@@ -21,9 +21,10 @@ const login = () => fetch("http://localhost:8000/api/v1/auth/login",{
 })
 .then(response => response.json())
 .then(data => {
-  if (data.token) {
-    localStorage.setItem('jwt',data.token)
-    storeAuth.setToken(data.token)
+  if (data.access_token) {
+    localStorage.setItem('access-token',data.access_token)
+    storeAuth.setToken(data.access_token)
+     console.log( data)
     console.log( storeAuth.token)
     router.push('/home')
     
