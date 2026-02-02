@@ -1,14 +1,59 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/auth';
+import { onMounted } from 'vue';
+import { router } from '@/router/routes';
 
+const storeAuth = useAuthStore();
 
+onMounted(async () => {
+  if (storeAuth.token && !storeAuth.user) {
+    try {
+      const response = await fetch('http://localhost:8000/api/v1/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${storeAuth.token}`,
+          'Accept': 'application/json'
+        }
+      });
+      const userData = await response.json();
+      if (response.ok) {
+        storeAuth.setUser(userData);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération de l\'utilisateur:', error);
+    }
+  }
+});
+
+const logout = async () => {
+  try {
+    const response = await fetch("http://localhost:8000/api/v1/auth/logout", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        'Authorization': `Bearer ${storeAuth.token}`,
+      },
+    });
+    
+    if (response.ok) {
+      storeAuth.clearAuth();
+      router.push('/login');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
 
 </script>
 
 <template>
   <div>
       
-      <h1>Home page</h1>
+      <h1>Bienvenue {{ storeAuth.user?.name }} {{ storeAuth.user?.surname }}</h1>
+
   </div>
+  <button v-on:click="logout">Se déconnecter</button>
 </template>
 
 <style>

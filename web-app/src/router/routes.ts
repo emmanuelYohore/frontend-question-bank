@@ -1,28 +1,31 @@
 import HomePage from '@/pages/HomePage.vue'
 import LoginPage from '@/pages/LoginPage.vue'
+import NotFound from '@/pages/NotFound.vue'
+import RegisterPage from '@/pages/RegisterPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
+   {
+    path: '/',
+    name: 'home',
+    component: HomePage,
+  },
   {
     path: '/login',
     name: 'login',
     component: LoginPage,
   },
-  {
-    path: '/home',
-    name: 'home',
-    component: HomePage,
+   {
+    path: '/register',
+    name: 'register',
+    component: RegisterPage,
   },
-  // {
-  //   path: '/404',
-  //   name: 'Not found',
-  //   component: NotFoundView,
-  // },
-  // {
-  //   path: '/:pathMatch(.*)*',
-  //   name: 'NotFoundView',
-  //  component: NotFoundView,
-  // },
+  {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: NotFound
+  }
+ 
 ]
 
 export const router = createRouter({
