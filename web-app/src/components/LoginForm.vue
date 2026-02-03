@@ -29,7 +29,7 @@ const login = async () => await fetch("http://localhost:8000/api/v1/auth/login",
       storeAuth.setUser(data.user)
     }
     console.log( data)
-    router.push('/')
+    router.push('/home')
     
   }
 })
@@ -41,7 +41,9 @@ const login = async () => await fetch("http://localhost:8000/api/v1/auth/login",
 <template>
   <div>
     <form @submit.prevent="login">
+      <label for="email">Email:</label>
       <input type="email" v-model="email" placeholder="Email" :required="true">
+      <label for="password">Mot de passe:</label>
       <input type="password" v-model="password" placeholder="Mot de passe" :required="true">
       <button type="submit">Se connecter</button>  
       <router-link to="/register">S'inscrire</router-link>  

@@ -33,7 +33,7 @@ const register = () => fetch("http://localhost:8000/api/v1/auth/register",{
       storeAuth.setUser(data.user)
     }
     console.log( data)
-    router.push('/')
+    router.push('/home')
     
   }
 })

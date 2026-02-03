@@ -1,3 +1,4 @@
+import CreateBankItemPage from '@/pages/CreateBankItemPage.vue'
 import HomePage from '@/pages/HomePage.vue'
 import LoginPage from '@/pages/LoginPage.vue'
 import NotFound from '@/pages/NotFound.vue'
@@ -7,8 +8,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
    {
     path: '/',
+    name: 'login',
+    component: LoginPage,
+  },
+
+  {
+    path: '/home',
     name: 'home',
     component: HomePage,
+  },
+   {
+    path: '/create-bank-item',
+    name: 'create-bank-item',
+    component: CreateBankItemPage,
   },
   {
     path: '/login',
