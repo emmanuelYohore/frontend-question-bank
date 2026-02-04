@@ -14,6 +14,10 @@ export const useAuthStore = defineStore('auth', () => {
 const token = ref<string | null>(localStorage.getItem('access-token'))
 const user = ref<User | null>(JSON.parse(localStorage.getItem('user') || 'null'))
 
+const getToken = () => {
+  return token.value
+}
+
 const setToken = (newToken: string) => {
   token.value = newToken
   localStorage.setItem('access-token', newToken)
@@ -34,6 +38,7 @@ const clearAuth = () => {
   return { 
     token,
     user,
+    getToken,
     setToken,
     setUser,
     clearAuth,

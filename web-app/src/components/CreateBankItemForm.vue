@@ -23,10 +23,9 @@ const createBankItem = async () => { await fetch("http://localhost:8000/api/v1/b
     })
     .then(response => response.json())
     .then(data => {
-      if (data) {
-      console.log('BankItem créé:', data);
-      name.value = '';  
-      }
+      alert('Banque créer avec succès')
+      console.log(data);
+      name.value = '';     
     })
     .catch(error => console.error('Error:', error))
   }
@@ -41,8 +40,10 @@ const createBankItem = async () => { await fetch("http://localhost:8000/api/v1/b
       <button type="submit">Créer</button>
     </form>   
   </div>
+    <router-link to="/my-bank-items">Voir mes banques</router-link>
+
 </template>
 
-<style  scoped>
+<style scoped>
 
 </style>

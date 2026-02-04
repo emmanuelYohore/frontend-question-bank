@@ -9,6 +9,7 @@ import AddItemToBankPage from '@/pages/AddItemToBankPage.vue'
 import NotFoundPage from '@/pages/NotFoundPage.vue'
 import CreateEnquetePage from '@/pages/CreateEnquetePage.vue'
 import MyEnquetesPage from '@/pages/MyEnquetesPage.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const routes = [
   {
@@ -82,15 +83,16 @@ export const router = createRouter({
   routes: routes,
 })
 
+
+
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('access-token')
+  const storeAuth = useAuthStore()
+  const authenticated = storeAuth.getToken()
   const requiresAuth = to.meta.requiresAuth
 
-  if (requiresAuth && !token) {
-    next('/login')
-  } else if (!requiresAuth && token && (to.path === '/login' || to.path === '/register')) {
-    next('/home')
+  if (requiresAuth && authenticated === null) {
+    next('/login');  
   } else {
-    next()
-  }
+        next();
+    }
 })
