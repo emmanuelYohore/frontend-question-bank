@@ -13,7 +13,7 @@
 </nav>
 </template>
 
-<style lang="css" scoped>
+<style scoped>
 body {
   margin: 0;
   font-family: sans-serif;

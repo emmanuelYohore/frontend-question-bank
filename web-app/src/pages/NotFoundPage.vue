@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import LoginForm from '@/components/LoginForm.vue';
 
 </script>
 
 <template>
-  <LoginForm/>
+  <div>
+    <h1>Not Found</h1>
+  </div>
 </template>
 
 <style scoped>
+
 </style>

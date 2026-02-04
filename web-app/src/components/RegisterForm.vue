@@ -11,34 +11,34 @@ const surname = ref('')
 const email = ref('');
 const password = ref('');
 
-const register = () => fetch("http://localhost:8000/api/v1/auth/register",{
-  method: "POST",
-  credentials: "include",
-  headers:{
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-  },
-  body: JSON.stringify({
-          name: name.value,
-          surname: surname.value,
-          email: email.value,
-          password: password.value,
-        }),
-})
-.then(response => response.json())
-.then(data => {
-  if (data.access_token) {
-    storeAuth.setToken(data.access_token)
-    if (data.user) {
-      storeAuth.setUser(data.user)
+ const register = async () => { await fetch("http://localhost:8000/api/v1/auth/register",{
+    method: "POST",
+    credentials: "include",
+    headers:{
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: JSON.stringify({
+            name: name.value,
+            surname: surname.value,
+            email: email.value,
+            password: password.value,
+          }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.access_token) {
+      storeAuth.setToken(data.access_token)
+      if (data.user) {
+        storeAuth.setUser(data.user)
+      }
+      console.log( data)
+      router.push('/home')
+      
     }
-    console.log( data)
-    router.push('/home')
-    
-  }
-})
-.catch(error => console.error('Error:', error))
-
+  })
+  .catch(error => console.error('Error:', error))
+}
 </script>
 
 <template>
@@ -54,5 +54,5 @@ const register = () => fetch("http://localhost:8000/api/v1/auth/register",{
   </div>
 </template>
 
-<style>
+<style scoped>
 </style>

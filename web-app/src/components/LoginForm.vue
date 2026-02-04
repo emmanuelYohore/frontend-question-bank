@@ -9,7 +9,7 @@ const storeAuth = useAuthStore();
 const email = ref('');
 const password = ref('');
 
-const login = async () => await fetch("http://localhost:8000/api/v1/auth/login",{
+const login = async () =>{ await fetch("http://localhost:8000/api/v1/auth/login",{
   method: "POST",
   credentials: "include",
   headers:{
@@ -23,17 +23,17 @@ const login = async () => await fetch("http://localhost:8000/api/v1/auth/login",
 })
 .then(response => response.json())
 .then(data => {
-  if (data.access_token) {
-    storeAuth.setToken(data.access_token)
-    if (data.user) {
-      storeAuth.setUser(data.user)
+    if (data.access_token) {
+      storeAuth.setToken(data.access_token)
+      if (data.user) {
+        storeAuth.setUser(data.user)
+      }
+      console.log( data)
+      router.push('/home')  
     }
-    console.log( data)
-    router.push('/home')
-    
-  }
-})
+  })
 .catch(error => console.error('Error:', error))
+}
 
 
 </script>
@@ -51,5 +51,5 @@ const login = async () => await fetch("http://localhost:8000/api/v1/auth/login",
   </div>
 </template>
 
-<style>
+<style scoped>
 </style>

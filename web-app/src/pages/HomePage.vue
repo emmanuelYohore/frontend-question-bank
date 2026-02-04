@@ -3,7 +3,6 @@ import { useAuthStore } from '@/stores/auth';
 import { onMounted } from 'vue';
 import { router } from '@/router/routes';
 import NavigationBar from '@/components/NavigationBar.vue';
-import { RouterView } from 'vue-router';
 
 const storeAuth = useAuthStore();
 
@@ -50,15 +49,18 @@ const logout = async () => {
 </script>
 
 <template>
+
   <NavigationBar/>
-  <div>
-      
+    
+    <div>
       <h1>Bienvenue {{ storeAuth.user?.name }} {{ storeAuth.user?.surname }}</h1>
-      <<router-link to="/create-bank-item">Créer une banque d'items</router-link>
+    <router-link to="/create-bank-item">Créer une banque d'items</router-link>
 
   </div>
   <button @click="logout">Se déconnecter</button>
+  
 </template>
 
-<style>
+<style scoped>
+
 </style>

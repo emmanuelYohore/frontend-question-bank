@@ -8,5 +8,5 @@ import RegisterForm from '@/components/RegisterForm.vue';
     <RegisterForm/>
 </template>
 
-<style>
+<style scoped>
 </style>
