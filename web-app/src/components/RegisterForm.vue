@@ -36,6 +36,10 @@ const password = ref('');
       router.push('/home')
       
     }
+        name.value = '',
+        surname.value = '',
+        email.value = '',
+        password.value = ''
   })
   .catch(error => console.error('Error:', error))
 }

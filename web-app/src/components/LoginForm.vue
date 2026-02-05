@@ -31,6 +31,8 @@ const login = async () =>{ await fetch("http://localhost:8000/api/v1/auth/login"
       console.log( data)
       router.push('/home')  
     }
+        email.value = '',
+        password.value = ''
   })
 .catch(error => console.error('Error:', error))
 }
