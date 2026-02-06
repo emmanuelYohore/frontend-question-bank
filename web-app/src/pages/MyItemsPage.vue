@@ -28,7 +28,6 @@ const getAllBankForUser = async () => await fetch(`http://localhost:8000/api/v1/
 .then(response => response.json())
 .then(data => {
   bankItems.value = data
-
   console.log(bankItems.value)
  
 })
@@ -38,10 +37,10 @@ const getAllBankForUser = async () => await fetch(`http://localhost:8000/api/v1/
 
 <template>
 
-  <h1>Mes banques</h1>
+  <h1>Mes items</h1>
 
   <div v-if="bankItems.length == 0">
-    <p>Pas de banques</p>
+    <p>Pas d'items</p>
   </div>
 
   <div v-else>
@@ -50,7 +49,7 @@ const getAllBankForUser = async () => await fetch(`http://localhost:8000/api/v1/
     </div>
 
     <div>
-      <router-link to="/create-bank-item">Créer une banque d'items</router-link>
+      <router-link to="/create-item">Créer des items</router-link>
     </div>
 </div>
  
