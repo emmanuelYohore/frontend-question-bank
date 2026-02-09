@@ -61,10 +61,10 @@ const password = ref('');
               <form @submit.prevent="register" class="space-y-4 md:space-y-6">
                 <div>
                       <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom</label>
-                      <input type="text" v-model="name" placeholder="" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" :required="true">
+                      <input type="text" v-model="name" minlength="3" maxlength="30" placeholder="" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" :required="true">
                   </div>
                   <div>
-                      <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Prenom</label>
+                      <label for="surname" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Prenom</label>
                       <input type="text" v-model="surname" placeholder="" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" :required="true">
                   </div>
                   <div>
@@ -73,7 +73,7 @@ const password = ref('');
                   </div>
                   <div>
                       <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mot de passe</label>
-                      <input type="password" v-model="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" :required="true">
+                      <input type="password" v-model="password" minlength="6" maxlength="30" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" :required="true">
                   </div>
                     
                   <div class="flex items-start">
