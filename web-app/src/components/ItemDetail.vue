@@ -1,24 +1,42 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
 const storeAuth = useAuthStore()
 
+interface FormatReponse {
+  id?: number 
+  type: string
+}
+
 interface Item {
-    id?: number
+  id?: number
   question: string
   obligatoire : boolean 
- 
+}
+
+interface ModaliteReponse {
+  intitule?: string | null
+  v1?: string | null
+  v2?: string | null
 }
 
 const item = ref<Item | null>(null)
+const formatReponse = ref<FormatReponse | null>(null)
+const modalites = ref<ModaliteReponse[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
 const itemId = route.params.itemId
+
+const isQCMorQCU = computed(() => 
+   formatReponse.value?.type === 'qcm' || formatReponse.value?.type === 'qcu'
+ )
+ const isEVN = computed(() => formatReponse.value?.type === 'evn')
+ const isTexte = computed(() => formatReponse.value?.type === 'texte')
 
 const getItemDetail = async () => {
   loading.value = true
@@ -39,6 +57,11 @@ const getItemDetail = async () => {
     
     const data = await response.json()
     item.value = data
+    formatReponse.value = data.format_reponse
+    modalites.value = data.modalite_reponses
+
+    console.log(item)
+    console.log(formatReponse)
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
     console.error('Error:', err)
@@ -128,7 +151,14 @@ onMounted(() => {
               {{ item.obligatoire ? 'Oui' : 'Non' }}
             </span>
           </p>
-          
+          <p><strong>Type de format de reponse :</strong>{{ formatReponse?.type}}</p>
+          <p><strong>Modalités :</strong></p>
+                <div v-for="(modalite, index) in modalites" :key="index">
+                    <ul>
+                        <li>{{ modalite.intitule }}</li>
+                    </ul>
+                    
+                </div>
         </div>
 
         <div class="actions">
