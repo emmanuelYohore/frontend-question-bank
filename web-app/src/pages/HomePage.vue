@@ -55,8 +55,13 @@ const logout = async () => {
     <div>
       <h1>Bienvenue {{ storeAuth.user?.name }} {{ storeAuth.user?.surname }}</h1>
     <router-link to="/create-bank-item">Créer une banque d'items</router-link>
-    <router-link to="/my-bank-items">Voir mes banques</router-link>
     <router-link to="/create-item">Créer un item</router-link>
+
+    <router-link to="/my-bank-items">Voir mes banques</router-link><br><br><br>
+
+
+    <router-link to="/my-items">Voir mes items</router-link>
+
 
 
 

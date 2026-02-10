@@ -10,6 +10,9 @@ import NotFoundPage from '@/pages/NotFoundPage.vue'
 import CreateEnquetePage from '@/pages/CreateEnquetePage.vue'
 import MyEnquetesPage from '@/pages/MyEnquetesPage.vue'
 import { useAuthStore } from '@/stores/auth'
+import BankItemDetail from '@/components/BankItemDetail.vue'
+import ItemDetail from '@/components/ItemDetail.vue'
+import MyItemsPage from '@/pages/MyItemsPage.vue'
 
 const routes = [
   {
@@ -40,6 +43,18 @@ const routes = [
     component: CreateBankItemPage,
     meta: { requiresAuth: true }
   },
+   {
+    path: '/bank-item/:bankItemId',
+    name: 'bank-item-detail',
+    component: BankItemDetail,
+    meta: { requiresAuth: true }
+  },
+   {
+    path: '/item/:id',
+    name: 'item-detail',
+    component: ItemDetail,
+    meta: { requiresAuth: true }
+  },
   {
     path: '/create-item',
     name: 'create-item',
@@ -47,7 +62,7 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/add-item-to-bank/:itemId',
+    path: '/add-item-to-bank',
     name: 'add-item-to-bank',
     component: AddItemToBankPage,
     meta: { requiresAuth: true }
@@ -69,6 +84,12 @@ const routes = [
     path: '/my-bank-items',
     name: 'my-bank-items',
     component: MyBankItemsPage,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/my-items',
+    name: 'my-items',
+    component: MyItemsPage,
     meta: { requiresAuth: true }
   },
   {
