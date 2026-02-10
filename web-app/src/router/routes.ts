@@ -50,7 +50,7 @@ const routes = [
     meta: { requiresAuth: true }
   },
    {
-    path: '/item/:id',
+    path: '/item/:itemId',
     name: 'item-detail',
     component: ItemDetail,
     meta: { requiresAuth: true }

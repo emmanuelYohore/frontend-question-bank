@@ -21,7 +21,6 @@ const loading = ref(true)
 
 
 const getAllBankForUser = async () => {  
- 
     
   loading.value = true
 await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items`,{

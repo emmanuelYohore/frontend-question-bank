@@ -7,6 +7,7 @@ const route = useRoute()
 const router = useRouter()
 const storeAuth = useAuthStore()
 
+
 interface BankItem {
   id: number
   name: string
@@ -23,9 +24,9 @@ const bankItemId = route.params.bankItemId
 const getBankItemDetail = async () => {
   loading.value = true
   error.value = null
-  
+
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/bank-items/${bankItemId}`, {
+    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/bank-items/${bankItemId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
