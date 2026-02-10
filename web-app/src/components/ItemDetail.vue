@@ -36,7 +36,7 @@ const isQCMorQCU = computed(() =>
    formatReponse.value?.type === 'qcm' || formatReponse.value?.type === 'qcu'
  )
  const isEVN = computed(() => formatReponse.value?.type === 'evn')
- const isTexte = computed(() => formatReponse.value?.type === 'texte')
+ //const isTexte = computed(() => formatReponse.value?.type === 'texte')
 
 const getItemDetail = async () => {
   loading.value = true
@@ -152,13 +152,27 @@ onMounted(() => {
             </span>
           </p>
           <p><strong>Type de format de reponse :</strong>{{ formatReponse?.type}}</p>
-          <p><strong>Modalités :</strong></p>
-                <div v-for="(modalite, index) in modalites" :key="index">
-                    <ul>
+          
+            <div v-if="isQCMorQCU">
+                <p><strong>Modalités :</strong></p>
+                <ul v-for="(modalite, index) in modalites" :key="index">
                         <li>{{ modalite.intitule }}</li>
-                    </ul>
-                    
+                </ul>
+            </div>
+            <div v-else-if="isEVN">
+                <p><strong>Modalités :</strong></p>
+                <div v-for="(modalite, index) in modalites" :key="index">
+                        <p>{{ modalite.v1 }}</p>
+                        <p>{{ modalite.v2 }}</p>
                 </div>
+            </div>
+            <div v-else>
+                <p><strong>Pas de modalités </strong></p>
+            </div>
+                
+                    
+                    
+                
         </div>
 
         <div class="actions">
