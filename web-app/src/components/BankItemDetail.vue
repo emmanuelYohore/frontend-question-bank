@@ -41,7 +41,6 @@ const getBankItemDetail = async () => {
     const data = await response.json()
     bankItem.value = data
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
     console.error('Error:', err)
   } finally {
     loading.value = false

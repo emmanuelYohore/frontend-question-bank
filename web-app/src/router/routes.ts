@@ -13,6 +13,7 @@ import { useAuthStore } from '@/stores/auth'
 import BankItemDetail from '@/components/BankItemDetail.vue'
 import ItemDetail from '@/components/ItemDetail.vue'
 import MyItemsPage from '@/pages/MyItemsPage.vue'
+import AddBankItemToEnquetePage from '@/pages/AddBankItemToEnquetePage.vue'
 
 const routes = [
   {
@@ -62,9 +63,15 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/add-item-to-bank',
+    path: '/users/:userId/bank-items/:bankId/items',
     name: 'add-item-to-bank',
     component: AddItemToBankPage,
+    meta: { requiresAuth: true }
+  },
+   {
+    path: '/users/:userId/enquetes/:enqueteId/bank-items',
+    name: 'add-bank-to-enquete',
+    component: AddBankItemToEnquetePage,
     meta: { requiresAuth: true }
   },
   {
@@ -103,7 +110,6 @@ export const router = createRouter({
   history: createWebHistory(),
   routes: routes,
 })
-
 
 
 router.beforeEach((to, from, next) => {

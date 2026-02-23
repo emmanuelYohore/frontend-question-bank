@@ -1,87 +1,145 @@
-<script lang="ts">
-</script>
 
-<template>
-    <nav class="navbar">
-  <input type="checkbox" id="toggle">
-  <div class="logo">MySite</div>
-  <label for="toggle" class="hamburger">☰</label>
-  <ul class="menu">
-    <li><a href="#">Home</a></li>
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const logout = async () => {
+  try {
+    const response = await fetch("http://localhost:8000/api/v1/auth/logout", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        'Authorization': `Bearer ${authStore.token}`,
+      },
+    });
     
-  </ul>
-</nav>
-</template>
+    if (response.ok) {
+      authStore.clearAuth();
+      router.push('/login');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
 
-<style scoped>
-body {
-  margin: 0;
-  font-family: sans-serif;
+ </script>
+ 
+ <template>
+   <nav class="navbar">
+     <div class="navbar-container">
+      <div class="logo-section">
+        <div class="logo">
+          <img src="../assets/img/logo.png" alt="Logo" />
+        </div>
+        <h1 class="app-title">ENQUETE APP</h1>
+       </div>
+      
+       <ul class="nav-links">
+        <li>
+          <router-link to="/home" class="nav-link">Accueil</router-link>
+        </li>
+        <li>
+          <router-link to="/my-bank-items" class="nav-link">Voir mes banques</router-link>
+        </li>
+        <li>
+          <router-link to="/my-items" class="nav-link">Voir mes items</router-link>
+        </li>
+        <li>
+          <router-link to="/my-enquetes" class="nav-link">Voir mes enquêtes</router-link>
+        </li>
+        <li>
+          <a href="#" class="nav-link">Mon compte</a>
+        </li>
+       </ul>
+
+      <button @click="logout" class="logout-btn">se déconnecter</button>
+     </div>
+   </nav>
+ </template>
+ 
+ <style scoped>
+.navbar {
+  border-radius: 0 0 40px 40px;
+  background-color: #FFF1F1;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+  z-index: 1000;
 }
 
-.navbar {
-  background-color: #333;
-  color: white;
+.navbar-container {
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  height: 60px;
-  position: relative;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.menu {
-  list-style: none;
+.logo-section {
   display: flex;
-  margin-left: auto;
+  align-items: center;
+  gap: 1rem;
 }
 
-.menu li a {
-  color: white;
+.logo img {
+  height: 50px;
+  width: auto;
+}
+
+.app-title {
+  font-family: 'Kufam', sans-serif;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #000;
+  margin: 0;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-link {
+  color: #000;
   text-decoration: none;
-  padding: 0 15px;
-  display: block;
-  line-height: 60px;
+  font-size: 1rem;
+  font-weight: bold;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.3s ease;
 }
 
-.hamburger {
-  display: none;
-  font-size: 1.8rem;
+.nav-link:hover {
+  color:#e74c3c;
+  border-bottom-color: #e74c3c;
+}
+
+.logout-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
   cursor: pointer;
-  margin-left: auto;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
 }
 
-#toggle {
-  display: none;
+.logout-btn:hover {
+  background-color: #c0392b;
 }
-
-/* Responsive Rules */
-@media (max-width: 768px) {
-  .hamburger {
-    display: block;
-  }
-
-  .menu {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    right: 0;
-    background-color: #333;
-    flex-direction: column;
-    display: none;
-  }
-
-  .menu li a {
-    line-height: 40px;
-    padding: 10px 20px;
-  }
-
-  #toggle:checked + .logo + .hamburger + .menu {
-    display: flex;
-  }
-}
-</style>
+ </style>
