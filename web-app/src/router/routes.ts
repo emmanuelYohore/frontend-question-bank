@@ -63,13 +63,13 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/users/:userId/bank-items/:bankId/items',
+    path: '/add-item-to-bank',
     name: 'add-item-to-bank',
     component: AddItemToBankPage,
     meta: { requiresAuth: true }
   },
    {
-    path: '/users/:userId/enquetes/:enqueteId/bank-items',
+    path: '/add-bank-to-enquete',
     name: 'add-bank-to-enquete',
     component: AddBankItemToEnquetePage,
     meta: { requiresAuth: true }
