@@ -67,18 +67,18 @@ const navigateTo = (routeName: string) => {
 
       <div class="card">
         <div class="card-image">
-          <img src="../assets/img/enquete.jpg" alt="Enquête" />
+          <img src="../assets/img/enquete.jpg" alt="ItemToBank" />
         </div>
-        <button class="card-button" @click="navigateTo('create-enquete')">
+        <button class="card-button" @click="navigateTo('add-item-to-bank')">
           Ajouter des items à une banque d'items
         </button>
       </div>
 
       <div class="card">
         <div class="card-image">
-          <img src="../assets/img/enquete.jpg" alt="Enquête" />
+          <img src="../assets/img/enquete.jpg" alt="BankToEnquete" />
         </div>
-        <button class="card-button" @click="navigateTo('create-enquete')">
+        <button class="card-button" @click="navigateTo('add-bank-to-enquete')">
           Ajouter des banques d'items à une enquête
         </button>
       </div>

@@ -19,7 +19,6 @@ const bankItems = ref<BankItem[]>([])
 const userId = storeAuth.user?.id
 const loading = ref(true)
 
-
 const getAllBankForUser = async () => {  
     
   loading.value = true

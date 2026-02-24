@@ -114,15 +114,12 @@ export const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const storeAuth = useAuthStore()
-  const dataUser = storeAuth.user
   const authenticated = storeAuth.getToken()
   const requiresAuth = to.meta.requiresAuth
 
-  if (requiresAuth && (!authenticated || !dataUser)) {
+  if (requiresAuth && !authenticated ) {
     next('/login');  
-  } else if (!requiresAuth && authenticated && dataUser) {
-    next('/home');
-  } else {
+  }  else {
     next();
   }
 })

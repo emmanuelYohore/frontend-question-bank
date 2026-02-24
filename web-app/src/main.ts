@@ -15,6 +15,6 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
-app.component('FontAwesomeIcon', FontAwesomeIcon) // Enregistrer le composant globalement
+app.component('FontAwesomeIcon', FontAwesomeIcon)
 
 app.mount('#app')
