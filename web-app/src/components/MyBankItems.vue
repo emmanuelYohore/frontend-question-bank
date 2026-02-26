@@ -32,6 +32,7 @@ await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items`,{
 })
 .then(response => response.json())
 .then(data => {
+  console.log(data)
   bankItems.value = data
   loading.value = false
 

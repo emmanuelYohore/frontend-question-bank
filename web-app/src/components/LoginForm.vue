@@ -10,14 +10,17 @@ const storeAuth = useAuthStore();
 
 const email = ref('');
 const password = ref('');
-
+const loading = ref(true)
 const showPassword = ref(false);
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
-const login = async () =>{ await fetch("http://localhost:8000/api/v1/auth/login",{
+const login = async () =>{ 
+  loading.value = true
+  
+  await fetch("http://localhost:8000/api/v1/auth/login",{
   method: "POST",
   credentials: "include",
   headers:{
@@ -41,8 +44,11 @@ const login = async () =>{ await fetch("http://localhost:8000/api/v1/auth/login"
     }
         email.value = '',
         password.value = ''
+        loading.value = false
+
   })
 .catch(error => console.error('Error:', error))
+
 }
 
 
@@ -89,7 +95,9 @@ const login = async () =>{ await fetch("http://localhost:8000/api/v1/auth/login"
           </div>
         </div>
 
-        <button type="submit" class="submit-btn">Se connecter</button>
+        <button type="submit" class="submit-btn">
+          {{loading? "Chargement..." : "Se connecter"}}
+        </button>
       </form>
 
       <p class="register-link">

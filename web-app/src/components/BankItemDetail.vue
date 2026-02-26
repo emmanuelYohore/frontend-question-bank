@@ -15,6 +15,14 @@ interface BankItem {
  
 }
 
+interface Item {
+  id: number
+  question: string
+  obligatoire : boolean 
+}
+
+const items = ref<Item[]>([])
+
 const bankItem = ref<BankItem | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -40,6 +48,8 @@ const getBankItemDetail = async () => {
     
     const data = await response.json()
     bankItem.value = data
+    items.value = data.items
+    console.log(`items : ${items.value}`)
   } catch (err) {
     console.error('Error:', err)
   } finally {
@@ -144,6 +154,27 @@ onMounted(() => {
         </div>
       </div>
     </div>
+  </div>
+
+  <div>
+   
+     <div v-if="items.length == 0" class="empty-state">
+      <p>Pas d'items ajoutés</p>
+    </div>
+
+    <div v-else class="bank-items-container">
+       <h1>Items ajoutés</h1>
+      <div v-for="item in items" :key="item.id" class="bank-item-card">
+        <router-link :to="`/item/${item.id}`" class="bank-item-link">
+          <h3>{{ item.question }}</h3>
+          <p class="bank-status" :class="{ 'obligatoire': item.obligatoire }">
+            Obligatoire : {{ item.obligatoire ? 'Oui' : 'Non' }}
+          </p>
+        </router-link>
+      </div>
+    </div>
+    
+
   </div>
 </template>
 
