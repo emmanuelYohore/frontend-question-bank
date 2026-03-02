@@ -10,7 +10,7 @@ const storeAuth = useAuthStore();
 
 const email = ref('');
 const password = ref('');
-const loading = ref(true)
+const loading = ref(false)
 const showPassword = ref(false);
 
 const togglePasswordVisibility = () => {

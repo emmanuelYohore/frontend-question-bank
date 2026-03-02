@@ -9,6 +9,6 @@ import CreateBankItemForm from '@/components/CreateBankItemForm.vue';
   </div>
 </template>
 
-<style lang="css" scoped>
+<style scoped>
 
 </style>

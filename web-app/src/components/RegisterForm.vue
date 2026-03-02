@@ -1,78 +1,97 @@
-
- <script setup lang="ts">
-
-import { router } from '@/router/routes';
-import { useAuthStore } from '@/stores/auth';
-import { ref } from 'vue'
-import { faUser, faEnvelope, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+<script setup lang="ts">
+import { router } from "@/router/routes";
+import { useAuthStore } from "@/stores/auth";
+import { computed, ref } from "vue";
+import {
+  faUser,
+  faEnvelope,
+  faLock,
+  faEye,
+  faEyeSlash,
+} from "@fortawesome/free-solid-svg-icons";
 
 const storeAuth = useAuthStore();
 
-const name = ref('');
-const surname = ref('')
-const email = ref('');
-const password = ref('');
+interface FormRegister {
+  name: string;
+  surname: string;
+  email: string;
+  password: string;
+}
 
- const register = async () => { await fetch("http://localhost:8000/api/v1/auth/register",{
+const loading = ref(false);
+
+const isSubmit = computed(() => {
+  return formRegister.value !== null;
+});
+
+const formRegister = ref<FormRegister>({
+  name: "",
+  surname: "",
+  email: "",
+  password: "",
+});
+
+const register = async () => {
+  await fetch("http://localhost:8000/api/v1/auth/register", {
     method: "POST",
     credentials: "include",
-    headers:{
+    headers: {
       "Content-Type": "application/json",
-      "Accept": "application/json",
+      Accept: "application/json",
     },
     body: JSON.stringify({
-            name: name.value,
-            surname: surname.value,
-            email: email.value,
-            password: password.value,
-          }),
+      name: formRegister.value.name,
+      surname: formRegister.value.surname,
+      email: formRegister.value.email,
+      password: formRegister.value.password,
+    }),
   })
-  .then(response => response.json())
-  .then(data => {
-    if (data.access_token) {
-      storeAuth.setToken(data.access_token)
-      if (data.user) {
-        storeAuth.setUser(data.user)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.access_token) {
+        storeAuth.setToken(data.access_token);
+        if (data.user) {
+          storeAuth.setUser(data.user);
+        }
+        console.log(data);
+        router.push("/home");
       }
-      console.log( data)
-      router.push('/home')
-      
-    }
-        name.value = '',
-        surname.value = '',
-        email.value = '',
-        password.value = ''
-  })
-  .catch(error => console.error('Error:', error))
-}
+      formRegister.value = {
+        name: "",
+        surname: "",
+        email: "",
+        password: "",
+      };
+    })
+    .catch((error) => console.error("Error:", error));
+};
 
 const showPassword = ref(false);
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
+</script>
 
-
- </script>
- 
- <template>
+<template>
   <div class="container">
     <div class="form-box">
       <div class="logo">
         <img src="../assets/img/logo.png" alt="Logo" />
       </div>
-      
+
       <h1>Créer un compte</h1>
-      
+
       <form @submit.prevent="register">
         <div class="form-group">
           <label for="nom">Nom</label>
           <div class="input-field">
-  <FontAwesomeIcon :icon="faUser" />
-            <input 
-              type="text" 
+            <FontAwesomeIcon :icon="faUser" />
+            <input
+              type="text"
               id="nom"
-              v-model="name"
+              v-model="formRegister.name"
               placeholder="Nom"
               required
             />
@@ -82,13 +101,13 @@ const togglePasswordVisibility = () => {
         <div class="form-group">
           <label for="prenom">Prénom</label>
           <div class="input-field">
-  <FontAwesomeIcon :icon="faUser" />
-            <input 
-              type="text" 
+            <FontAwesomeIcon :icon="faUser" />
+            <input
+              type="text"
               id="prenom"
-              v-model="surname"
-            placeholder="Prénom"
-            required
+              v-model="formRegister.surname"
+              placeholder="Prénom"
+              required
             />
           </div>
         </div>
@@ -96,13 +115,12 @@ const togglePasswordVisibility = () => {
         <div class="form-group">
           <label for="email">Email</label>
           <div class="input-field">
-  <FontAwesomeIcon :icon="faEnvelope" />
-            <input 
-              type="email" 
+            <FontAwesomeIcon :icon="faEnvelope" />
+            <input
+              type="email"
               id="email"
-              v-model="email"
-            placeholder="Ex : user@gmail.com "
-
+              v-model="formRegister.email"
+              placeholder="Ex : user@gmail.com "
               required
             />
           </div>
@@ -111,45 +129,52 @@ const togglePasswordVisibility = () => {
         <div class="form-group">
           <label for="password">Mot de passe</label>
           <div class="input-field">
-             <FontAwesomeIcon :icon="faLock" />
-  <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Mot de passe" required />
-  <FontAwesomeIcon 
-    :icon="showPassword ? faEyeSlash : faEye" 
-    class="toggle-password" 
-    @click="togglePasswordVisibility" 
-  />
+            <FontAwesomeIcon :icon="faLock" />
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              v-model="formRegister.password"
+              placeholder="Mot de passe"
+              required
+            />
+            <FontAwesomeIcon
+              :icon="showPassword ? faEyeSlash : faEye"
+              class="toggle-password"
+              @click="togglePasswordVisibility"
+            />
           </div>
         </div>
 
-        <button type="submit" class="submit-btn">Créer un compte</button>
+        <button type="submit" class="submit-btn" :disabled="!isSubmit">
+          {{ loading ? "Chargement..." : "Créer un compte" }}
+        </button>
       </form>
 
       <p class="login-link">
-        Vous avez déjà un compte ? 
+        Vous avez déjà un compte ?
         <router-link to="/login">Se connecter</router-link>
       </p>
     </div>
   </div>
- </template>
- 
- <style scoped>
- * {
+</template>
+
+<style scoped>
+* {
   margin: 0;
   padding: 0;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   box-sizing: border-box;
- }
- 
- .container {
+}
+
+.container {
   width: 100%;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #e5e5e5;
- }
- 
- .form-box {
+}
+
+.form-box {
   width: 600px;
   padding: 40px 50px;
   background-color: #fff;
@@ -166,7 +191,7 @@ const togglePasswordVisibility = () => {
 .logo img {
   height: 80px;
   border-radius: 8px;
- }
+}
 
 h1 {
   text-align: center;
@@ -263,4 +288,4 @@ label {
 .login-link a:hover {
   text-decoration: underline;
 }
- </style>
+</style>

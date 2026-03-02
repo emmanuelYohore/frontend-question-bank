@@ -14,6 +14,7 @@ import BankItemDetail from '@/components/BankItemDetail.vue'
 import ItemDetail from '@/components/ItemDetail.vue'
 import MyItemsPage from '@/pages/MyItemsPage.vue'
 import AddBankItemToEnquetePage from '@/pages/AddBankItemToEnquetePage.vue'
+import EnqueteDetail from '@/components/EnqueteDetail.vue'
 
 const routes = [
   {
@@ -54,6 +55,12 @@ const routes = [
     path: '/item/:itemId',
     name: 'item-detail',
     component: ItemDetail,
+    meta: { requiresAuth: true }
+  },
+    {
+    path: '/enquete/:enqueteId',
+    name: 'enquete-detail',
+    component: EnqueteDetail,
     meta: { requiresAuth: true }
   },
   {
