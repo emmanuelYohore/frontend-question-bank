@@ -1,12 +1,15 @@
 
  <script setup lang="ts">
  import { useAuthStore } from '@/stores/auth';
- import { onMounted } from 'vue';
+ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
  import NavigationBar from '@/components/NavigationBar.vue';
+import PopupUpdateUserInfo from '@/components/PopupUpdateUserInfo.vue';
  
  const storeAuth = useAuthStore();
 const router = useRouter();
+const isPopupOpen = ref(false)
+
  
  onMounted(async () => {
    if (storeAuth.token && !storeAuth.user) {
@@ -35,6 +38,17 @@ const navigateTo = (routeName: string) => {
  
  <template>
   <NavigationBar />
+
+  <div>
+    <button @click="isPopupOpen = true">Ouvrir la popup</button>
+    <PopupUpdateUserInfo
+      v-if="isPopupOpen"
+      title="Ma Popup"
+      @close="isPopupOpen = false"
+    >
+      <p>Contenu de la popup.</p>
+    </PopupUpdateUserInfo>
+  </div>
   
   <div class="home-container">
     <div class="cards-container">

@@ -53,7 +53,7 @@ const logout = async () => {
           <router-link to="/my-enquetes" class="nav-link">Voir mes enquêtes</router-link>
         </li>
         <li>
-          <a href="#" class="nav-link">Mon compte</a>
+          <router-link to="/my-account" class="nav-link">Mon compte</router-link>
         </li>
        </ul>
 

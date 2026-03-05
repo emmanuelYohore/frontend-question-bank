@@ -32,18 +32,87 @@ const createBankItem = async () => { await fetch("http://localhost:8000/api/v1/b
 </script>
 
 <template>
- <div>
-    <form @submit.prevent="createBankItem()">
-      <label for="name">*Nom:</label>
-      <input type="text" v-model="name" placeholder="Nom" :required="true">
-      
-      <button type="submit">Créer</button>
-    </form>   
+  <div class="form-wrapper">
+    <div class="form-card">
+      <form @submit.prevent="createBankItem()">
+        <div class="form-group">
+          <label for="name">Nom :</label>
+          <input 
+            type="text" 
+            v-model="name" 
+            placeholder="Entrez un nom" 
+            :required="true"
+          >
+        </div>
+        
+        <button type="submit" class="btn-submit">Créer</button>
+      </form>
+    </div>
   </div>
-    <router-link to="/my-bank-items">Voir mes banques</router-link>
-
 </template>
 
 <style scoped>
+.form-wrapper {
+  max-width: 500px;
+  margin: 0 auto;
+}
 
+.form-card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-group input {
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #5b9aff;
+}
+
+.form-group input::placeholder {
+  color: #aaa;
+}
+
+.btn-submit {
+  padding: 12px 24px;
+  background-color: #5b9aff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 10px;
+}
+
+.btn-submit:hover {
+  background-color: #4a89e8;
+}
 </style>

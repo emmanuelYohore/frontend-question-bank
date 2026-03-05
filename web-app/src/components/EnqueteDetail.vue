@@ -136,6 +136,8 @@ onMounted(() => {
         
         <div class="info-section">
           <p><strong>Propriétaire:</strong>{{ storeAuth.user?.surname }}</p>
+                        <p><strong>Titre:</strong>{{ enquete.title }}</p>
+
               <p><strong>Description:</strong>{{ enquete.description }}</p>
               <p><strong>Message de début:</strong>{{ enquete.start_message }}</p>
               <p><strong>Message de fin:</strong>{{ enquete.end_message }}</p>

@@ -3,6 +3,7 @@
 import { ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { router } from '@/router/routes';
+import { faDeleteLeft } from '@fortawesome/free-solid-svg-icons';
 
 const authStore = useAuthStore();
 
@@ -149,26 +150,31 @@ const createItem = async () => {
 </script>
 
 <template>
-  <div class="form-container">
-    <form @submit.prevent="createItem">
-      <div class="form-group">
-        <label>Type de réponse :</label>
-        <select v-model="formatReponse.type" required>
-          <option value="">-- Choisir un type --</option>
-          <option v-for="option in options" :key="option.value" :value="option.value">
-            {{ option.text }}
-          </option>
-        </select>
-      </div>
+  <div class="form-wrapper">
+    <div class="form-card">
+      <form @submit.prevent="createItem">
+        <div class="form-group">
+          <label>Type de réponse :</label>
+          <select v-model="formatReponse.type" required>
+            <option value="">--- Choisir un type ---</option>
+            <option v-for="option in options" :key="option.value" :value="option.value">
+              {{ option.text }}
+            </option>
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label>Question :</label>
-        <input type="text" v-model="item.question" placeholder="Entrez la question" required>
-        
-      </div>
+        <div class="form-group">
+          <label>Question :</label>
+          <input type="text" v-model="item.question" placeholder="Entrez la question" required>
+        </div>
 
-      <input type="checkbox"  :value=true v-model="item.obligatoire" />
-      <label for="oui">OUI</label>
+        <div class="form-group checkbox-group">
+          <label>Obligatoire :</label>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="obligatoire" :value="true" v-model="item.obligatoire" />
+            <label for="obligatoire" class="checkbox-label">OUI</label>
+          </div>
+        </div>
 
 
 
@@ -181,13 +187,13 @@ const createItem = async () => {
             :placeholder="'Intitulé ' + (index + 1)" 
             required
           >
-          <button 
+         <button 
             type="button" 
             @click="removeModalite(index)"
             :disabled="modalites.length <= 2"
             class="btn-remove"
           >
-            <i class="fas fa-trash-can"></i>
+            <FontAwesomeIcon :icon="faDeleteLeft"/>
           </button>
         </div>
         <button 
@@ -216,16 +222,23 @@ const createItem = async () => {
         <p>Aucune modalité requise pour le texte libre.</p>
       </div>
 
-      <button type="submit" class="btn-submit">Créer l'item</button>
-    </form>
+        <button type="submit" class="btn-submit">Créer</button>
+      </form>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.form-container {
+.form-wrapper {
   max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
+  margin: 0 auto;
+}
+
+.form-card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 form {
@@ -243,20 +256,56 @@ form {
 .form-group label {
   font-weight: 600;
   color: #333;
+  font-size: 14px;
 }
 
 .form-group input,
 .form-group select {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
   font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #5b9aff;
+}
+
+.form-group input::placeholder {
+  color: #aaa;
+}
+
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  font-weight: 400;
+  margin: 0;
+  cursor: pointer;
 }
 
 .modalites-section,
 .evn-section {
-  padding: 15px;
-  background-color: #f8f9fa;
+  padding: 20px;
+  background-color: #f9f9f9;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
 }
@@ -265,8 +314,9 @@ form {
 .evn-section h3 {
   margin-top: 0;
   margin-bottom: 15px;
-  font-size: 16px;
-  color: #555;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
 }
 
 .modalite-item {
@@ -277,19 +327,21 @@ form {
 
 .modalite-item input {
   flex: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 10px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
 }
 
 .btn-remove {
-  padding: 8px 12px;
+  padding: 10px 14px;
   background-color: #dc3545;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
+  transition: background-color 0.2s;
 }
 
 .btn-remove:disabled {
@@ -302,13 +354,14 @@ form {
 }
 
 .btn-add {
-  padding: 10px 15px;
+  padding: 10px 16px;
   background-color: #28a745;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
+  transition: background-color 0.2s;
 }
 
 .btn-add:disabled {
@@ -321,7 +374,7 @@ form {
 }
 
 .texte-info {
-  padding: 15px;
+  padding: 16px;
   background-color: #e7f3ff;
   border-radius: 8px;
   border: 1px solid #b3d9ff;
@@ -330,21 +383,23 @@ form {
 .texte-info p {
   margin: 0;
   color: #0056b3;
+  font-size: 14px;
 }
 
 .btn-submit {
   padding: 12px 24px;
-  background-color: #007bff;
+  background-color: #5b9aff;
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
+  margin-top: 10px;
 }
 
 .btn-submit:hover {
-  background-color: #0056b3;
+  background-color: #4a89e8;
 }
 </style>
