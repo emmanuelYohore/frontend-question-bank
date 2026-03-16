@@ -12,7 +12,7 @@ export interface User {
 export const useAuthStore = defineStore('auth', () => {
 
 const token = ref<string | null>(localStorage.getItem('access-token'))
-const user = ref<User | null>(null)
+const user = ref<User | null>(JSON.parse(localStorage.getItem('user') || 'null'))
 
 const getToken = () => {
   return token.value
@@ -25,12 +25,14 @@ const setToken = (newToken: string) => {
 
 const setUser = (newUser: User) => {
   user.value = newUser
+  localStorage.setItem('user', JSON.stringify(newUser))
 }
 
 const clearAuth = () => {
   token.value = null
   user.value = null
   localStorage.removeItem('access-token')
+  localStorage.removeItem('user')
 }
 
   return { 

@@ -15,10 +15,6 @@ const navigateTo = (routeName: string) => {
  
  <template>
   <NavigationBar />
-
-  <div>
-    <button @click="isPopupOpen = true">Ouvrir la popup</button>
-  </div>
   
   <div class="home-container">
     <div class="cards-container">
