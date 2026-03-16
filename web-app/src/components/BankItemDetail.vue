@@ -24,7 +24,7 @@ interface Item {
 const items = ref<Item[]>([])
 
 const bankItem = ref<BankItem | null>(null)
-const loading = ref(true)
+const loading = ref(false)
 const error = ref<string | null>(null)
 
 const bankItemId = route.params.bankItemId

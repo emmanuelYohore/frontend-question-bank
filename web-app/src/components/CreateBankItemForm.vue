@@ -7,8 +7,12 @@ const authStore = useAuthStore();
 const name = ref('');
 
 const archiver = ref(false);
+const loading = ref(false)
 
-const createBankItem = async () => { await fetch("http://localhost:8000/api/v1/bank-items", {
+
+const createBankItem = async () => { 
+  loading.value = true;
+  await fetch("http://localhost:8000/api/v1/bank-items", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -25,7 +29,8 @@ const createBankItem = async () => { await fetch("http://localhost:8000/api/v1/b
     .then(data => {
       alert('Banque créer avec succès')
       console.log(data);
-      name.value = '';     
+      name.value = ''; 
+      loading.value = false;    
     })
     .catch(error => console.error('Error:', error))
   }
@@ -45,7 +50,9 @@ const createBankItem = async () => { await fetch("http://localhost:8000/api/v1/b
           >
         </div>
         
-        <button type="submit" class="btn-submit">Créer</button>
+        <button type="submit" class="btn-submit" :disabled="loading">
+          {{ loading ? 'Chargement...' : 'Créer' }}
+        </button>
       </form>
     </div>
   </div>

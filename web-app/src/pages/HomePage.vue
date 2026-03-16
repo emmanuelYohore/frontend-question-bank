@@ -1,34 +1,11 @@
 
  <script setup lang="ts">
- import { useAuthStore } from '@/stores/auth';
- import { onMounted, ref } from 'vue';
+ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
  import NavigationBar from '@/components/NavigationBar.vue';
-import PopupUpdateUserInfo from '@/components/PopupUpdateUserInfo.vue';
  
- const storeAuth = useAuthStore();
 const router = useRouter();
 const isPopupOpen = ref(false)
-
- 
- onMounted(async () => {
-   if (storeAuth.token && !storeAuth.user) {
-     try {
-       const response = await fetch('http://localhost:8000/api/v1/auth/me', {
-         headers: {
-           'Authorization': `Bearer ${storeAuth.token}`,
-           'Accept': 'application/json'
-         }
-       });
-       const userData = await response.json();
-       if (response.ok) {
-         storeAuth.setUser(userData);
-       }
-     } catch (error) {
-       console.error('Erreur lors de la récupération de l\'utilisateur:', error);
-     }
-   }
- });
 
 const navigateTo = (routeName: string) => {
   router.push({ name: routeName });
@@ -41,13 +18,6 @@ const navigateTo = (routeName: string) => {
 
   <div>
     <button @click="isPopupOpen = true">Ouvrir la popup</button>
-    <PopupUpdateUserInfo
-      v-if="isPopupOpen"
-      title="Ma Popup"
-      @close="isPopupOpen = false"
-    >
-      <p>Contenu de la popup.</p>
-    </PopupUpdateUserInfo>
   </div>
   
   <div class="home-container">

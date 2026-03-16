@@ -36,9 +36,9 @@ const login = async () =>{
 .then(data => {
     if (data.access_token) {
       storeAuth.setToken(data.access_token)
-      if (data.user) {
-        storeAuth.setUser(data.user)
-      }
+      // if (data.user) {
+      //   storeAuth.setUser(data.user)
+      // }
       console.log( data)
       router.push('/home')  
     }

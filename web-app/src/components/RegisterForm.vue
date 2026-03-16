@@ -33,6 +33,8 @@ const formRegister = ref<FormRegister>({
 });
 
 const register = async () => {
+loading.value = true;
+
   await fetch("http://localhost:8000/api/v1/auth/register", {
     method: "POST",
     credentials: "include",
@@ -51,9 +53,9 @@ const register = async () => {
     .then((data) => {
       if (data.access_token) {
         storeAuth.setToken(data.access_token);
-        if (data.user) {
-          storeAuth.setUser(data.user);
-        }
+         if (data.user) {
+           storeAuth.setUser(data.user);
+         }
         console.log(data);
         router.push("/home");
       }
@@ -63,6 +65,8 @@ const register = async () => {
         email: "",
         password: "",
       };
+      loading.value = false
+
     })
     .catch((error) => console.error("Error:", error));
 };

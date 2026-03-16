@@ -31,6 +31,8 @@ const options = ref([
   { text: 'EVN', value: 'evn' }
 ])
 
+const loading = ref(false)
+
 
 const formatReponse = ref<FormatReponse>({ type: '' })
 const item = ref<Item>({ question: '', obligatoire: true })
@@ -61,6 +63,7 @@ const removeModalite = (index: number) => {
 }
 
 const createItem = async () => {
+  loading.value = true;
   try {
     const res1 = await fetch("http://localhost:8000/api/v1/format-reponses", {
       method: "POST",
@@ -134,7 +137,8 @@ const createItem = async () => {
       console.log("Modalité EVN créée:", data3);
       
         alert('Item créer avec succès')
-        router.push('/home')
+        loading.value = false;
+        router.push('/my-items')
       
       
     }    
@@ -222,7 +226,9 @@ const createItem = async () => {
         <p>Aucune modalité requise pour le texte libre.</p>
       </div>
 
-        <button type="submit" class="btn-submit">Créer</button>
+        <button type="submit" class="btn-submit" :disabled="loading">
+          {{ loading ? 'Chargement...' : 'Créer' }}
+        </button>
       </form>
     </div>
   </div>
