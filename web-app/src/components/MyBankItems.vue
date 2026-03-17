@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
 import { onMounted, ref } from 'vue'
+import NavigationBar from './NavigationBar.vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 
 onMounted(() => {
   getAllBankForUser()
@@ -19,143 +22,176 @@ const bankItems = ref<BankItem[]>([])
 const userId = storeAuth.user?.id
 const loading = ref(true)
 
-const getAllBankForUser = async () => {  
-    
+const getAllBankForUser = async () => {
   loading.value = true
-await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items`,{
-  
-  method: "GET",
-  headers:{
-    "Content-Type": "application/json",
-   'Authorization': `Bearer ${storeAuth.token}`,
-  },
-})
-.then(response => response.json())
-.then(data => {
-  console.log(data)
-  bankItems.value = data
-  loading.value = false
-
-  console.log(bankItems.value)
- 
-})
-.catch(error => console.error('Error:', error))
+  await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${storeAuth.token}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      bankItems.value = data
+      loading.value = false
+    })
+    .catch(error => console.error('Error:', error))
 }
-
 </script>
 
 <template>
-  <div class="my-bank-items">
-    <h1>Mes banques</h1>
-
-     <div v-if="loading" class="loading">
-      <p>Chargement...</p>
+  <navigation-bar />
+  <div class="page-wrapper">
+    <div class="back-row">
+      <button class="back-btn" @click="router.back()">
+        <span class="back-circle">&#8592;</span>
+        Retour
+      </button>
     </div>
 
-    <div v-if="bankItems.length == 0" class="empty-state">
-      <p>Pas de banques</p>
-      <router-link to="/create-bank-item" class="btn-create">Créer une banque d'items</router-link>
-    </div>
+    <div class="content">
+      <h2 class="page-title">Mes banques</h2>
+      <p class="page-subtitle">Cliquez sur une banque pour voir ses détails</p>
 
-    <div v-else class="bank-items-container">
-      <div v-for="bankItem in bankItems" :key="bankItem.id" class="bank-item-card">
-        <router-link :to="`/bank-item/${bankItem.id}`" class="bank-item-link">
-          <h3>{{ bankItem.name }}</h3>
-          <p class="bank-status" :class="{ 'archived': bankItem.archiver }">
-            {{ bankItem.archiver ? 'Archivée' : 'Active' }}
-          </p>
-        </router-link>
+      <div v-if="loading" class="loading">
+        <p>Chargement...</p>
       </div>
 
-      <div class="actions">
-        <router-link to="/create-bank-item" class="btn-create">+ Créer une banque d'items</router-link>
+      <div v-else>
+        <div v-if="bankItems.length === 0" class="empty-state">
+          <p>Pas de banques</p>
+        </div>
+
+        <div v-else class="bank-items-container">
+          <router-link
+            v-for="bankItem in bankItems"
+            :key="bankItem.id"
+            :to="`/bank-item/${bankItem.id}`"
+            class="bank-item-card"
+          >
+            <span class="card-name">{{ bankItem.name }}</span>
+            <span class="bank-status" :class="{ archived: bankItem.archiver }">
+              {{ bankItem.archiver ? 'Archivée' : 'Active' }}
+            </span>
+          </router-link>
+        </div>
+
+        <div class="actions">
+          <router-link to="/create-bank-item" class="btn-create">+ Créer une banque</router-link>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.my-bank-items {
-  max-width: 1200px;
+.page-wrapper {
+  max-width: 1100px;
   margin: 2rem auto;
-  padding: 1rem;
+  padding: 0 2rem;
+}
+
+.back-row {
+  margin-bottom: 1.5rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #2c3e50;
+  padding: 0;
+}
+
+.back-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 2px solid #2c3e50;
+  border-radius: 50%;
+  font-size: 1.1rem;
+}
+
+.page-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 0.4rem 0;
+}
+
+.page-subtitle {
+  color: #555;
+  margin: 0 0 1.5rem 0;
+  font-size: 0.95rem;
 }
 
 .loading {
   text-align: center;
   padding: 2rem;
-}
-
-h1 {
-  margin-bottom: 2rem;
-  color: #2c3e50;
+  color: #6c757d;
 }
 
 .empty-state {
-  text-align: center;
-  padding: 3rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.empty-state p {
   color: #6c757d;
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .bank-items-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
 }
 
 .bank-item-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 130px;
+  padding: 1rem 0.75rem;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: hidden;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s ease;
+  gap: 0.35rem;
 }
 
 .bank-item-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.13);
 }
 
-.bank-item-link {
-  display: block;
-  padding: 1.5rem;
-  text-decoration: none;
-  color: inherit;
-}
-
-.bank-item-link h3 {
-  margin: 0 0 0.75rem 0;
+.card-name {
+  font-weight: 600;
+  font-size: 0.95rem;
   color: #2c3e50;
-  font-size: 1.3rem;
+  text-align: center;
 }
 
 .bank-status {
-  margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
+  color: #27ae60;
 }
 
 .bank-status.archived {
   color: #95a5a6;
 }
 
-.bank-status:not(.archived) {
-  color: #27ae60;
-}
-
 .actions {
-  grid-column: 1 / -1;
   display: flex;
   justify-content: center;
-  padding-top: 1rem;
 }
 
 .btn-create {

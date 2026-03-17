@@ -63,6 +63,12 @@ const logout = async () => {
  </template>
  
  <style scoped>
+  * {
+   margin: 0;
+   padding: 0;
+   font-family: 'Arial', sans-serif;
+ }
+ 
 .navbar {
   border-radius: 0 0 40px 40px;
   background-color: #FFF1F1;

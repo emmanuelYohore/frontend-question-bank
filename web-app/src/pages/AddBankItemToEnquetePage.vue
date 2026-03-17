@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import NavigationBar from "@/components/NavigationBar.vue";
+
+const router = useRouter();
 
 onMounted(async () => {
   await loadData();
@@ -31,7 +35,7 @@ const bankItemIds = ref([]);
 const enqueteId = ref();
 
 const isSelectAll = computed(() => {
-  return enqueteId.value !== null && bankItemIds.value.length > 0;
+  return enqueteId.value != null && bankItemIds.value.length > 0;
 });
 
 const getAllEnqueteForUser = async () => {
@@ -110,79 +114,228 @@ const addBankItemsToEnquete = async () => {
 </script>
 
 <template>
-  <div class="my-bank-items">
-    <h1>Mes Enquêtes</h1>
-
-    <div v-if="loading" class="loading">
-      <p>Chargement...</p>
+  <navigation-bar />
+  <div class="page-wrapper">
+    <div class="header-row">
+      <button class="back-btn" @click="router.back()">
+        <span class="back-circle">&#8592;</span>
+        Retour
+      </button>
+      <h2 class="page-title">Ajouter des banques d'items a une enquete</h2>
     </div>
 
-    <div v-if="enquetes.length == 0" class="empty-state">
-      <p>Pas d'enquêtes</p>
-      <router-link to="/create-enquete" class="btn-create"
-        >Créer une enquête</router-link
-      >
-    </div>
+    <div v-if="loading" class="loading">Chargement...</div>
 
-    <div v-else class="bank-items-container">
-      <div
-        v-for="enquete in enquetes"
-        :key="enquete.id"
-        class="bank-item-card"
-      >
-        <router-link :to="`/enquete/${enquete.id}`" class="bank-item-link">
-          <h3>{{ enquete.title }}</h3>
-          <p class="bank-status" :class="{ archived: enquete.archiver }">
-            {{ enquete.archiver ? "Archivée" : "Active" }}
-          </p>
-        </router-link>
-        <input
-          type="radio"
-          id="checkbox"
-          :value="enquete.id"
-          v-model="enqueteId"
-        />
+    <div v-else class="two-col">
+      <div class="col">
+        <h3 class="col-title">Mes Enquetes</h3>
+        <div v-if="enquetes.length === 0" class="empty">Pas d'enquetes</div>
+        <div v-else class="rows">
+          <div v-for="enquete in enquetes" :key="enquete.id" class="row-item">
+            <div class="card">
+              <span class="card-name">{{ enquete.title }}</span>
+              <span class="status" :class="{ archived: enquete.archiver }">
+                {{ enquete.archiver ? "Archivee" : "Active" }}
+              </span>
+            </div>
+            <input type="radio" :value="enquete.id" v-model="enqueteId" class="radio" />
+          </div>
+        </div>
+      </div>
+
+      <div class="col col-right">
+        <h3 class="col-title col-title-right">Mes banque d'items</h3>
+        <div v-if="bankItems.length === 0" class="empty">Pas de banques d'items</div>
+        <div v-else class="rows">
+          <div v-for="bankItem in bankItems" :key="bankItem.id" class="row-item row-item-right">
+            <input type="checkbox" :value="bankItem.id" v-model="bankItemIds" class="checkbox" />
+            <div class="card">
+              <span class="card-name">{{ bankItem.name }}</span>
+              <span class="status" :class="{ archived: bankItem.archiver }">
+                {{ bankItem.archiver ? "Archivee" : "Active" }}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- banque items -->
-
-  <div class="my-bank-items">
-    <h1>Mes banques d'items</h1>
-
-    <div v-if="loading" class="loading">
-      <p>Chargement...</p>
-    </div>
-
-    <div v-if="bankItems.length == 0" class="empty-state">
-      <p>Pas de banques d'items</p>
-      <router-link to="/create-item" class="btn-create"
-        >Créer des items</router-link
-      >
-    </div>
-
-    <div v-else class="bank-items-container">
-      <div v-for="bankItem in bankItems" :key="bankItem.id" class="bank-item-card">
-        <router-link :to="`/item/${bankItem.id}`" class="bank-item-link">
-          <h3>{{ bankItem.name }}</h3>
-          <p class="bank-status" :class="{ archived: bankItem.archiver }">
-            {{ bankItem.archiver ? "Archivée" : "Active" }}
-          </p>
-        </router-link>
-        <input
-          type="checkbox"
-          id="checkbox"
-          :value="bankItem.id"
-          v-model="bankItemIds"
-        />
-      </div>
+    <div class="actions">
+      <button class="btn-valider" type="button" :disabled="!isSelectAll || loading" @click="addBankItemsToEnquete">
+        {{ loading ? "En cours..." : "Valider" }}
+      </button>
     </div>
   </div>
-
-  <button type="button" :disabled="!isSelectAll" @click="addBankItemsToEnquete">
-    {{ loading ? "En cours..." : "Valider" }}
-  </button>
 </template>
 
-<style scoped></style>
+<style scoped>
+.page-wrapper {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 2rem 3rem;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #1f2937;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.back-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid #1f2937;
+  border-radius: 50%;
+  font-size: 1.2rem;
+}
+
+.page-title {
+  flex: 1;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+  transform: translateX(-4rem);
+  margin: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.two-col {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.col {
+  flex: 1;
+}
+
+.col-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.col-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 1.2rem 0;
+}
+
+.col-title-right {
+  text-align: right;
+  width: 100%;
+}
+
+.empty {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.row-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.row-item-right {
+  justify-content: flex-end;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  min-height: 70px;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  gap: 0.2rem;
+}
+
+.card-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+}
+
+.status {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #27ae60;
+}
+
+.status.archived {
+  color: #95a5a6;
+}
+
+.radio,
+.checkbox {
+  width: 1.1rem;
+  height: 1.1rem;
+  cursor: pointer;
+  accent-color: #6b4cbf;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.btn-valider {
+  padding: 0.75rem 3rem;
+  background-color: #5b8ee6;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-valider:hover:not(:disabled) {
+  background-color: #4a7fdb;
+}
+
+.btn-valider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+</style>

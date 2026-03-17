@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
 import { onMounted, ref } from 'vue'
+import NavigationBar from './NavigationBar.vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 
 onMounted(() => {
   getAllItemForUser()
@@ -10,7 +13,7 @@ onMounted(() => {
 interface Item {
   id: number
   question: string
-  obligatoire : boolean 
+  obligatoire: boolean
 }
 
 const storeAuth = useAuthStore()
@@ -18,158 +21,191 @@ const items = ref<Item[]>([])
 const userId = storeAuth.user?.id
 const loading = ref(true)
 
-
-const getAllItemForUser = async () => {  
- 
-    
+const getAllItemForUser = async () => {
   loading.value = true
-await fetch(`http://localhost:8000/api/v1/users/${userId}/items`,{
-  
-  method: "GET",
-  headers:{
-    "Content-Type": "application/json",
-   'Authorization': `Bearer ${storeAuth.token}`,
-  },
-})
-.then(response => response.json())
-.then(data => {
-  items.value = data
-  loading.value = false
-
-  console.log(items.value)
- 
-})
-.catch(error => console.error('Error:', error))
+  await fetch(`http://localhost:8000/api/v1/users/${userId}/items`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${storeAuth.token}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      items.value = data
+      loading.value = false
+    })
+    .catch(error => console.error('Error:', error))
 }
 
 </script>
 
 <template>
-  <div class="my-bank-items">
-    <h1>Mes items</h1>
-
-     <div v-if="loading" class="loading">
-      <p>Chargement...</p>
+  <navigation-bar />
+  <div class="page-wrapper">
+    <div class="back-row">
+      <button class="back-btn" @click="router.back()">
+        <span class="back-circle">&#8592;</span>
+        Retour
+      </button>
     </div>
 
-    <div v-if="items.length == 0" class="empty-state">
-      <p>Pas d'items</p>
-      <router-link to="/create-item" class="btn-create">Créer des items</router-link>
-    </div>
+    <div class="content">
+      <h2 class="page-title">Mes items</h2>
+      <p class="page-subtitle">Cliquez sur un item pour voir ses détails</p>
 
-    <div v-else class="bank-items-container">
-      <div v-for="item in items" :key="item.id" class="bank-item-card">
-        <router-link :to="`/item/${item.id}`" class="bank-item-link">
-          <h3>{{ item.question }}</h3>
-          <p class="bank-status" :class="{ 'obligatoire': item.obligatoire }">
-            Obligatoire : {{ item.obligatoire ? 'Oui' : 'Non' }}
-          </p>
-        </router-link>
+      <div v-if="loading" class="loading">
+        <p>Chargement...</p>
       </div>
 
-      <div class="actions">
-        <router-link to="/create-item" class="btn-create">+ Créer des items</router-link>
+      <div v-else>
+        <div v-if="items.length === 0" class="empty-state">
+          <p>Pas d'items</p>
+        </div>
+
+        <div v-else class="items-container">
+          <router-link
+            v-for="item in items"
+            :key="item.id"
+            :to="`/item/${item.id}`"
+            class="item-card"
+          >
+            <span class="card-name">{{ item.question }}</span>
+            <span class="item-status" :class="{ 'non': !item.obligatoire }">
+              Obligatoire : {{ item.obligatoire ? 'oui' : 'non' }}
+            </span>
+          </router-link>
+        </div>
+
+        <div class="actions">
+          <router-link to="/create-item" class="btn-create">+ Créer un item</router-link>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.my-bank-items {
-  max-width: 1200px;
+.page-wrapper {
+  max-width: 1100px;
   margin: 2rem auto;
-  padding: 1rem;
+  padding: 0 2rem;
+}
+
+.back-row {
+  margin-bottom: 1.5rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #2c3e50;
+  padding: 0;
+}
+
+.back-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 2px solid #2c3e50;
+  border-radius: 50%;
+  font-size: 1.1rem;
+}
+
+.page-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 0.4rem 0;
+}
+
+.page-subtitle {
+  color: #555;
+  margin: 0 0 1.5rem 0;
+  font-size: 0.95rem;
 }
 
 .loading {
   text-align: center;
   padding: 2rem;
-}
-
-h1 {
-  margin-bottom: 2rem;
-  color: #2c3e50;
+  color: #6c757d;
 }
 
 .empty-state {
-  text-align: center;
-  padding: 3rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.empty-state p {
   color: #6c757d;
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin-bottom: 1.5rem;
 }
 
-.bank-items-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+.items-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
 }
 
-.bank-item-card {
+.item-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 145px;
+  padding: 1rem 0.75rem;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: hidden;
-}
-
-.bank-item-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.bank-item-link {
-  display: block;
-  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
   text-decoration: none;
   color: inherit;
+  transition: box-shadow 0.2s ease;
+  gap: 0.35rem;
 }
 
-.bank-item-link h3 {
-  margin: 0 0 0.75rem 0;
+.item-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.13);
+}
+
+.card-name {
+  font-weight: 600;
+  font-size: 0.95rem;
   color: #2c3e50;
-  font-size: 1.3rem;
+  text-align: center;
 }
 
-.bank-status {
-  margin: 0;
-  font-size: 0.9rem;
+.item-status {
+  font-size: 0.85rem;
   font-weight: 500;
-}
-
-.bank-status.archived {
-  color: #95a5a6;
-}
-
-.bank-status:not(.archived) {
   color: #27ae60;
 }
 
+.item-status.non {
+  color: #e74c3c;
+}
+
 .actions {
-  grid-column: 1 / -1;
   display: flex;
   justify-content: center;
-  padding-top: 1rem;
 }
 
 .btn-create {
   display: inline-block;
-  padding: 0.75rem 1.5rem;
-  background-color: #3498db;
+  padding: 0.75rem 2rem;
+  background-color: #5b9bd5;
   color: white;
   text-decoration: none;
-  border-radius: 4px;
+  border-radius: 25px;
   font-weight: 500;
   transition: background-color 0.3s ease;
 }
 
 .btn-create:hover {
-  background-color: #2980b9;
+  background-color: #4a8bc4;
 }
 </style>

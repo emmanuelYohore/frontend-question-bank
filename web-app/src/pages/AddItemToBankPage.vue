@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import NavigationBar from "@/components/NavigationBar.vue";
+
+const router = useRouter();
 
 onMounted(async () => {
   await loadData();
@@ -107,79 +111,253 @@ const addItemsToBank = async () => {
 </script>
 
 <template>
-  <div class="my-bank-items">
-    <h1>Mes banques</h1>
-
-    <div v-if="loading" class="loading">
-      <p>Chargement...</p>
+  <navigation-bar />
+  <div class="page-wrapper">
+    <!-- Header -->
+    <div class="header-row">
+      <button class="back-btn" @click="router.back()">
+        <span class="back-circle">&#8592;</span>
+        Retour
+      </button>
+      <h2 class="page-title">Ajouter des items à une banque</h2>
     </div>
 
-    <div v-if="bankItems.length == 0" class="empty-state">
-      <p>Pas de banques</p>
-      <router-link to="/create-bank-item" class="btn-create"
-        >Créer une banque d'items</router-link
-      >
-    </div>
+    <div v-if="loading" class="loading">Chargement...</div>
 
-    <div v-else class="bank-items-container">
-      <div
-        v-for="bankItem in bankItems"
-        :key="bankItem.id"
-        class="bank-item-card"
-      >
-        <router-link :to="`/bank-item/${bankItem.id}`" class="bank-item-link">
-          <h3>{{ bankItem.name }}</h3>
-          <p class="bank-status" :class="{ archived: bankItem.archiver }">
-            {{ bankItem.archiver ? "Archivée" : "Active" }}
-          </p>
-        </router-link>
-        <input
-          type="radio"
-          id="checkbox"
-          :value="bankItem.id"
-          v-model="bankItemId"
-        />
+    <div v-else class="two-col">
+      <!-- LEFT: Banques -->
+      <div class="col">
+        <h3 class="col-title">Mes banque d'items</h3>
+        <div v-if="bankItems.length === 0" class="empty">
+          <p>Pas de banques</p>
+        </div>
+        <div v-else class="rows">
+          <div v-for="bankItem in bankItems" :key="bankItem.id" class="row-item">
+            <div class="card">
+              <span class="card-name">{{ bankItem.name }}</span>
+              <span class="status" :class="{ archived: bankItem.archiver }">
+                {{ bankItem.archiver ? "Archivée" : "Active" }}
+              </span>
+            </div>
+            <input
+              type="radio"
+              :value="bankItem.id"
+              v-model="bankItemId"
+              class="radio"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Items -->
+      <div class="col col-right">
+        <h3 class="col-title col-title-right">Mes items</h3>
+        <div v-if="items.length === 0" class="empty">
+          <p>Pas d'items</p>
+        </div>
+        <div v-else class="rows">
+          <div v-for="item in items" :key="item.id" class="row-item row-item-right">
+            <input
+              type="checkbox"
+              :value="item.id"
+              v-model="itemIds"
+              class="checkbox"
+            />
+            <div class="card">
+              <span class="card-name">{{ item.question }}</span>
+              <span class="status">
+                Obligatoire : {{ item.obligatoire ? "oui" : "non" }}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- items -->
-
-  <div class="my-bank-items">
-    <h1>Mes items</h1>
-
-    <div v-if="loading" class="loading">
-      <p>Chargement...</p>
-    </div>
-
-    <div v-if="items.length == 0" class="empty-state">
-      <p>Pas d'items</p>
-      <router-link to="/create-item" class="btn-create"
-        >Créer des items</router-link
+    <!-- Valider -->
+    <div class="actions">
+      <button
+        class="btn-valider"
+        type="button"
+        :disabled="!isSelectAll || loading"
+        @click="addItemsToBank"
       >
-    </div>
-
-    <div v-else class="bank-items-container">
-      <div v-for="item in items" :key="item.id" class="bank-item-card">
-        <router-link :to="`/item/${item.id}`" class="bank-item-link">
-          <h3>{{ item.question }}</h3>
-          <p class="bank-status" :class="{ obligatoire: item.obligatoire }">
-            Obligatoire : {{ item.obligatoire ? "Oui" : "Non" }}
-          </p>
-        </router-link>
-        <input
-          type="checkbox"
-          id="checkbox"
-          :value="item.id"
-          v-model="itemIds"
-        />
-      </div>
+        {{ loading ? "En cours..." : "Valider" }}
+      </button>
     </div>
   </div>
-
-  <button type="button" :disabled="!isSelectAll" @click="addItemsToBank">
-    {{ loading ? "En cours..." : "Valider" }}
-  </button>
 </template>
+
+<style scoped>
+.page-wrapper {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 2rem 3rem;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #1f2937;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.back-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid #1f2937;
+  border-radius: 50%;
+  font-size: 1.2rem;
+}
+
+.page-title {
+  flex: 1;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+  transform: translateX(-4rem);
+  margin: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.two-col {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.col {
+  flex: 1;
+}
+
+.col-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.col-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 1.2rem 0;
+}
+
+.col-title-right {
+  text-align: right;
+  width: 100%;
+}
+
+.empty {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.row-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.row-item-right {
+  justify-content: flex-end;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  min-height: 70px;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  gap: 0.2rem;
+}
+
+.card-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+}
+
+.status {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #27ae60;
+}
+
+.status.archived {
+  color: #95a5a6;
+}
+
+.radio,
+.checkbox {
+  width: 1.1rem;
+  height: 1.1rem;
+  cursor: pointer;
+  accent-color: #5b8ee6;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.btn-valider {
+  padding: 0.75rem 3rem;
+  background-color: #5b8ee6;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-valider:hover:not(:disabled) {
+  background-color: #4a7fdb;
+}
+
+.btn-valider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+</style>
 
 <style scoped></style>
