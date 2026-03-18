@@ -52,6 +52,7 @@ const getAllBankForUser = async () => {
 
     <div class="content">
       <h2 class="page-title">Mes banques</h2>
+      <h2>Nombre de banques : {{bankItems.length}} / 10</h2>
       <p class="page-subtitle">Cliquez sur une banque pour voir ses détails</p>
 
       <div v-if="loading" class="loading">

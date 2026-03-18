@@ -1,11 +1,8 @@
-
- <script setup lang="ts">
- import { ref } from 'vue';
+<script setup lang="ts">
 import { useRouter } from 'vue-router';
- import NavigationBar from '@/components/NavigationBar.vue';
+import NavigationBar from '@/components/NavigationBar.vue';
  
 const router = useRouter();
-const isPopupOpen = ref(false)
 
 const navigateTo = (routeName: string) => {
   router.push({ name: routeName });
@@ -67,7 +64,7 @@ const navigateTo = (routeName: string) => {
         <div class="card-image">
           <img src="../assets/img/enquete.jpg" alt="Enquête" />
         </div>
-        <button class="card-button" @click="navigateTo('create-enquete')">
+        <button class="card-button" @click="navigateTo('')">
           Commencer une enquête
         </button>
       </div>

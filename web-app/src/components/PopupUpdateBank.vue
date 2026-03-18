@@ -1,13 +1,12 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 
-interface Props {
+const props = defineProps<{
   visible: boolean
   title: string
   value: string
-}
-
-const props = defineProps<Props>()
+  label?: string
+}>()
 
 const emit = defineEmits<{
   (e: 'close'): void
@@ -20,11 +19,9 @@ watch(() => props.value, (newValue) => {
   inputValue.value = newValue
 }, { immediate: true })
 
-function close() {
-  emit('close')
-}
+const close = () => emit('close')
 
-function confirm() {
+const confirm = () => {
   emit('confirm', { value: inputValue.value })
 }
 </script>
@@ -36,8 +33,10 @@ function confirm() {
         <h2>{{ title }}</h2>
         <button @click="close">✖</button>
       </header>
+
       <main>
-        <input 
+        <label v-if="label">{{ label }}</label>
+        <input
           v-model="inputValue"
           type="text"
           class="form-input"
@@ -46,6 +45,7 @@ function confirm() {
           autofocus
         />
       </main>
+
       <footer>
         <button @click="close">Annuler</button>
         <button @click="confirm">Confirmer</button>
@@ -100,6 +100,14 @@ header button:hover {
 
 main {
   margin-bottom: 1rem;
+}
+
+main label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .form-input {

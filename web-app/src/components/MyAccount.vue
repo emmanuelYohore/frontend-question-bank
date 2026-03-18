@@ -170,7 +170,7 @@ const confirmPopupEmail = async (payload: { value: string }) => {
         <div class="info-row">
           <div class="info-main">
             <span class="label">Prénom :</span>
-            <span class="value">{{ user?.surname || '-' }}</span>
+            <span class="value">{{ user?.surname }}</span>
           </div>
           <button class="modify-button" @click="openPopupSurname">
             <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -184,7 +184,7 @@ const confirmPopupEmail = async (payload: { value: string }) => {
         <div class="info-row">
           <div class="info-main">
             <span class="label">Email :</span>
-            <span class="value">{{ user?.email || '-' }}</span>
+            <span class="value">{{ user?.email }}</span>
           </div>
           <button class="modify-button" @click="openPopupEmail">
             <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
