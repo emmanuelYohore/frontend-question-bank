@@ -122,13 +122,13 @@ const login = async () =>{
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e5e5e5;
+  background-color: white;
  }
  
  .form-box {
   width: 600px;
   padding: 40px 50px;
-  background-color: #fff;
+  background-color: #EFEFEF;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
 }
@@ -168,7 +168,7 @@ label {
   position: relative;
   display: flex;
   align-items: center;
-  background-color: #f5f5f5;
+  background-color: white;
   border-radius: 8px;
   padding: 12px 15px;
 }

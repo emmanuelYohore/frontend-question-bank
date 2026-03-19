@@ -2,12 +2,15 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { ref } from 'vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const loading = ref(false)
 
 const logout = async () => {
   try {
+    loading.value = true
     const response = await fetch("http://localhost:8000/api/v1/auth/logout", {
       method: "POST",
       credentials: "include",
@@ -21,6 +24,8 @@ const logout = async () => {
     if (response.ok) {
       authStore.clearAuth();
       router.push('/login');
+          loading.value = false
+
     }
   } catch (error) {
     console.error('Error:', error);
@@ -57,7 +62,7 @@ const logout = async () => {
         </li>
        </ul>
 
-      <button @click="logout" class="logout-btn">se déconnecter</button>
+      <button @click="logout" class="logout-btn">{{loading? 'Chargement...':'se déconnecter'}}</button>
      </div>
    </nav>
  </template>
