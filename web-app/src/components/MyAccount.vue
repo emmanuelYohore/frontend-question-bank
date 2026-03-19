@@ -224,6 +224,11 @@ const confirmPopupEmail = async (payload: { value: string }) => {
 </template>
 
 <style scoped>
+ * {
+   margin: 0;
+   padding: 0;
+   font-family: 'Arial', sans-serif;
+ }
 .my-account-container {
   min-height: 100vh;
   background: #fff;

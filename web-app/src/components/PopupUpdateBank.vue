@@ -56,6 +56,10 @@ const confirm = () => {
 
 <style scoped>
 .popup-overlay {
+   * {
+
+   font-family: 'Arial', sans-serif;
+ }
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.5);

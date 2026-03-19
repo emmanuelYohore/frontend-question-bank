@@ -266,6 +266,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
+ * {
+   margin: 0;
+   padding: 0;
+   font-family: 'Arial', sans-serif;
+ }
 .detail-page {
   max-width: 1100px;
   margin: 1.5rem auto;

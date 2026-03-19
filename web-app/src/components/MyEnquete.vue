@@ -88,6 +88,11 @@ const getAllEnquetesForUser = async () => {
 </template>
 
 <style scoped>
+ * {
+   margin: 0;
+   padding: 0;
+   font-family: 'Arial', sans-serif;
+ }
 .page-wrapper {
   max-width: 1100px;
   margin: 2rem auto;

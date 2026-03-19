@@ -86,6 +86,9 @@ const getAllItemForUser = async () => {
 </template>
 
 <style scoped>
+ * {
+   font-family: 'Arial', sans-serif;
+ }
 .page-wrapper {
   max-width: 1100px;
   margin: 2rem auto;
@@ -200,7 +203,7 @@ const getAllItemForUser = async () => {
   background-color: #5b9bd5;
   color: white;
   text-decoration: none;
-  border-radius: 25px;
+  border-radius: 8px;
   font-weight: 500;
   transition: background-color 0.3s ease;
 }

@@ -191,6 +191,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
+ * {
+   margin: 0;
+   padding: 0;
+   font-family: 'Arial', sans-serif;
+ }
 .bank-item-detail {
   max-width: 800px;
   margin: 2rem auto;

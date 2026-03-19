@@ -55,6 +55,9 @@ function confirm() {
 </template>
 
 <style scoped>
+ * {
+   font-family: 'Arial', sans-serif;
+ }
 .popup-overlay {
   position: fixed;
   inset: 0;

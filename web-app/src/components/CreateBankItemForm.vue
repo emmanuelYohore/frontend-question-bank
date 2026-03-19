@@ -59,6 +59,12 @@ const createBankItem = async () => {
 </template>
 
 <style scoped>
+ * {
+   margin: 0;
+   padding: 0;
+   background-color: white;
+   font-family: 'Arial', sans-serif;
+ }
 .form-wrapper {
   max-width: 500px;
   margin: 0 auto;
