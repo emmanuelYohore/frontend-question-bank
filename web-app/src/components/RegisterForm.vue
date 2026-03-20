@@ -33,42 +33,51 @@ const formRegister = ref<FormRegister>({
 });
 
 const register = async () => {
-loading.value = true;
+  loading.value = true;
 
-  await fetch("http://localhost:8000/api/v1/auth/register", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      name: formRegister.value.name,
-      surname: formRegister.value.surname,
-      email: formRegister.value.email,
-      password: formRegister.value.password,
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.access_token) {
-        storeAuth.setToken(data.access_token);
-         if (data.user) {
-           storeAuth.setUser(data.user);
-         }
-        console.log(data);
-        router.push("/home");
+  try {
+    const response = await fetch("http://localhost:8000/api/v1/auth/register", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        name: formRegister.value.name,
+        surname: formRegister.value.surname,
+        email: formRegister.value.email,
+        password: formRegister.value.password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert("Erreur lors de l'inscription");
+      return;
+    }
+
+    if (data.access_token) {
+      storeAuth.setToken(data.access_token);
+      if (data.user) {
+        storeAuth.setUser(data.user);
       }
-      formRegister.value = {
-        name: "",
-        surname: "",
-        email: "",
-        password: "",
-      };
-      loading.value = false
+      router.push("/home");
+    }
 
-    })
-    .catch((error) => console.error("Error:", error));
+    formRegister.value = {
+      name: "",
+      surname: "",
+      email: "",
+      password: "",
+    };
+  } catch (error) {
+    alert("Erreur lors de l'inscription");
+    console.error("Error:", error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const showPassword = ref(false);
@@ -97,6 +106,7 @@ const togglePasswordVisibility = () => {
               id="nom"
               v-model="formRegister.name"
               placeholder="Nom"
+              min="3"
               required
             />
           </div>
@@ -111,6 +121,7 @@ const togglePasswordVisibility = () => {
               id="prenom"
               v-model="formRegister.surname"
               placeholder="Prénom"
+              min="3"
               required
             />
           </div>
@@ -138,6 +149,7 @@ const togglePasswordVisibility = () => {
               :type="showPassword ? 'text' : 'password'"
               v-model="formRegister.password"
               placeholder="Mot de passe"
+              min="6"
               required
             />
             <FontAwesomeIcon

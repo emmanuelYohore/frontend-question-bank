@@ -63,7 +63,7 @@ const removeModalite = (index: number) => {
 }
 
 const createItem = async () => {
-  loading.value = true;
+  loading.value = true
   try {
     const res1 = await fetch("http://localhost:8000/api/v1/format-reponses", {
       method: "POST",
@@ -76,9 +76,14 @@ const createItem = async () => {
       body: JSON.stringify({
         type: formatReponse.value.type
       })
-    });
+    })
 
-    const data1 = await res1.json();
+    if (!res1.ok) {
+      alert( "Erreur lors de la création du format de réponse")
+      return
+    }
+
+    const data1 = await res1.json()
     console.log("FormatReponse créé:", data1)
 
     const res2 = await fetch("http://localhost:8000/api/v1/items", {
@@ -94,13 +99,19 @@ const createItem = async () => {
             question: item.value.question,
             obligatoire: item.value.obligatoire,
       })
-    });
-    const data2 = await res2.json();
+    })
+
+    if (!res2.ok) {
+      alert( "Erreur lors de la création de l'item")
+      return
+    }
+
+    const data2 = await res2.json()
     console.log("Item créé:", data2)
 
     if (isQCMorQCU.value) {
       for (const modalite of modalites.value) {
-        await fetch("http://localhost:8000/api/v1/modalite-reponses", {
+        const resModalite = await fetch("http://localhost:8000/api/v1/modalite-reponses", {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
@@ -114,9 +125,14 @@ const createItem = async () => {
             v1: null,
             v2: null
           })
-        });
+        })
+
+        if (!resModalite.ok) {
+          alert( "Erreur lors de la création des modalités")
+          return
+        }
       }
-      console.log("Modalités QCM/QCU créées");
+      console.log("Modalités QCM/QCU créées")
     } else if (isEVN.value) {
       const res3 = await fetch("http://localhost:8000/api/v1/modalite-reponses", {
         method: "POST",
@@ -132,25 +148,29 @@ const createItem = async () => {
           v1: modaliteEVN.value.v1,
           v2: modaliteEVN.value.v2
         })
-      });
-      const data3 = await res3.json();
-      console.log("Modalité EVN créée:", data3);
-      
-        alert('Item créer avec succès')
-        loading.value = false;
-        router.push('/my-items')
-      
-      
-    }    
-    
+      })
+
+      if (!res3.ok) {
+        alert( "Erreur lors de la création de la modalité EVN")
+        return
+      }
+
+      const data3 = await res3.json()
+      console.log("Modalité EVN créée:", data3)
+    }
+
+    alert("Item créé avec succès")
+    router.push('/my-items')
   } catch (err) {
-    console.error("Erreur :", err);
-    alert("Erreur: " + err);
+    console.error("Erreur :", err)
+    alert("Erreur: " + err)
+  } finally {
+    loading.value = false
   }
-};
+}
 
 
-  
+
 </script>
 
 <template>

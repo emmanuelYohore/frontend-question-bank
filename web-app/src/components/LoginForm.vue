@@ -86,7 +86,7 @@ const login = async () =>{
           <label for="password">Mot de passe</label>
           <div class="input-field">
              <FontAwesomeIcon :icon="faLock" />
-  <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Mot de passe" required />
+  <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Mot de passe" min="6" required />
   <FontAwesomeIcon 
     :icon="showPassword ? faEyeSlash : faEye" 
     class="toggle-password" 
