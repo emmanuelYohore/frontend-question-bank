@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import NavigationBar from './NavigationBar.vue'
 
@@ -23,6 +23,7 @@ const storeAuth = useAuthStore()
 const enquetes = ref<Enquete[]>([])
 const userId = storeAuth.user?.id
 const loading = ref(true)
+const input = ref('')
 
 const getAllEnquetesForUser = async () => {
   loading.value = true
@@ -40,6 +41,33 @@ const getAllEnquetesForUser = async () => {
     })
     .catch(error => console.error('Error:', error))
 }
+
+const filterEnquetes = async () => {
+  loading.value = true
+  await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes?search=${input.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${storeAuth.token}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      enquetes.value = data
+      loading.value = false
+    })
+    .catch(error => console.error('Error:', error))
+}
+
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+
+watch(input, () => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+  
+  debounceTimer = setTimeout(() => {
+    filterEnquetes()
+  }, 400)
+})
 </script>
 
 <template>
@@ -54,6 +82,7 @@ const getAllEnquetesForUser = async () => {
 
     <div class="content">
       <h2 class="page-title">Mes enquêtes</h2>
+      <input type="text" v-model="input" placeholder="Chercher une enquête" />
       <p class="page-subtitle">Cliquez sur une enquête pour voir ses détails</p>
 
       <div v-if="loading" class="loading">

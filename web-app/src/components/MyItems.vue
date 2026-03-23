@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import NavigationBar from './NavigationBar.vue'
 import { useRouter } from 'vue-router'
 
@@ -20,6 +20,7 @@ const storeAuth = useAuthStore()
 const items = ref<Item[]>([])
 const userId = storeAuth.user?.id
 const loading = ref(true)
+const input = ref('')
 
 const getAllItemForUser = async () => {
   loading.value = true
@@ -38,6 +39,33 @@ const getAllItemForUser = async () => {
     .catch(error => console.error('Error:', error))
 }
 
+const filterItems = async () => {
+  loading.value = true
+  await fetch(`http://localhost:8000/api/v1/users/${userId}/items?search=${input.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${storeAuth.token}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      items.value = data
+      loading.value = false
+    })
+    .catch(error => console.error('Error:', error))
+}
+
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+
+watch(input, () => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+  
+  debounceTimer = setTimeout(() => {
+    filterItems()
+  }, 400)
+})
+
 </script>
 
 <template>
@@ -52,6 +80,8 @@ const getAllItemForUser = async () => {
 
     <div class="content">
       <h2 class="page-title">Mes items</h2>
+      <input type="text" v-model="input" placeholder="Chercher un item" />
+
       <p class="page-subtitle">Cliquez sur un item pour voir ses détails</p>
 
       <div v-if="loading" class="loading">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import NavigationBar from './NavigationBar.vue'
 import { useRouter } from 'vue-router'
 
@@ -21,6 +21,7 @@ const storeAuth = useAuthStore()
 const bankItems = ref<BankItem[]>([])
 const userId = storeAuth.user?.id
 const loading = ref(true)
+const input = ref('')
 
 const getAllBankForUser = async () => {
   loading.value = true
@@ -38,6 +39,33 @@ const getAllBankForUser = async () => {
     })
     .catch(error => console.error('Error:', error))
 }
+
+const filterBanks = async () => {
+  loading.value = true
+  await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items?search=${input.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${storeAuth.token}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      bankItems.value = data
+      loading.value = false
+    })
+    .catch(error => console.error('Error:', error))
+}
+
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+
+watch(input, () => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+  
+  debounceTimer = setTimeout(() => {
+    filterBanks()
+  }, 400)
+})
 </script>
 
 <template>
@@ -53,6 +81,8 @@ const getAllBankForUser = async () => {
     <div class="content">
       <h2 class="page-title">Mes banques</h2>
       <h2>Nombre de banques : {{bankItems.length}} / 10</h2>
+      <input type="text" v-model="input" placeholder="Chercher une banque" />
+
       <p class="page-subtitle">Cliquez sur une banque pour voir ses détails</p>
 
       <div v-if="loading" class="loading">
@@ -65,6 +95,7 @@ const getAllBankForUser = async () => {
         </div>
 
         <div v-else class="bank-items-container">
+          
           <router-link
             v-for="bankItem in bankItems"
             :key="bankItem.id"
