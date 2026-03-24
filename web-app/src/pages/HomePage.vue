@@ -8,11 +8,10 @@ const navigateTo = (routeName: string) => {
   router.push({ name: routeName });
 };
  
- </script>
- 
+</script>
+
  <template>
   <NavigationBar />
-  
   <div class="home-container">
     <div class="cards-container">
       <div class="card">

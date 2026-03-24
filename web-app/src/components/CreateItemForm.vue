@@ -51,7 +51,7 @@ const isEVN = computed(() => formatReponse.value.type === 'evn')
 const isTexte = computed(() => formatReponse.value.type === 'texte')
 
 const addModalite = () => {
-  if (modalites.value.length < 5) {
+  if (modalites.value.length < 20) {
     modalites.value.push({ intitule: '' })
   }
 }
@@ -203,7 +203,7 @@ const createItem = async () => {
 
 
       <div v-if="isQCMorQCU" class="modalites-section">
-        <h3>Modalités de réponse (minimum 2, maximum 5)</h3>
+        <h3>Modalités de réponse (minimum 2)</h3>
         <div v-for="(modalite, index) in modalites" :key="index" class="modalite-item">
           <input 
             type="text" 
@@ -223,7 +223,7 @@ const createItem = async () => {
         <button 
           type="button" 
           @click="addModalite"
-          :disabled="modalites.length >= 5"
+          :disabled="modalites.length >= 20"
           class="btn-add"
         >
           + Ajouter une modalité

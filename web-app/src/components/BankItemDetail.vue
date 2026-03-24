@@ -22,7 +22,6 @@ interface Item {
   obligatoire: boolean
 }
 
-const items = ref<Item[]>([])
 const showPopupName = ref(false)
 
 const bankItem = ref<BankItem | null>(null)
@@ -50,8 +49,6 @@ const getBankItemDetail = async () => {
     
     const data = await response.json()
     bankItem.value = data
-    items.value = data.items
-    console.log(`items : ${items.value}`)
   } catch (err) {
     console.error('Error:', err)
   } finally {
@@ -110,35 +107,8 @@ const goBack = () => {
   router.push('/my-bank-items')
 }
 
-const removeItemFromBank = async (itemId: number) => {
-  if (!confirm("Etes-vous sur de vouloir supprimer l'item de cette banque ?")) {
-    return
-  }
-
-  try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/users/${storeAuth.user?.id}/bank-items/${bankItemId}/items/detach`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${storeAuth.token}`,
-        },
-        body: JSON.stringify({
-          item_ids: [itemId],
-        }),
-      }
-    )
-
-    if (!response.ok) {
-      throw new Error("Erreur lors de la suppression de l'item")
-    }
-
-    await getBankItemDetail()
-  } catch (err) {
-    console.error('Error:', err)
-    alert("Impossible de supprimer l'item de la banque")
-  }
+const goToItemsPage = () => {
+  router.push({ name: 'bank-item-items', params: { bankItemId } })
 }
 
 const confirmePopupName = async (payload: { value: string }) => {
@@ -222,6 +192,12 @@ onMounted(() => {
         </div>
 
         <div class="actions-row">
+          <button @click="goToItemsPage" class="btn btn-items">
+            Voir les items ajoutes
+          </button>
+        </div>
+
+        <div class="actions-row">
           <button @click="toggleArchive" class="btn btn-archive">
             {{ bankItem.archiver ? 'Desarchiver' : 'Archiver' }}
           </button>
@@ -239,28 +215,6 @@ onMounted(() => {
         @close="closePopupName"
         @confirm="confirmePopupName"
       />
-
-      <section class="card items-card">
-        <h2 class="items-title">Items :</h2>
-
-        <div v-if="items.length === 0" class="empty-state">Pas d'items ajoutes</div>
-
-        <ul v-else class="items-list">
-          <li v-for="item in items" :key="item.id" class="item-row">
-            <span class="item-text">{{ item.question }}</span>
-            <button class="remove-item-btn" @click="removeItemFromBank(item.id)">
-              <svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 6h18" />
-                <path d="M8 6V4h8v2" />
-                <path d="M19 6l-1 14H6L5 6" />
-                <path d="M10 11v6" />
-                <path d="M14 11v6" />
-              </svg>
-              <span>Supprimer l'item de la banque</span>
-            </button>
-          </li>
-        </ul>
-      </section>
     </template>
   </div>
 </template>
@@ -406,61 +360,17 @@ onMounted(() => {
   cursor: pointer;
 }
 
+.btn-items {
+  width: 210px;
+  background: #22a86c;
+}
+
 .btn-archive {
   background: #5b8ee6;
 }
 
 .btn-delete {
   background: #ef4423;
-}
-
-.items-title {
-  margin: 0 0 0.75rem;
-  font-size: 1.7rem;
-  font-weight: 700;
-  color: #111827;
-}
-
-.empty-state {
-  color: #6b7280;
-}
-
-.items-list {
-  list-style: disc;
-  margin: 0;
-  padding-left: 1.1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-}
-
-.item-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.2rem;
-}
-
-.item-text {
-  color: #111827;
-  line-height: 1.2;
-}
-
-.remove-item-btn {
-  border: none;
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  color: #1f2937;
-  cursor: pointer;
-  font-size: 1.05rem;
-}
-
-.trash-icon {
-  width: 1.2rem;
-  height: 1.2rem;
-  color: #ef4423;
 }
 
 @media (max-width: 900px) {
@@ -481,11 +391,6 @@ onMounted(() => {
 
   .edit-placeholder {
     margin-top: 0;
-  }
-
-  .item-row {
-    flex-direction: column;
-    align-items: flex-start;
   }
 }
 </style>

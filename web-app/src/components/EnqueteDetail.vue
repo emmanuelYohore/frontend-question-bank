@@ -7,14 +7,6 @@ const route = useRoute()
 const router = useRouter()
 const storeAuth = useAuthStore()
 
-
-interface BankItem {
-  id: number
-  name: string
-  archiver: boolean
- 
-}
-
 interface Enquete {
   id?: number;
   title: string;
@@ -24,8 +16,6 @@ interface Enquete {
   url_enquete?: string;
   archiver: boolean;
 }
-
-const bankItems = ref<BankItem[]>([])
 
 const enquete = ref<Enquete | null>(null)
 const loading = ref(true)
@@ -52,7 +42,6 @@ const getEnqueteDetail = async () => {
     
     const data = await response.json()
     enquete.value = data
-    bankItems.value = data.bank_items
     console.log(`enquete : ${enquete.value}`)
   } catch (err) {
     console.error('Error:', err)
@@ -112,102 +101,155 @@ const goBack = () => {
   router.push('/my-enquetes')
 }
 
+const goToBanksPage = () => {
+  router.push({ name: 'enquete-banks', params: { enqueteId } })
+}
+
 onMounted(() => {
   getEnqueteDetail()
 })
 </script>
 
 <template>
-  <div class="enquete-detail">
-    <h1>Détails de l'Enquête</h1>
-
-    <div v-if="loading" class="loading">
-      <p>Chargement...</p>
+  <div class="detail-page">
+    <div class="header-row">
+      <button class="back-btn" @click="goBack">
+        <span class="back-circle">&#8592;</span>
+        Retour
+      </button>
+      <h1 class="page-title">Détails d'enquête</h1>
     </div>
+
+    <div v-if="loading" class="loading">Chargement...</div>
 
     <div v-else-if="error" class="error">
       <p>{{ error }}</p>
-      <button @click="goBack">Retour</button>
     </div>
 
-    <div v-else-if="enquete" class="content">
-      <div class="details-card">
-        <h2>{{ enquete.title }}</h2>
-        
-        <div class="info-section">
-          <p><strong>Propriétaire:</strong>{{ storeAuth.user?.surname }}</p>
-                        <p><strong>Titre:</strong>{{ enquete.title }}</p>
-
-              <p><strong>Description:</strong>{{ enquete.description }}</p>
-              <p><strong>Message de début:</strong>{{ enquete.start_message }}</p>
-              <p><strong>Message de fin:</strong>{{ enquete.end_message }}</p>
-            <p><strong>URL:</strong>{{ enquete?.url_enquete }}</p>
-
-
-          <p>
-            <strong>Statut:</strong> 
-            <span :class="{ 'archived': enquete.archiver, 'active': !enquete.archiver }">
-              {{ enquete.archiver ? 'Archivée' : 'Active' }}
+    <section v-else-if="enquete" class="card details-card">
+      <div class="details-grid">
+        <div class="details-left">
+          <div class="detail-line">
+            <span class="label">Propriétaire:</span>
+            <span class="value">{{ storeAuth.user?.surname }}</span>
+          </div>
+          <div class="detail-line">
+            <span class="label">Titre :</span>
+            <span class="value">{{ enquete.title }}</span>
+          </div>
+          <div class="detail-line">
+            <span class="label">Message de début :</span>
+            <span class="value">{{ enquete.start_message }}</span>
+          </div>
+          <div class="detail-line">
+            <span class="label">Message de fin :</span>
+            <span class="value">{{ enquete.end_message }}</span>
+          </div>
+          <div class="detail-line">
+            <span class="label">Statut :</span>
+            <span class="status" :class="{ archived: enquete.archiver }">
+              {{ enquete.archiver ? 'Archivee' : 'Active' }}
             </span>
-          </p>
-          
+          </div>
+          <div class="detail-line">
+            <span class="label">Lien de l'enquête :</span>
+            <span class="value">{{ enquete.url_enquete }}</span>
+          </div>
         </div>
 
-        <div class="actions">
-          <button @click="toggleArchive" class="btn-archive">
-            {{ enquete.archiver ? 'Désarchiver' : 'Archiver' }}
-          </button>
-          <button @click="deleteEnquete" class="btn-delete">
-            Supprimer
-          </button>
-          <button @click="goBack" class="btn-back">
-            Retour
-          </button>
+        <div class="edit-column">
+          <div class="edit-placeholder">
+            <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>Modifier</span>
+          </div>
+          <div class="edit-placeholder">
+            <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>Modifier</span>
+          </div>
+          <div class="edit-placeholder">
+            <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>Modifier</span>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <div>
-   
-     <div v-if="bankItems.length == 0" class="empty-state">
-      <p>Pas de banque ajoutés</p>
-    </div>
-
-    <div v-else class="bank-items-container">
-       <h1>banques ajoutés</h1>
-      <div v-for="bank in bankItems" :key="bank.id" class="bank-item-card">
-        <router-link :to="`/bank-item/${bank.id}`" class="bank-item-link">
-          <h3>{{ bank.name }}</h3>
-            <p class="bank-status" :class="{ archived: bank.archiver }">
-                {{ bank.archiver ? "Archivée" : "Active" }}
-            </p>
-        </router-link>
+      <div class="actions-row">
+        <button @click="goToBanksPage" class="btn btn-banks">Voir les banques ajoutes</button>
       </div>
-    </div>
-    
 
+      <div class="actions-row">
+        <button @click="toggleArchive" class="btn btn-archive">
+          {{ enquete.archiver ? 'Desarchiver' : 'Archiver' }}
+        </button>
+        <button @click="deleteEnquete" class="btn btn-delete">Supprimer</button>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
- * {
-   margin: 0;
-   padding: 0;
-   font-family: 'Arial', sans-serif;
- }
-.bank-item-detail {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 1rem;
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
 }
 
-h1 {
-  margin-bottom: 2rem;
-  color: #2c3e50;
+.detail-page {
+  max-width: 1100px;
+  margin: 1.5rem auto;
+  padding: 0 1rem 2rem;
 }
 
-.loading, .error {
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 1.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.back-circle {
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 2px solid #1f2937;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.page-title {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+  color: #111827;
+  font-size: 1.45rem;
+  font-weight: 700;
+  transform: translateX(-4rem);
+}
+
+.loading,
+.error {
   text-align: center;
   padding: 2rem;
 }
@@ -216,91 +258,124 @@ h1 {
   color: #e74c3c;
 }
 
-.content {
-  width: 100%;
+.card {
+  background: #fff;
+  border: 1px solid #d8d8d8;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+  padding: 1.4rem 1.8rem;
 }
 
 .details-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  margin-bottom: 0.85rem;
 }
 
-.details-card h2 {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  color: #34495e;
-  font-size: 1.8rem;
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 1.5rem;
 }
 
-.info-section {
-  margin-bottom: 2rem;
-}
-
-.info-section p {
-  margin: 0.75rem 0;
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.info-section strong {
-  color: #2c3e50;
-  margin-right: 0.5rem;
-}
-
-.archived {
-  color: #95a5a6;
-  font-weight: 500;
-}
-
-.active {
-  color: #27ae60;
-  font-weight: 500;
-}
-
-.actions {
+.details-left {
   display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  padding-top: 1rem;
-  border-top: 1px solid #ecf0f1;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
-button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
+.detail-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.label {
+  min-width: 170px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.value {
+  color: #1f2937;
+}
+
+.status {
+  color: #22c55e;
   font-weight: 500;
-  transition: all 0.3s ease;
+}
+
+.status.archived {
+  color: #95a5a6;
+}
+
+.edit-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 1.3rem;
+}
+
+.edit-placeholder {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: #1f2937;
+}
+
+.edit-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.actions-row {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1.4rem;
+}
+
+.btn {
+  width: 210px;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-banks {
+  background: #22a86c;
 }
 
 .btn-archive {
-  background-color: #3498db;
-  color: white;
-}
-
-.btn-archive:hover {
-  background-color: #2980b9;
+  width: 140px;
+  background: #5b8ee6;
 }
 
 .btn-delete {
-  background-color: #e74c3c;
-  color: white;
+  width: 140px;
+  background: #ef4423;
 }
 
-.btn-delete:hover {
-  background-color: #c0392b;
-}
+@media (max-width: 900px) {
+  .page-title {
+    transform: none;
+    text-align: left;
+    font-size: 1.2rem;
+  }
 
-.btn-back {
-  background-color: #95a5a6;
-  color: white;
-}
+  .header-row {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
 
-.btn-back:hover {
-  background-color: #7f8c8d;
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-column {
+    margin-top: 0;
+  }
 }
 </style>

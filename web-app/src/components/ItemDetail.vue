@@ -121,6 +121,10 @@ const goBack = () => {
   router.push('/my-items')
 }
 
+const goToModalites = () => {
+  router.push({ name: 'item-modalites', params: { itemId: itemId } })
+}
+
 onMounted(() => {
   getItemDetail()
 })
@@ -128,8 +132,6 @@ onMounted(() => {
 
 <template>
   <div class="bank-item-detail">
-    <h1>Détails d'Items</h1>
-
     <div v-if="loading" class="loading">
       <p>Chargement...</p>
     </div>
@@ -140,50 +142,55 @@ onMounted(() => {
     </div>
 
     <div v-else-if="item" class="content">
+      <div class="header">
+        <button @click="goBack" class="btn-back-header">
+          <span class="arrow">←</span>
+        </button>
+        <span class="header-text">Retour</span>
+        <h1 class="page-title">Détails d'items</h1>
+      </div>
+
       <div class="details-card">
-        <h2>{{ item.question }}</h2>
-        
+        <div class="card-header">
+          <h2>{{ item.question }}</h2>
+        </div>
+
         <div class="info-section">
-          <p><strong>Propriétaire:</strong>{{ storeAuth.user?.surname }}</p>
-          <p>
-            <strong>Obligatoire:</strong> 
-            <span :class="{ 'Oui': item.obligatoire, 'Non': !item.obligatoire }">
-              {{ item.obligatoire ? 'Oui' : 'Non' }}
-            </span>
-          </p>
-          <p><strong>Type de format de reponse :</strong>{{ formatReponse?.type}}</p>
+          <div class="info-group">
+            <label>Propriétaire:</label>
+            <span>{{ storeAuth.user?.surname }}</span>
+          </div>
           
-            <div v-if="isQCMorQCU">
-                <p><strong>Modalités :</strong></p>
-                <ul v-for="(modalite, index) in modalites" :key="index">
-                        <li>{{ modalite.intitule }}</li>
-                </ul>
-            </div>
-            <div v-else-if="isEVN">
-                <p><strong>Modalités :</strong></p>
-                <div v-for="(modalite, index) in modalites" :key="index">
-                        <p>{{ modalite.v1 }}</p>
-                        <p>{{ modalite.v2 }}</p>
-                </div>
-            </div>
-            <div v-else>
-                <p><strong>Pas de modalités </strong></p>
-            </div>
-                
-                    
-                    
-                
+          <div class="info-group">
+            <label>Question :</label>
+            <span>{{ item.question }}</span>
+          </div>
+
+          <div class="info-group">
+            <label>Obligatoire :</label>
+            <span>{{ item.obligatoire ? 'Oui' : 'Non' }}</span>
+          </div>
+
+          <div class="info-group">
+            <label>Type de format de reponse :</label>
+            <span>{{ formatReponse?.type }}</span>
+          </div>
+
+          <div class="info-group">
+            <label>Modalités :</label>
+            <button v-if="isQCMorQCU || isEVN" @click="goToModalites" class="btn-see-modalites">
+              Voir les modalités
+            </button>
+            <span v-else>Pas de modalités</span>
+          </div>
         </div>
 
         <div class="actions">
           <button @click="toggleObligatoire" class="btn-archive">
-             {{ item.obligatoire ? 'Ne pas Rendre Obligatoire' : 'Rendre Obligatoire' }}
+             {{ item.obligatoire ? 'Ne pas rendre obligatoire' : 'Rendre obligatoire' }}
           </button>
           <button @click="deleteItem" class="btn-delete">
             Supprimer
-          </button>
-          <button @click="goBack" class="btn-back">
-            Retour
           </button>
         </div>
       </div>
@@ -192,20 +199,16 @@ onMounted(() => {
 </template>
 
 <style scoped>
- * {
-   margin: 0;
-   padding: 0;
-   font-family: 'Arial', sans-serif;
- }
-.bank-item-detail {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 1rem;
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
 }
 
-h1 {
-  margin-bottom: 2rem;
-  color: #2c3e50;
+.bank-item-detail {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .loading, .error {
@@ -221,59 +224,140 @@ h1 {
   width: 100%;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.btn-back-header {
+  background: white;
+  border: 2px solid #000;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.btn-back-header:hover {
+  background-color: #f5f5f5;
+}
+
+.arrow {
+  font-size: 1.3rem;
+  color: #000;
+  font-weight: bold;
+}
+
+.header-text {
+  font-size: 0.95rem;
+  color: #000;
+  font-weight: 500;
+  margin-right: auto;
+}
+
+.page-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+}
+
 .details-card {
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  border-radius: 4px;
   padding: 2rem;
 }
 
-.details-card h2 {
-  margin-top: 0;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 1.5rem;
-  color: #34495e;
-  font-size: 1.8rem;
+  gap: 1rem;
+}
+
+.details-card h2 {
+  margin: 0;
+  color: #000;
+  font-size: 1rem;
+  font-weight: 400;
+  flex: 1;
+}
+
+.btn-edit {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.5rem;
+  flex-shrink: 0;
 }
 
 .info-section {
   margin-bottom: 2rem;
 }
 
-.info-section p {
-  margin: 0.75rem 0;
-  font-size: 1rem;
-  line-height: 1.6;
+.info-group {
+  display: flex;
+  margin-bottom: 1rem;
+  align-items: flex-start;
 }
 
-.info-section strong {
-  color: #2c3e50;
-  margin-right: 0.5rem;
+.info-group label {
+  font-weight: 600;
+  color: #000;
+  min-width: 200px;
+  margin-right: 1rem;
 }
 
-.archived {
-  color: #95a5a6;
+.info-group span {
+  color: #333;
+  flex: 1;
+}
+
+.btn-see-modalites {
+  background-color: #27ae60;
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
   font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-.active {
-  color: #27ae60;
-  font-weight: 500;
+.btn-see-modalites:hover {
+  background-color: #229954;
 }
 
 .actions {
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
-  padding-top: 1rem;
-  border-top: 1px solid #ecf0f1;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ddd;
+  justify-content: center;
 }
 
 button {
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 2rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   transition: all 0.3s ease;
 }
@@ -294,14 +378,5 @@ button {
 
 .btn-delete:hover {
   background-color: #c0392b;
-}
-
-.btn-back {
-  background-color: #95a5a6;
-  color: white;
-}
-
-.btn-back:hover {
-  background-color: #7f8c8d;
 }
 </style>

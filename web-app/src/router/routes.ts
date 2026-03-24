@@ -16,6 +16,9 @@ import MyItemsPage from '@/pages/MyItemsPage.vue'
 import AddBankItemToEnquetePage from '@/pages/AddBankItemToEnquetePage.vue'
 import EnqueteDetail from '@/components/EnqueteDetail.vue'
 import MyAccountPage from '@/pages/MyAccountPage.vue'
+import ModaliteItemPage from '@/pages/ModaliteItemPage.vue'
+import ItemAddPage from '@/pages/ItemAddPage.vue'
+import BankAddPage from '@/pages/BankAddPage.vue'
 
 const routes = [
   {
@@ -52,10 +55,22 @@ const routes = [
     component: BankItemDetail,
     meta: { requiresAuth: true }
   },
+  {
+    path: '/bank-item/:bankItemId/items',
+    name: 'bank-item-items',
+    component: ItemAddPage,
+    meta: { requiresAuth: true }
+  },
    {
     path: '/item/:itemId',
     name: 'item-detail',
     component: ItemDetail,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/item/:itemId/modalites',
+    name: 'item-modalites',
+    component: ModaliteItemPage,
     meta: { requiresAuth: true }
   },
     {
@@ -64,6 +79,12 @@ const routes = [
     component: EnqueteDetail,
     meta: { requiresAuth: true }
   },
+    {
+      path: '/enquete/:enqueteId/banks',
+      name: 'enquete-banks',
+      component: BankAddPage,
+      meta: { requiresAuth: true }
+    },
   {
     path: '/create-item',
     name: 'create-item',

@@ -45,7 +45,7 @@ const confirm = () => {
           autofocus
         />
       </main>
-
+      
       <footer>
         <button @click="close">Annuler</button>
         <button @click="confirm">Confirmer</button>
