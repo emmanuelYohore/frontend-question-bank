@@ -114,47 +114,45 @@ const addBankItemsToEnquete = async () => {
 </script>
 
 <template>
-  <navigation-bar />
+  <navigation-bar class="hidden-nav" />
   <div class="page-wrapper">
     <div class="header-row">
       <button class="back-btn" @click="router.back()">
         <span class="back-circle">&#8592;</span>
         Retour
       </button>
-      <h2 class="page-title">Ajouter des banques d'items a une enquete</h2>
+      <h2 class="page-title">Ajouter des banques à une enquête</h2>
     </div>
 
     <div v-if="loading" class="loading">Chargement...</div>
 
     <div v-else class="two-col">
       <div class="col">
-        <h3 class="col-title">Mes Enquetes</h3>
-        <div v-if="enquetes.length === 0" class="empty">Pas d'enquetes</div>
-        <div v-else class="rows">
-          <div v-for="enquete in enquetes" :key="enquete.id" class="row-item">
-            <div class="card">
-              <span class="card-name">{{ enquete.title }}</span>
-              <span class="status" :class="{ archived: enquete.archiver }">
-                {{ enquete.archiver ? "Archivee" : "Active" }}
-              </span>
-            </div>
-            <input type="radio" :value="enquete.id" v-model="enqueteId" class="radio" />
+        <h3 class="col-title">Mes enquêtes</h3>
+        <div class="select-label">Sélectionner une enquête</div>
+
+        <div class="list-box" :class="{ 'list-box-empty': enquetes.length === 0 }">
+          <div v-if="enquetes.length === 0" class="empty">Pas d'enquêtes</div>
+          <div v-else class="rows">
+            <label v-for="enquete in enquetes" :key="enquete.id" class="row-item">
+              <input type="radio" :value="enquete.id" v-model="enqueteId" class="radio" />
+              <span class="row-label">{{ enquete.title }}</span>
+            </label>
           </div>
         </div>
       </div>
 
       <div class="col col-right">
-        <h3 class="col-title col-title-right">Mes banque d'items</h3>
-        <div v-if="bankItems.length === 0" class="empty">Pas de banques d'items</div>
-        <div v-else class="rows">
-          <div v-for="bankItem in bankItems" :key="bankItem.id" class="row-item row-item-right">
-            <input type="checkbox" :value="bankItem.id" v-model="bankItemIds" class="checkbox" />
-            <div class="card">
-              <span class="card-name">{{ bankItem.name }}</span>
-              <span class="status" :class="{ archived: bankItem.archiver }">
-                {{ bankItem.archiver ? "Archivee" : "Active" }}
-              </span>
-            </div>
+        <h3 class="col-title col-title-right">Mes banques</h3>
+        <div class="select-label">Sélectionner des banques</div>
+
+        <div class="list-box" :class="{ 'list-box-empty': bankItems.length === 0 }">
+          <div v-if="bankItems.length === 0" class="empty">Pas de banques d'items</div>
+          <div v-else class="rows">
+            <label v-for="bankItem in bankItems" :key="bankItem.id" class="row-item">
+              <input type="checkbox" :value="bankItem.id" v-model="bankItemIds" class="checkbox" />
+              <span class="row-label">{{ bankItem.name }}</span>
+            </label>
           </div>
         </div>
       </div>
@@ -169,17 +167,21 @@ const addBankItemsToEnquete = async () => {
 </template>
 
 <style scoped>
+.hidden-nav {
+  display: none;
+}
+
 .page-wrapper {
-  max-width: 1100px;
-  margin: 2rem auto;
-  padding: 0 2rem 3rem;
+  max-width: 1150px;
+  margin: 1.2rem auto;
+  padding: 0 2.2rem 2.4rem;
 }
 
 .header-row {
   display: flex;
   align-items: center;
-  gap: 2rem;
-  margin-bottom: 2.5rem;
+  gap: 1.8rem;
+  margin-bottom: 2.2rem;
 }
 
 .back-btn {
@@ -208,11 +210,11 @@ const addBankItemsToEnquete = async () => {
 
 .page-title {
   flex: 1;
-  font-size: 1.1rem;
+  font-size: 2.1rem;
   font-weight: 700;
   color: #111827;
   text-align: center;
-  transform: translateX(-4rem);
+  transform: translateX(-3.9rem);
   margin: 0;
 }
 
@@ -224,7 +226,7 @@ const addBankItemsToEnquete = async () => {
 
 .two-col {
   display: flex;
-  gap: 2rem;
+  gap: 5.4rem;
   align-items: flex-start;
 }
 
@@ -235,14 +237,14 @@ const addBankItemsToEnquete = async () => {
 .col-right {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch;
 }
 
 .col-title {
-  font-size: 1rem;
+  font-size: 2.35rem;
   font-weight: 700;
   color: #111827;
-  margin: 0 0 1.2rem 0;
+  margin: 0 0 1rem 0;
 }
 
 .col-title-right {
@@ -250,81 +252,96 @@ const addBankItemsToEnquete = async () => {
   width: 100%;
 }
 
+.select-label {
+  width: 100%;
+  max-width: 360px;
+  height: 52px;
+  border: 1px solid #4b5563;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+  font-size: 2.2rem;
+  margin-bottom: 1.1rem;
+  background: #f7f7f7;
+}
+
+.col-right .select-label {
+  margin-left: auto;
+}
+
+.list-box {
+  width: 100%;
+  max-width: 360px;
+  min-height: 356px;
+  max-height: 356px;
+  overflow-y: auto;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #f3f4f6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  padding: 1rem 1.2rem;
+}
+
+.col-right .list-box {
+  margin-left: auto;
+}
+
+.list-box-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .empty {
   color: #6c757d;
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 .rows {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  width: 100%;
+  gap: 0.7rem;
 }
 
 .row-item {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.95rem;
+  min-height: 48px;
+  cursor: pointer;
 }
 
-.row-item-right {
-  justify-content: flex-end;
-}
-
-.card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 180px;
-  min-height: 70px;
-  padding: 0.75rem 1rem;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  gap: 0.2rem;
-}
-
-.card-name {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #1f2937;
-  text-align: center;
-}
-
-.status {
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: #27ae60;
-}
-
-.status.archived {
-  color: #95a5a6;
+.row-label {
+  font-size: 1.95rem;
+  color: #111827;
+  line-height: 1.2;
 }
 
 .radio,
 .checkbox {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
   accent-color: #6b4cbf;
+  flex-shrink: 0;
 }
 
 .actions {
   display: flex;
   justify-content: center;
-  margin-top: 3rem;
+  margin-top: 2rem;
 }
 
 .btn-valider {
-  padding: 0.75rem 3rem;
+  width: 260px;
+  padding: 0.72rem 1rem;
   background-color: #5b8ee6;
   color: #fff;
   border: none;
-  border-radius: 10px;
-  font-size: 1rem;
+  border-radius: 12px;
+  font-size: 1.35rem;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -337,5 +354,45 @@ const addBankItemsToEnquete = async () => {
 .btn-valider:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 1200px) {
+  .page-title,
+  .col-title,
+  .select-label,
+  .row-label {
+    font-size: clamp(1.1rem, 2.3vw, 1.9rem);
+  }
+
+  .two-col {
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .header-row {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .page-title {
+    transform: none;
+    text-align: left;
+    width: 100%;
+  }
+
+  .two-col {
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  .col-right .select-label,
+  .col-right .list-box {
+    margin-left: 0;
+  }
+
+  .col-title-right {
+    text-align: left;
+  }
 }
 </style>
