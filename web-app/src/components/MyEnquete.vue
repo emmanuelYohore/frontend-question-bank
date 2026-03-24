@@ -59,14 +59,9 @@ const filterEnquetes = async () => {
     .catch(error => console.error('Error:', error))
 }
 
-let debounceTimer: ReturnType<typeof setTimeout> | null = null
-
 watch(input, () => {
-  if (debounceTimer) clearTimeout(debounceTimer)
-  
-  debounceTimer = setTimeout(() => {
     filterEnquetes()
-  }, 400)
+  
 })
 </script>
 

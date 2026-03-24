@@ -57,15 +57,10 @@ const filterBanks = async () => {
     .catch(error => console.error('Error:', error))
 }
 
-let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-watch(input, () => {
-  if (debounceTimer) clearTimeout(debounceTimer)
-  
-  debounceTimer = setTimeout(() => {
-    filterBanks()
-  }, 400)
-})
+watch(input, () => {  
+      filterBanks()
+  })
 </script>
 
 <template>
@@ -80,7 +75,7 @@ watch(input, () => {
 
     <div class="content">
       <h2 class="page-title">Mes banques</h2>
-      <h2>Nombre de banques : {{bankItems.length}} / 10</h2>
+      <h2>Nombre de banques : {{bankItems.length}} / 50</h2>
       <input type="text" v-model="input" placeholder="Chercher une banque" />
 
       <p class="page-subtitle">Cliquez sur une banque pour voir ses détails</p>

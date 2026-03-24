@@ -56,14 +56,8 @@ const filterItems = async () => {
     .catch(error => console.error('Error:', error))
 }
 
-let debounceTimer: ReturnType<typeof setTimeout> | null = null
-
-watch(input, () => {
-  if (debounceTimer) clearTimeout(debounceTimer)
-  
-  debounceTimer = setTimeout(() => {
-    filterItems()
-  }, 400)
+watch(input, () => {  
+      filterItems()
 })
 
 </script>
