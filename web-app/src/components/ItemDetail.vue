@@ -2,6 +2,8 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
+import PopupUpdateItem from './PopupUpdateItem.vue'
+
 
 const route = useRoute()
 const router = useRouter()
@@ -37,6 +39,33 @@ const isQCMorQCU = computed(() =>
  )
  const isEVN = computed(() => formatReponse.value?.type === 'evn')
  //const isTexte = computed(() => formatReponse.value?.type === 'texte')
+
+
+const showModal = ref(false)
+
+const onConfirm = async (newQuestion: string) => {
+  loading.value = true
+
+  await fetch(`http://localhost:8000/api/v1/items/${itemId}`, {
+    method: 'PUT',
+    credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify({ question: newQuestion }),
+  })
+    .then(res => res.json())
+    .then(() => {
+      if (item.value) {
+        item.value.question = newQuestion
+      }
+      showModal.value = false
+    })
+    .catch(err => console.error(err))
+    .finally(() => loading.value = false
+  )}
 
 const getItemDetail = async () => {
   loading.value = true
@@ -164,6 +193,14 @@ onMounted(() => {
           <div class="info-group">
             <label>Question :</label>
             <span>{{ item.question }}</span>
+            <button @click="showModal = true">✏️ Modifier</button>
+
+    <PopupUpdateItem
+      v-if="showModal"
+      :current-question="item.question"
+      @confirm="onConfirm"
+      @cancel="showModal = false"
+    />
           </div>
 
           <div class="info-group">

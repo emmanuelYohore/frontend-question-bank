@@ -16,12 +16,6 @@ export interface BankItem {
  
 }
 
-interface Item {
-  id: number
-  question: string
-  obligatoire: boolean
-}
-
 const showPopupName = ref(false)
 
 const bankItem = ref<BankItem | null>(null)
@@ -108,7 +102,7 @@ const goBack = () => {
 }
 
 const goToItemsPage = () => {
-  router.push({ name: 'bank-item-items', params: { bankItemId } })
+  router.push({ name: 'item-add', params: { bankItemId } })
 }
 
 const confirmePopupName = async (payload: { value: string }) => {

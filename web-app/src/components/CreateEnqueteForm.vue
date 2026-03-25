@@ -108,22 +108,13 @@ const createEnquete = async () => {
       <form @submit.prevent="createEnquete()">
         <div class="form-group">
           <label for="title">Titre :</label>
-          <input
-            type="text"
-            v-model="enquete.title"
-            placeholder="Entrez un titre"
-            required="true"
-          />
+          <input type="text" v-model="enquete.title" placeholder="Entrez un titre" required="true" />
         </div>
 
         <div class="form-group">
           <label for="description">Description :</label>
-          <textarea
-            v-model="enquete.description"
-            placeholder="Entrez une description"
-            required="true"
-            maxlength="800"
-          ></textarea>
+          <textarea v-model="enquete.description" placeholder="Entrez une description" required="true"
+            maxlength="800"></textarea>
           <p class="char-count">{{ descriptionLength }}/800</p>
           <div class="html-preview-wrapper">
             <p class="preview-label">Aperçu HTML</p>
@@ -133,12 +124,8 @@ const createEnquete = async () => {
 
         <div class="form-group">
           <label for="start_message">Message de début :</label>
-          <textarea
-            v-model="enquete.start_message"
-            placeholder="Entrez un message de début"
-            required="true"
-            maxlength="800"
-          ></textarea>
+          <textarea v-model="enquete.start_message" placeholder="Entrez un message de début" required="true"
+            maxlength="800"></textarea>
           <p class="char-count">{{ startMessageLength }}/800</p>
           <div class="html-preview-wrapper">
             <p class="preview-label">Aperçu HTML</p>
@@ -148,12 +135,8 @@ const createEnquete = async () => {
 
         <div class="form-group">
           <label for="end_message">Message de fin :</label>
-          <textarea
-            v-model="enquete.end_message"
-            placeholder="Entrez un message de fin"
-            required="true"
-            maxlength="800"
-          ></textarea>
+          <textarea v-model="enquete.end_message" placeholder="Entrez un message de fin" required="true"
+            maxlength="800"></textarea>
           <p class="char-count">{{ endMessageLength }}/800</p>
           <div class="html-preview-wrapper">
             <p class="preview-label">Aperçu HTML</p>

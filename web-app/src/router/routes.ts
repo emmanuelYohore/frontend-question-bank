@@ -57,7 +57,7 @@ const routes = [
   },
   {
     path: '/bank-item/:bankItemId/items',
-    name: 'bank-item-items',
+    name: 'item-add',
     component: ItemAddPage,
     meta: { requiresAuth: true }
   },
