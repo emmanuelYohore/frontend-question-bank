@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import DOMPurify from 'dompurify'
 
 const route = useRoute()
 const router = useRouter()
@@ -20,6 +21,11 @@ interface Enquete {
 const enquete = ref<Enquete | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
+
+const sanitizeHtml = (content: string) => DOMPurify.sanitize(content)
+const previewDescription = computed(() => sanitizeHtml(enquete.value?.description ?? ''))
+const previewStartMessage = computed(() => sanitizeHtml(enquete.value?.start_message ?? ''))
+const previewEndMessage = computed(() => sanitizeHtml(enquete.value?.end_message ?? ''))
 
 const enqueteId = route.params.enqueteId
 
@@ -138,12 +144,16 @@ onMounted(() => {
             <span class="value">{{ enquete.title }}</span>
           </div>
           <div class="detail-line">
+            <span class="label">Description :</span>
+            <span class="value" v-html="previewDescription"></span>
+          </div>
+          <div class="detail-line">
             <span class="label">Message de début :</span>
-            <span class="value">{{ enquete.start_message }}</span>
+            <span class="value" v-html="previewStartMessage"></span>
           </div>
           <div class="detail-line">
             <span class="label">Message de fin :</span>
-            <span class="value">{{ enquete.end_message }}</span>
+            <span class="value" v-html="previewEndMessage"></span>
           </div>
           <div class="detail-line">
             <span class="label">Statut :</span>
