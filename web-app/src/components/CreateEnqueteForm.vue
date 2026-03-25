@@ -25,17 +25,43 @@ const loading = ref(false);
 
 const sanitizeHtml = (content: string) =>
   DOMPurify.sanitize(content, {
-    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'a', 'h1', 'h2', 'h3','i', 'b', 'u', 'span','small'
-],
+    ALLOWED_TAGS: [
+      "p",
+      "br",
+      "strong",
+      "em",
+      "ul",
+      "ol",
+      "li",
+      "a",
+      "h1",
+      "h2",
+      "h3",
+      "i",
+      "b",
+      "u",
+      "span",
+      "small",
+    ],
     ALLOWED_ATTR: ["href", "target", "rel"],
     ALLOW_DATA_ATTR: false,
     FORBID_TAGS: ["style", "script"],
     FORBID_ATTR: ["style", "onerror", "onclick", "onload"],
   });
 
-const previewDescription = computed(() => sanitizeHtml(enquete.value.description));
-const previewStartMessage = computed(() => sanitizeHtml(enquete.value.start_message));
-const previewEndMessage = computed(() => sanitizeHtml(enquete.value.end_message));
+const previewDescription = computed(() =>
+  sanitizeHtml(enquete.value.description),
+);
+const previewStartMessage = computed(() =>
+  sanitizeHtml(enquete.value.start_message),
+);
+const previewEndMessage = computed(() =>
+  sanitizeHtml(enquete.value.end_message),
+);
+
+const descriptionLength = computed(() => enquete.value.description.length);
+const startMessageLength = computed(() => enquete.value.start_message.length);
+const endMessageLength = computed(() => enquete.value.end_message.length);
 
 const isSubmit = computed(() => {
   return enquete.value !== null;
@@ -51,13 +77,13 @@ const createEnquete = async () => {
       Accept: "application/json",
       Authorization: `Bearer ${authStore.token}`,
     },
-   body: JSON.stringify({
-  title: enquete.value.title,
-  description: sanitizeHtml(enquete.value.description),
-  start_message: sanitizeHtml(enquete.value.start_message),
-  end_message: sanitizeHtml(enquete.value.end_message),
-  archiver: enquete.value.archiver,
-}),
+    body: JSON.stringify({
+      title: enquete.value.title,
+      description: sanitizeHtml(enquete.value.description),
+      start_message: sanitizeHtml(enquete.value.start_message),
+      end_message: sanitizeHtml(enquete.value.end_message),
+      archiver: enquete.value.archiver,
+    }),
   })
     .then((response) => response.json())
     .then((data) => {
@@ -86,43 +112,49 @@ const createEnquete = async () => {
             type="text"
             v-model="enquete.title"
             placeholder="Entrez un titre"
-            :required="true"
+            required="true"
           />
         </div>
-        
+
         <div class="form-group">
           <label for="description">Description :</label>
           <textarea
             v-model="enquete.description"
             placeholder="Entrez une description"
-            :required="true"
+            required="true"
+            maxlength="800"
           ></textarea>
+          <p class="char-count">{{ descriptionLength }}/800</p>
           <div class="html-preview-wrapper">
             <p class="preview-label">Aperçu HTML</p>
             <div class="html-preview" v-html="previewDescription"></div>
           </div>
         </div>
-        
+
         <div class="form-group">
           <label for="start_message">Message de début :</label>
           <textarea
             v-model="enquete.start_message"
             placeholder="Entrez un message de début"
-            :required="true"
-          ></textarea>  
+            required="true"
+            maxlength="800"
+          ></textarea>
+          <p class="char-count">{{ startMessageLength }}/800</p>
           <div class="html-preview-wrapper">
             <p class="preview-label">Aperçu HTML</p>
             <div class="html-preview" v-html="previewStartMessage"></div>
           </div>
         </div>
-        
+
         <div class="form-group">
           <label for="end_message">Message de fin :</label>
           <textarea
             v-model="enquete.end_message"
             placeholder="Entrez un message de fin"
-            :required="true"
+            required="true"
+            maxlength="800"
           ></textarea>
+          <p class="char-count">{{ endMessageLength }}/800</p>
           <div class="html-preview-wrapper">
             <p class="preview-label">Aperçu HTML</p>
             <div class="html-preview" v-html="previewEndMessage"></div>
@@ -138,13 +170,12 @@ const createEnquete = async () => {
 </template>
 
 <style scoped>
- * {
-   margin: 0;
-   padding: 0;
-   background-color: white;
-   font-family: 'Arial', sans-serif;
- }
-
+* {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  font-family: "Arial", sans-serif;
+}
 
 .form-wrapper {
   max-width: 500px;
@@ -156,6 +187,7 @@ const createEnquete = async () => {
   border-radius: 12px;
   padding: 40px 30px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 form {
@@ -183,6 +215,8 @@ form {
   font-size: 14px;
   transition: border-color 0.2s;
   resize: none;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .form-group textarea:focus {
@@ -212,6 +246,15 @@ form {
   min-height: 50px;
   color: #222;
   background: #fafafa;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  overflow-x: auto;
+}
+
+.html-preview :deep(*) {
+  max-width: 100%;
 }
 
 .btn-submit {
