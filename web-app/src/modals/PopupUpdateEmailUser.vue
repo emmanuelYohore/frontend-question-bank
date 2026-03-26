@@ -26,6 +26,7 @@ const handleConfirm = () => {
       <input
         v-model="newEmail"
         type="email"
+        required
         placeholder="Nouveau email..."
         @keyup.enter="handleConfirm"
         @keydown.escape="emit('cancel')"

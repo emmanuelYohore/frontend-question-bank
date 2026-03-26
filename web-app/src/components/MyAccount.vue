@@ -99,6 +99,13 @@ const confirmPopupSurname = async ( newSurname: string ) => {
 }
 
 const confirmPopupEmail = async ( newEmail: string ) => {
+    const email = newEmail.trim()
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+  if (!emailRegex.test(email)) {
+    alert('Veuillez entrer un email valide.')
+    return
+  }
   loading.value = true
 
   await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
