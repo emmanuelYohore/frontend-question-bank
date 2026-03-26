@@ -2,7 +2,7 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
-import PopupUpdateBank from './PopupUpdateBank.vue'
+import PopupUpdateBank from '../modals/PopupUpdateBank.vue'
 
 const route = useRoute()
 const router = useRouter()

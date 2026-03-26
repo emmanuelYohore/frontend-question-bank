@@ -3,7 +3,9 @@ import { useAuthStore, type User } from '@/stores/auth'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import NavigationBar from './NavigationBar.vue'
-import PopupUpdateUserInfo from './PopupUpdateUserInfo.vue'
+import PopupUpdateNameUser from '@/modals/PopupUpdateNameUser.vue'
+import PopupUpdateSurnameUser from '@/modals/PopupUpdateSurnameUser.vue'
+import PopupUpdateEmailUser from '@/modals/PopupUpdateEmailUser.vue'
 
 const router = useRouter()
 const storeAuth = useAuthStore()
@@ -46,91 +48,79 @@ const goBack = () => {
   router.back()
 }
 
-const openPopupName = () => {
-  showPopupName.value = true
-}
+const confirmPopupName = async ( newName: string ) => {
+  loading.value = true
 
-const closePopupName = () => {
-  showPopupName.value = false
-}
-
-const confirmPopupName = async (payload: { value: string }) => {
-  if (!payload.value.trim()) return
-  try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
-      method: 'PUT',
+  await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
+    method: 'PUT',
+    credentials: "include",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${storeAuth.token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify({ name: newName }),
+  })
+    .then(res => res.json())
+    .then(() => {
+      if (user.value) {
+        user.value.name = newName
       }
-      ,
-      body: JSON.stringify({ name: payload.value }),
+      showPopupName.value = false
     })
-
-    if (!response.ok) throw new Error()
-    if (user.value) user.value.name = payload.value
-    showPopupName.value = false
-  } catch (error) {
-    console.error('Error:', error)
-  }
+    .catch(err => console.error(err))
+    .finally(() => loading.value = false
+  )
 }
 
-const openPopupSurname = () => {
-  showPopupSurname.value = true
-}
+const confirmPopupSurname = async ( newSurname: string ) => {
+  loading.value = true
 
-const closePopupSurname = () => {
-  showPopupSurname.value = false
-}
-
-const confirmPopupSurname = async (payload: { value: string }) => {
-  if (!payload.value.trim()) return
-  try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
-      method: 'PUT',
+  await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
+    method: 'PUT',
+    credentials: "include",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${storeAuth.token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify({ surname: newSurname }),
+  })
+    .then(res => res.json())
+    .then(() => {
+      if (user.value) {
+        user.value.surname = newSurname
       }
-      ,
-      body: JSON.stringify({ surname: payload.value }),
+      showPopupSurname.value = false
     })
-
-    if (!response.ok) throw new Error()
-    if (user.value) user.value.surname = payload.value
-    showPopupSurname.value = false
-  } catch (error) {
-    console.error('Error:', error)
-  }
+    .catch(err => console.error(err))
+    .finally(() => loading.value = false
+  )
 }
 
-const openPopupEmail = () => {
-  showPopupEmail.value = true
-}
+const confirmPopupEmail = async ( newEmail: string ) => {
+  loading.value = true
 
-const closePopupEmail = () => {
-  showPopupEmail.value = false
-}
-
-const confirmPopupEmail = async (payload: { value: string }) => {
-  if (!payload.value.trim()) return
-  try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
-      method: 'PUT',
+  await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
+    method: 'PUT',
+    credentials: "include",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${storeAuth.token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify({ email: newEmail }),
+  })
+    .then(res => res.json())
+    .then(() => {
+      if (user.value) {
+        user.value.email = newEmail
       }
-      ,
-      body: JSON.stringify({ email: payload.value }),
+      showPopupEmail.value = false
     })
-
-    if (!response.ok) throw new Error()
-    if (user.value) user.value.email = payload.value
-    showPopupEmail.value = false
-  } catch (error) {
-    console.error('Error:', error)
-  }
+    .catch(err => console.error(err))
+    .finally(() => loading.value = false
+  )
 }
 </script>
 
@@ -158,7 +148,7 @@ const confirmPopupEmail = async (payload: { value: string }) => {
             <span class="label">Nom :</span>
             <span class="value">{{ user?.name }}</span>
           </div>
-          <button class="modify-button" @click="openPopupName">
+          <button class="modify-button" @click="showPopupName = true">
             <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
@@ -172,7 +162,7 @@ const confirmPopupEmail = async (payload: { value: string }) => {
             <span class="label">Prénom :</span>
             <span class="value">{{ user?.surname }}</span>
           </div>
-          <button class="modify-button" @click="openPopupSurname">
+          <button class="modify-button" @click="showPopupSurname = true">
             <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
@@ -186,7 +176,7 @@ const confirmPopupEmail = async (payload: { value: string }) => {
             <span class="label">Email :</span>
             <span class="value">{{ user?.email }}</span>
           </div>
-          <button class="modify-button" @click="openPopupEmail">
+          <button class="modify-button" @click="showPopupEmail = true">
             <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
@@ -197,28 +187,26 @@ const confirmPopupEmail = async (payload: { value: string }) => {
       </div>
     </div>
 
-    <PopupUpdateUserInfo
-      :visible="showPopupName"
-      title="Modifier le nom"
-      :value="user?.name || ''"
-      @close="closePopupName"
+    <PopupUpdateNameUser
+      v-if="showPopupName"
+      :current-name="user?.name || ''"
       @confirm="confirmPopupName"
+      @cancel="showPopupName = false"
     />
 
-    <PopupUpdateUserInfo
-      :visible="showPopupSurname"
-      title="Modifier le prénom"
-      :value="user?.surname || ''"
-      @close="closePopupSurname"
+    <PopupUpdateSurnameUser
+      v-if="showPopupSurname"
+      :current-surname="user?.surname || ''"
       @confirm="confirmPopupSurname"
+      @cancel="showPopupSurname = false"
+
     />
 
-    <PopupUpdateUserInfo
-      :visible="showPopupEmail"
-      title="Modifier l'email"
-      :value="user?.email || ''"
-      @close="closePopupEmail"
+    <PopupUpdateEmailUser
+      v-if="showPopupEmail"
+      :current-email="user?.email || ''"
       @confirm="confirmPopupEmail"
+      @cancel="showPopupEmail = false"
     />
   </div>
 </template>

@@ -103,7 +103,7 @@ onMounted(() => {
       <div v-if="isQCMorQCU && modalites.length > 0" class="modalites-list">
         <ul>
           <li v-for="(modalite, index) in modalites" :key="index">
-            {{ modalite.intitule }}
+            - {{ modalite.intitule }}
           </li>
         </ul>
       </div>
@@ -111,7 +111,7 @@ onMounted(() => {
       <div v-else-if="isEVN && modalites.length > 0" class="modalites-list">
         <ul>
           <li v-for="(modalite, index) in modalites" :key="index">
-            Valeur 1: {{ modalite.v1 }} - Valeur 2: {{ modalite.v2 }}
+            - Valeur 1: {{ modalite.v1 }} - Valeur 2: {{ modalite.v2 }}
           </li>
         </ul>
       </div>

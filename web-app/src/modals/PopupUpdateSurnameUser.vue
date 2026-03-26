@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 const props = defineProps<{
-  currentQuestion: string
+  currentSurname: string
 }>()
 
 const emit = defineEmits<{
@@ -10,24 +10,26 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
-const newQuestion = ref(props.currentQuestion)
+const newSurname = ref(props.currentSurname)
 
 const handleConfirm = () => {
-  if (!newQuestion.value.trim()) return
-  emit('confirm', newQuestion.value.trim())
+  if (!newSurname.value.trim()) return
+  emit('confirm', newSurname.value.trim())
 }
 </script>
 
 <template>
-  <div class="overlay">
+  <div class="overlay" @click.self="emit('cancel')">
     <div class="modal">
-      <h3>Modifier la question</h3>
+      <h3>Modifier le prénom</h3>
 
       <input
-        v-model="newQuestion"
+        v-model="newSurname"
         type="text"
-        placeholder="Nouvelle question..."
+        placeholder="Nouveau prénom..."
         @keyup.enter="handleConfirm"
+        @keydown.escape="emit('cancel')"
+        autofocus
       />
 
       <div class="actions">
