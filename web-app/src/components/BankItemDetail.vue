@@ -105,32 +105,29 @@ const goToItemsPage = () => {
   router.push({ name: 'item-add', params: { bankItemId } })
 }
 
-const confirmePopupName = async (payload: { value: string }) => {
-  if (!payload.value.trim() || !bankItem.value) return
-  try {
-    const response = await fetch(`http://localhost:8000/api/v1/bank-items/${bankItemId}`, {
-      method: 'PUT',
+const confirmePopupName = async (newName: string ) => {
+  loading.value = true
+
+  await fetch(`http://localhost:8000/api/v1/bank-items/${bankItemId}`, {
+    method: 'PUT',
+    credentials: "include",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${storeAuth.token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
       },
-      body: JSON.stringify({ name: payload.value }),
+    body: JSON.stringify({ name: newName }),
+  })
+    .then(res => res.json())
+    .then(() => {
+      if (bankItem.value) {
+        bankItem.value.name = newName
+      }
+      showPopupName.value = false
     })
-
-    if (!response.ok) throw new Error()
-    if (bankItem.value) bankItem.value.name = payload.value
-    showPopupName.value = false
-  } catch (error) {
-    console.error('Error:', error)
-  }
-}
-
-const openPopupName = () => {
-  showPopupName.value = true
-}
-
-const closePopupName = () => {
-  showPopupName.value = false
+    .catch(err => console.error(err))
+    .finally(() => loading.value = false
+  )
 }
 
 onMounted(() => {
@@ -176,7 +173,7 @@ onMounted(() => {
             </div>
           </div>
 
-          <div class="edit-placeholder" @click="openPopupName" style="cursor: pointer;">
+          <div class="edit-placeholder" @click="showPopupName = true" style="cursor: pointer;">
             <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
@@ -202,12 +199,10 @@ onMounted(() => {
       </section>
 
       <popup-update-bank
-        :visible="showPopupName"
-        title="Modifier le nom de la banque"
-        label="Nouveau nom"
-        :value="bankItem.name || ''"
-        @close="closePopupName"
+        v-if="showPopupName"
+        :current-name="bankItem.name"
         @confirm="confirmePopupName"
+        @cancel="showPopupName = false"
       />
     </template>
   </div>
