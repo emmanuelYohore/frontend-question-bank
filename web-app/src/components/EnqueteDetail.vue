@@ -3,6 +3,10 @@ import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
 import DOMPurify from 'dompurify'
+import PopupUpdateTitleEnquete from '@/modals/PopupUpdateTitleEnquete.vue'
+import PopupUpdateDescriptionEnquete from '@/modals/PopupUpdateDescriptionEnquete.vue'
+import PopupUpdateStartMessageEnquete from '@/modals/PopupUpdateStartMessageEnquete.vue'
+import PopupUpdateEndMessageEnquete from '@/modals/PopupUpdateEndMessageEnquete.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -21,7 +25,10 @@ interface Enquete {
 const enquete = ref<Enquete | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
-
+const showTitleModal = ref(false)
+const showDescriptionModal = ref(false)
+const showStartMessageModal = ref(false)
+const showEndMessageModal = ref(false)
 const sanitizeHtml = (content: string) => DOMPurify.sanitize(content)
 const previewDescription = computed(() => sanitizeHtml(enquete.value?.description ?? ''))
 const previewStartMessage = computed(() => sanitizeHtml(enquete.value?.start_message ?? ''))
@@ -29,6 +36,7 @@ const previewEndMessage = computed(() => sanitizeHtml(enquete.value?.end_message
 
 const enqueteId = route.params.enqueteId
 
+// Récupérer les détails de l'enquête
 const getEnqueteDetail = async () => {
   loading.value = true
   error.value = null
@@ -56,13 +64,118 @@ const getEnqueteDetail = async () => {
   }
 }
 
+//Update titre
+const onConfirmTitle = async (newTitle: string) => {
+  loading.value = true
+
+  await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
+    method: 'PUT',
+    credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify({ title: newTitle }),
+  })
+    .then(res => res.json())
+    .then(() => {
+      if (enquete.value) {
+        enquete.value.title = newTitle
+      }
+      showTitleModal.value = false
+    })
+    .catch(err => console.error(err))
+    .finally(() => loading.value = false
+  )
+}
+
+//Update description
+const onConfirmDescription = async (newDescription: string) => {
+  loading.value = true
+
+  await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
+    method: 'PUT',
+    credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify({ description: newDescription }),
+  })
+    .then(res => res.json())
+    .then(() => {
+      if (enquete.value) {
+        enquete.value.description = newDescription
+      }
+      showDescriptionModal.value = false
+    })
+    .catch(err => console.error(err))
+    .finally(() => loading.value = false
+  )
+}
+
+//Update start_message
+const onConfirmStartMessage = async (newStartMessage: string) => {
+  loading.value = true
+
+  await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
+    method: 'PUT',
+    credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify({ start_message: newStartMessage }),
+  })
+    .then(res => res.json())
+    .then(() => {
+      if (enquete.value) {
+        enquete.value.start_message = newStartMessage
+      }
+      showStartMessageModal.value = false
+    })
+    .catch(err => console.error(err))
+    .finally(() => loading.value = false
+  )
+}
+
+//Update end_message
+const onConfirmEndMessage = async (newEndMessage: string) => {
+  loading.value = true
+
+  await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
+    method: 'PUT',
+    credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify({ end_message: newEndMessage }),
+  })
+    .then(res => res.json())
+    .then(() => {
+      if (enquete.value) {
+        enquete.value.end_message = newEndMessage
+      }
+      showEndMessageModal.value = false
+    })
+    .catch(err => console.error(err))
+    .finally(() => loading.value = false
+  )
+}
+
+//Supprimer l'enquête
 const deleteEnquete = async () => {
   if (!confirm('Êtes-vous sûr de vouloir supprimer cette enquête ?')) {
     return
   }
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/enquetes/${enqueteId}`, {
+    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -79,11 +192,12 @@ const deleteEnquete = async () => {
   }
 }
 
+//Archiver / Désarchiver l'enquête
 const toggleArchive = async () => {
   if (!enquete.value) return
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/enquetes/${enqueteId}`, {
+    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -169,25 +283,44 @@ onMounted(() => {
 
         <div class="edit-column">
           <div class="edit-placeholder">
-            <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-            <span>Modifier</span>
+            <button @click="showTitleModal = true">✏️ Modifier</button>
+              <PopupUpdateTitleEnquete
+                v-if="showTitleModal"
+                :currentTitle="enquete.title || ''"
+                @confirm="onConfirmTitle"
+                @cancel="showTitleModal = false"
+                />
+      
           </div>
           <div class="edit-placeholder">
-            <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-            <span>Modifier</span>
+            <button @click="showDescriptionModal = true">✏️ Modifier</button>
+                      <PopupUpdateDescriptionEnquete
+                        v-if="showDescriptionModal"
+                        :currentDescription="enquete.description || ''"
+                        @confirm="onConfirmDescription"
+                        @cancel="showDescriptionModal = false"
+                        />
+      
           </div>
           <div class="edit-placeholder">
-            <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-            <span>Modifier</span>
+            <button @click="showStartMessageModal = true">✏️ Modifier</button>
+                      <PopupUpdateStartMessageEnquete
+                        v-if="showStartMessageModal"
+                        :currentStartMessage="enquete.start_message || ''"
+                        @confirm="onConfirmStartMessage"
+                        @cancel="showStartMessageModal = false"
+                        />
+            
+          </div>
+          <div class="edit-placeholder">
+            <button @click="showEndMessageModal = true">✏️ Modifier</button>
+                      <PopupUpdateEndMessageEnquete
+                        v-if="showEndMessageModal"
+                        :currentEndMessage="enquete.end_message || ''"
+                        @confirm="onConfirmEndMessage"
+                        @cancel="showEndMessageModal = false"
+                        />
+          
           </div>
         </div>
       </div>

@@ -38,7 +38,7 @@ const getBanks = async () => {
 		}
 
 		const data = await response.json()
-		bankItems.value = data.bank_items ?? []
+		bankItems.value = data.bank_items
 	} catch (err) {
 		error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
 	} finally {

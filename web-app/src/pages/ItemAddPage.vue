@@ -38,7 +38,7 @@ const getItems = async () => {
 		}
 
 		const data = await response.json()
-		items.value = data.items ?? []
+		items.value = data.items
 	} catch (err) {
 		error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
 	} finally {

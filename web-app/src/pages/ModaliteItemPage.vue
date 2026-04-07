@@ -2,6 +2,7 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
+import PopupUpdateModalite from '@/modals/PopupUpdateModalite.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -19,6 +20,7 @@ interface Item {
 }
 
 interface ModaliteReponse {
+  id: number
   intitule?: string | null
   v1?: string | null
   v2?: string | null
@@ -27,6 +29,8 @@ interface ModaliteReponse {
 const item = ref<Item | null>(null)
 const formatReponse = ref<FormatReponse | null>(null)
 const modalites = ref<ModaliteReponse[]>([])
+const modaliteToUpdate = ref<ModaliteReponse | null>(null)
+
 const loading = ref(true)
 const error = ref<string | null>(null)
 
@@ -37,7 +41,33 @@ const isQCMorQCU = computed(() =>
 )
 const isEVN = computed(() => formatReponse.value?.type === 'evn')
 
-const getItemDetail = async () => {
+const showModal = ref(false)
+
+const onConfirm = async (newModalite: string) => {
+  loading.value = true
+
+  await fetch(`http://localhost:8000/api/v1/modalite-reponses/${modaliteToUpdate.value?.id}`, {
+    method: 'PUT',
+    credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify({ intitule: newModalite }),
+  })
+    .then(res => res.json())
+    .then(() => {
+      getModalites()
+      showModal.value = false
+    })
+    .catch(err => {
+      console.error('Error:', err)
+      alert('Impossible de modifier la modalité')
+    })
+}
+
+const getModalites = async () => {
   loading.value = true
   error.value = null
   
@@ -70,12 +100,40 @@ const getItemDetail = async () => {
   }
 }
 
+const removeModalite = async (modaliteId: number) => {
+  if (!confirm("Etes-vous sur de vouloir supprimer cette modalité ?")) {
+    return
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/modalite-reponses/${modaliteId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${storeAuth.token}`,
+        },
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la suppression de la modalité')
+    }
+
+    await getModalites()
+  } catch (err) {
+    console.error('Error:', err)
+    alert('Impossible de supprimer la modalité')
+  }
+}
+
 const goBack = () => {
   router.push({ name: 'item-detail', params: { itemId: itemId } })
 }
 
 onMounted(() => {
-  getItemDetail()
+  getModalites()
 })
 </script>
 
@@ -104,14 +162,33 @@ onMounted(() => {
         <ul>
           <li v-for="(modalite, index) in modalites" :key="index">
             - {{ modalite.intitule }}
+            				<button class="icon-btn" @click="removeModalite(modalite.id)">✕</button>
+                    <button class="icon-btn" @click="modaliteToUpdate = modalite; showModal = true">✎</button>
+                    <PopupUpdateModalite
+                    v-if="showModal"
+                    :current-modalite="modaliteToUpdate?.intitule || ''"
+                    @confirm="onConfirm"
+                    @cancel="showModal = false"
+                    />
           </li>
+          
         </ul>
       </div>
 
       <div v-else-if="isEVN && modalites.length > 0" class="modalites-list">
         <ul>
           <li v-for="(modalite, index) in modalites" :key="index">
-            - Valeur 1: {{ modalite.v1 }} - Valeur 2: {{ modalite.v2 }}
+
+            <p>- Valeur 1: {{ modalite.v1 }}</p>
+
+            <button class="icon-btn" @click="removeModalite(modalite.id)">✕</button>
+              
+             <p>- Valeur 2: {{ modalite.v2 }}</p>
+            
+              <button class="icon-btn" @click="removeModalite(modalite.id)">✕</button>
+
+            
+
           </li>
         </ul>
       </div>
