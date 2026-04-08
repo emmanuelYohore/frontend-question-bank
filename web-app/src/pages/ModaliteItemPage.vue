@@ -3,6 +3,8 @@ import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
 import PopupUpdateModalite from '@/modals/PopupUpdateModalite.vue'
+import PopupUpdateModaliteEvnV1 from '@/modals/PopupUpdateModaliteEvnV1.vue'
+import PopupUpdateModaliteEvnV2 from '@/modals/PopupUpdateModaliteEvnV2.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,7 +31,9 @@ interface ModaliteReponse {
 const item = ref<Item | null>(null)
 const formatReponse = ref<FormatReponse | null>(null)
 const modalites = ref<ModaliteReponse[]>([])
-const modaliteToUpdate = ref<ModaliteReponse | null>(null)
+const modaliteQcmOrQcuToUpdate = ref<ModaliteReponse | null>(null)
+const modaliteEvnToUpdate = ref<ModaliteReponse | null>(null)
+
 
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -41,12 +45,14 @@ const isQCMorQCU = computed(() =>
 )
 const isEVN = computed(() => formatReponse.value?.type === 'evn')
 
-const showModal = ref(false)
+const showModalQcmOrQcu = ref(false)
+const showModalEvnV1 = ref(false)
+const showModalEvnV2 = ref(false)
 
-const onConfirm = async (newModalite: string) => {
+const onConfirmPopupQcmOrQcu = async (newModalite: string) => {
   loading.value = true
 
-  await fetch(`http://localhost:8000/api/v1/modalite-reponses/${modaliteToUpdate.value?.id}`, {
+  await fetch(`http://localhost:8000/api/v1/modalite-reponses/${modaliteQcmOrQcuToUpdate.value?.id}`, {
     method: 'PUT',
     credentials: "include",
       headers: {
@@ -59,7 +65,63 @@ const onConfirm = async (newModalite: string) => {
     .then(res => res.json())
     .then(() => {
       getModalites()
-      showModal.value = false
+      showModalQcmOrQcu.value = false
+    })
+    .catch(err => {
+      console.error('Error:', err)
+      alert('Impossible de modifier la modalité')
+    })
+}
+
+const onConfirmPopupEvnV1 = async (newV1: string) => {
+  loading.value = true
+
+  await fetch(`http://localhost:8000/api/v1/modalite-reponses/${modaliteEvnToUpdate.value?.id}`, {
+    method: 'PUT',
+    credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify(
+      { 
+        v1: newV1
+      }
+    ),
+  })
+    .then(res => res.json())
+    .then(() => {
+      getModalites()
+      showModalEvnV1.value = false
+    })
+    .catch(err => {
+      console.error('Error:', err)
+      alert('Impossible de modifier la modalité')
+    })
+}
+
+const onConfirmPopupEvnV2 = async (newV2: string) => {
+  loading.value = true
+
+  await fetch(`http://localhost:8000/api/v1/modalite-reponses/${modaliteEvnToUpdate.value?.id}`, {
+    method: 'PUT',
+    credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify(
+      { 
+        v2: newV2
+      }
+    ),
+  })
+    .then(res => res.json())
+    .then(() => {
+      getModalites()
+      showModalEvnV2.value = false
     })
     .catch(err => {
       console.error('Error:', err)
@@ -163,12 +225,12 @@ onMounted(() => {
           <li v-for="(modalite, index) in modalites" :key="index">
             - {{ modalite.intitule }}
             				<button class="icon-btn" @click="removeModalite(modalite.id)">✕</button>
-                    <button class="icon-btn" @click="modaliteToUpdate = modalite; showModal = true">✎</button>
+                    <button class="icon-btn" @click="modaliteQcmOrQcuToUpdate = modalite; showModalQcmOrQcu = true">✎</button>
                     <PopupUpdateModalite
-                    v-if="showModal"
-                    :current-modalite="modaliteToUpdate?.intitule || ''"
-                    @confirm="onConfirm"
-                    @cancel="showModal = false"
+                    v-if="showModalQcmOrQcu"
+                    :current-modalite="modaliteQcmOrQcuToUpdate?.intitule || ''"
+                    @confirm="onConfirmPopupQcmOrQcu"
+                    @cancel="showModalQcmOrQcu = false"
                     />
           </li>
           
@@ -177,18 +239,26 @@ onMounted(() => {
 
       <div v-else-if="isEVN && modalites.length > 0" class="modalites-list">
         <ul>
-          <li v-for="(modalite, index) in modalites" :key="index">
+          <li v-for="(modaliteEvn, index) in modalites" :key="index">
 
-            <p>- Valeur 1: {{ modalite.v1 }}</p>
+            <p>- Valeur 1: {{ modaliteEvn.v1 }}</p>
+                    <button class="icon-btn" @click="modaliteEvnToUpdate = modaliteEvn; showModalEvnV1 = true">✎</button>
+                    <PopupUpdateModaliteEvnV1
+                    v-if="showModalEvnV1"
+                    :current-v1="modaliteEvnToUpdate?.v1 || ''"
+                    @confirm="onConfirmPopupEvnV1"
+                    @cancel="showModalEvnV1 = false"
+                    />
+                          
+             <p>- Valeur 2: {{ modaliteEvn.v2 }}</p>
 
-            <button class="icon-btn" @click="removeModalite(modalite.id)">✕</button>
-              
-             <p>- Valeur 2: {{ modalite.v2 }}</p>
-            
-              <button class="icon-btn" @click="removeModalite(modalite.id)">✕</button>
-
-            
-
+                    <button class="icon-btn" @click="modaliteEvnToUpdate = modaliteEvn; showModalEvnV2 = true">✎</button>
+                    <PopupUpdateModaliteEvnV2
+                    v-if="showModalEvnV2"
+                    :current-v2="modaliteEvnToUpdate?.v2 || ''"
+                    @confirm="onConfirmPopupEvnV2"
+                    @cancel="showModalEvnV2 = false"
+                    />                       
           </li>
         </ul>
       </div>
