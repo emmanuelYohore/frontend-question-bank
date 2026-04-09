@@ -19,7 +19,7 @@ interface Enquete {
   start_message: string;
   end_message: string;
   url_enquete?: string;
-  archiver: boolean;
+  archived: boolean;
 }
 
 const enquete = ref<Enquete | null>(null)
@@ -204,7 +204,7 @@ const toggleArchive = async () => {
         'Authorization': `Bearer ${storeAuth.token}`,
       },
       body: JSON.stringify({
-        archiver: !enquete.value.archiver
+        archived: !enquete.value.archived
       })
     })
     
@@ -223,6 +223,10 @@ const goBack = () => {
 
 const goToBanksPage = () => {
   router.push({ name: 'enquete-banks', params: { enqueteId } })
+}
+
+const goToEnqueteStart = () => {
+  router.push({ name: 'enquete-start', params: { enqueteStartId: enqueteId } })
 }
 
 onMounted(() => {
@@ -271,8 +275,8 @@ onMounted(() => {
           </div>
           <div class="detail-line">
             <span class="label">Statut :</span>
-            <span class="status" :class="{ archived: enquete.archiver }">
-              {{ enquete.archiver ? 'Archivee' : 'Active' }}
+            <span class="status" :class="{ archived: enquete.archived }">
+              {{ enquete.archived ? 'Archivee' : 'Active' }}
             </span>
           </div>
           <div class="detail-line">
@@ -331,9 +335,11 @@ onMounted(() => {
 
       <div class="actions-row">
         <button @click="toggleArchive" class="btn btn-archive">
-          {{ enquete.archiver ? 'Desarchiver' : 'Archiver' }}
+          {{ enquete.archived ? 'Desarchiver' : 'Archiver' }}
         </button>
         <button @click="deleteEnquete" class="btn btn-delete">Supprimer</button>
+        <button @click="goToEnqueteStart" class="btn btn-start">Commencer l'enquête</button>
+
       </div>
     </section>
   </div>
@@ -497,8 +503,11 @@ onMounted(() => {
 }
 
 .btn-delete {
-  width: 140px;
   background: #ef4423;
+}
+
+.btn-start {
+  background: #16a34a;
 }
 
 @media (max-width: 900px) {

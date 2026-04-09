@@ -14,6 +14,7 @@ interface Item {
   id: number
   question: string
   obligatoire: boolean
+  archived: boolean
 }
 
 const storeAuth = useAuthStore()
@@ -22,6 +23,7 @@ const userId = storeAuth.user?.id
 const loading = ref(true)
 const input = ref('')
 
+//fonction pour récupérer tous les items avec leurs items associés pour un userId
 const getAllItemForUser = async () => {
   loading.value = true
   await fetch(`http://localhost:8000/api/v1/users/${userId}/items`, {
@@ -39,6 +41,7 @@ const getAllItemForUser = async () => {
     .catch(error => console.error('Error:', error))
 }
 
+// filtre tous les items
 const filterItems = async () => {
   loading.value = true
   await fetch(`http://localhost:8000/api/v1/users/${userId}/items?search=${input.value}`, {
@@ -95,8 +98,8 @@ watch(input, () => {
             class="item-card"
           >
             <span class="card-name">{{ item.question }}</span>
-            <span class="item-status" :class="{ 'non': !item.obligatoire }">
-              Obligatoire : {{ item.obligatoire ? 'oui' : 'non' }}
+            <span class="item-status" :class="{ 'non': !item.archived }">
+              Archivé : {{ item.archived ? 'oui' : 'non' }}
             </span>
           </router-link>
         </div>
@@ -213,7 +216,7 @@ watch(input, () => {
 }
 
 .item-status.non {
-  color: #e74c3c;
+  color: #95a5a6;
 }
 
 .actions {

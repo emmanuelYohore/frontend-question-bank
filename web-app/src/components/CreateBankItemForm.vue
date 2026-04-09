@@ -6,10 +6,10 @@ const authStore = useAuthStore();
 
 const name = ref('');
 
-const archiver = ref(false);
+const archived = ref(false);
 const loading = ref(false)
 
-
+//fonction pour créer une banque d'item
 const createBankItem = async () => { 
   loading.value = true;
   await fetch("http://localhost:8000/api/v1/bank-items", {
@@ -22,7 +22,7 @@ const createBankItem = async () => {
       },
       body: JSON.stringify({
         name: name.value,
-        archiver: archiver.value
+        archived: archived.value
       }),
     })
     .then(response => response.json())

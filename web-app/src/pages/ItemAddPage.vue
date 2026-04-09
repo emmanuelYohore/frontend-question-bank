@@ -17,7 +17,8 @@ const items = ref<Item[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-const getItems = async () => {
+// Récupère les items associés à la banque pour un userId
+const getItemsAssociatedToBanks = async () => {
 	loading.value = true
 	error.value = null
 
@@ -46,6 +47,7 @@ const getItems = async () => {
 	}
 }
 
+// Supprime l'association d'un item à la banque
 const removeItemFromBank = async (itemId: number) => {
 	if (!confirm("Etes-vous sur de vouloir supprimer l'item de cette banque ?")) {
 		return
@@ -68,7 +70,7 @@ const removeItemFromBank = async (itemId: number) => {
 			throw new Error("Erreur lors de la suppression de l'item")
 		}
 
-		await getItems()
+		await getItemsAssociatedToBanks()
 	} catch (err) {
 		console.error('Error:', err)
 		alert("Impossible de supprimer l'item de la banque")
@@ -80,7 +82,7 @@ const goBack = () => {
 }
 
 onMounted(() => {
-	getItems()
+	getItemsAssociatedToBanks()
 })
 </script>
 

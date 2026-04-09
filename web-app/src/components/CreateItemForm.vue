@@ -7,21 +7,28 @@ import { faDeleteLeft } from '@fortawesome/free-solid-svg-icons';
 
 const authStore = useAuthStore();
 
+//interface pour le format de réponse
 interface FormatReponse {
   id?: number 
   type: string
 }
 
-interface Item {
-  id?: number
-  question: string
-  obligatoire : boolean 
-}
-
+//interface pour les modalités de réponse
 interface ModaliteReponse {
+  id?: number
   intitule?: string | null
   v1?: string | null
   v2?: string | null
+  format_reponse?: FormatReponse
+}
+
+//interface pour l'item
+interface Item {
+  id?: number
+  question: string
+  obligatoire : boolean
+  format_reponse?: FormatReponse | null
+  modalite_reponses?: ModaliteReponse[]
 }
 
 const options = ref([
@@ -50,6 +57,7 @@ const isQCMorQCU = computed(() =>
 const isEVN = computed(() => formatReponse.value.type === 'evn')
 const isTexte = computed(() => formatReponse.value.type === 'texte')
 
+//fonctions pour ajouter ou supprimer des modalités de réponse pour les QCM/QCU
 const addModalite = () => {
   if (modalites.value.length < 20) {
     modalites.value.push({ intitule: '' })
@@ -62,6 +70,7 @@ const removeModalite = (index: number) => {
   }
 }
 
+//fonction pour créer un item avec son format de réponse et ses modalités
 const createItem = async () => {
   loading.value = true
   try {
@@ -168,8 +177,6 @@ const createItem = async () => {
     loading.value = false
   }
 }
-
-
 
 </script>
 

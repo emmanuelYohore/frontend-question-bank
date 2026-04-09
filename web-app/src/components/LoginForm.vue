@@ -17,6 +17,7 @@ const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
+//fonction pour se connecter
 const login = async () =>{ 
   loading.value = true
   

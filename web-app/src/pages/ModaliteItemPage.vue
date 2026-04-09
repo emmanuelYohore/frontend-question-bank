@@ -15,17 +15,20 @@ interface FormatReponse {
   type: string
 }
 
-interface Item {
-  id?: number
-  question: string
-  obligatoire: boolean 
-}
-
 interface ModaliteReponse {
   id: number
   intitule?: string | null
   v1?: string | null
   v2?: string | null
+  format_reponse?: FormatReponse
+}
+
+interface Item {
+  id?: number
+  question: string
+  obligatoire: boolean
+  format_reponse?: FormatReponse | null
+  modalite_reponses?: ModaliteReponse[]
 }
 
 const item = ref<Item | null>(null)
@@ -129,6 +132,7 @@ const onConfirmPopupEvnV2 = async (newV2: string) => {
     })
 }
 
+// Récupère les modalités associées à l'item
 const getModalites = async () => {
   loading.value = true
   error.value = null

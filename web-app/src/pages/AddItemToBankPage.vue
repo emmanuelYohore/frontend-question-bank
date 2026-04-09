@@ -14,13 +14,15 @@ interface BankItem {
   id: number;
   user_id: number;
   name: string;
-  archiver: boolean;
+  archived: boolean;
 }
 
 interface Item {
   id: number;
   question: string;
   obligatoire: boolean;
+  archived: boolean;
+
 }
 
 const items = ref<Item[]>([]);
@@ -136,6 +138,7 @@ const addItemsToBank = async () => {
                 type="radio"
                 :value="bankItem.id"
                 v-model="bankItemId"
+                :disabled="bankItem.archived"
                 class="radio"
               />
               <span class="row-label">{{ bankItem.name }}</span>
@@ -156,6 +159,7 @@ const addItemsToBank = async () => {
                 type="checkbox"
                 :value="item.id"
                 v-model="itemIds"
+                :disabled="item.archived"
                 class="checkbox"
               />
               <span class="row-label">{{ item.question }}</span>

@@ -8,6 +8,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 const loading = ref(false)
 
+//fonction pour se déconnecter
 const logout = async () => {
   try {
     loading.value = true

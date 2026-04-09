@@ -12,7 +12,7 @@ const storeAuth = useAuthStore()
 export interface BankItem {
   id: number
   name: string
-  archiver: boolean
+  archived: boolean
  
 }
 
@@ -74,6 +74,7 @@ const deleteBankItem = async () => {
 }
 
 const toggleArchive = async () => {
+  loading.value = true
   if (!bankItem.value) return
   
   try {
@@ -84,15 +85,17 @@ const toggleArchive = async () => {
         'Authorization': `Bearer ${storeAuth.token}`,
       },
       body: JSON.stringify({
-        archiver: !bankItem.value.archiver
+        archived: !bankItem.value.archived
       })
     })
     
     if (response.ok) {
       await getBankItemDetail()
+      loading.value = false
     }
   } catch (err) {
     console.error('Error:', err)
+    loading.value = false
     alert('Erreur lors de la mise à jour')
   }
 }
@@ -167,8 +170,8 @@ onMounted(() => {
             </div>
             <div class="detail-line">
               <span class="label">Status :</span>
-              <span class="status" :class="{ archived: bankItem.archiver }">
-                {{ bankItem.archiver ? 'Archivee' : 'Active' }}
+              <span class="status" :class="{ archived: bankItem.archived }">
+                {{ bankItem.archived ? 'Archiver' : 'Active' }}
               </span>
             </div>
           </div>
@@ -190,7 +193,7 @@ onMounted(() => {
 
         <div class="actions-row">
           <button @click="toggleArchive" class="btn btn-archive">
-            {{ bankItem.archiver ? 'Desarchiver' : 'Archiver' }}
+            {{ bankItem.archived ? 'Desarchiver' : 'Archiver' }}
           </button>
           <button @click="deleteBankItem" class="btn btn-delete">
             Supprimer

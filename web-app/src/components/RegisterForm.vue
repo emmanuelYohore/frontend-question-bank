@@ -12,6 +12,7 @@ import {
 
 const storeAuth = useAuthStore();
 
+//interface pour le formulaire d'inscription
 interface FormRegister {
   name: string;
   surname: string;
@@ -32,6 +33,7 @@ const formRegister = ref<FormRegister>({
   password: "",
 });
 
+//fonction pour s'inscrire
 const register = async () => {
   loading.value = true;
 

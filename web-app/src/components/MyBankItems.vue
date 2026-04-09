@@ -14,7 +14,7 @@ interface BankItem {
   id: number
   user_id: number
   name: string
-  archiver: boolean
+  archived: boolean
 }
 
 const storeAuth = useAuthStore()
@@ -23,6 +23,7 @@ const userId = storeAuth.user?.id
 const loading = ref(true)
 const input = ref('')
 
+//fonction pour récupérer tous les bank items avec leurs items associés pour un userId
 const getAllBankForUser = async () => {
   loading.value = true
   await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items`, {
@@ -40,6 +41,7 @@ const getAllBankForUser = async () => {
     .catch(error => console.error('Error:', error))
 }
 
+// filtre tous les bank items
 const filterBanks = async () => {
   loading.value = true
   await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items?search=${input.value}`, {
@@ -98,8 +100,8 @@ watch(input, () => {
             class="bank-item-card"
           >
             <span class="card-name">{{ bankItem.name }}</span>
-            <span class="bank-status" :class="{ archived: bankItem.archiver }">
-              {{ bankItem.archiver ? 'Archivée' : 'Active' }}
+            <span class="bank-status" :class="{ archived: bankItem.archived }">
+              {{ bankItem.archived ? 'Archivée' : 'Active' }}
             </span>
           </router-link>
         </div>

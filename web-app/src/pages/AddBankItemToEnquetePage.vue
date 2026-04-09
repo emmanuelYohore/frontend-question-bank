@@ -14,7 +14,7 @@ interface BankItem {
   id: number;
   user_id: number;
   name: string;
-  archiver: boolean;
+  archived: boolean;
 }
 
 interface Enquete {
@@ -23,7 +23,7 @@ interface Enquete {
   description: string;
   start_message: string;
   end_message: string;
-  archiver: boolean;
+  archived: boolean;
 }
 
 const bankItems = ref<BankItem[]>([]);
@@ -135,7 +135,7 @@ const addBankItemsToEnquete = async () => {
           <div v-if="enquetes.length === 0" class="empty">Pas d'enquêtes</div>
           <div v-else class="rows">
             <label v-for="enquete in enquetes" :key="enquete.id" class="row-item">
-              <input type="radio" :value="enquete.id" v-model="enqueteId" class="radio" />
+              <input type="radio" :value="enquete.id" v-model="enqueteId" :disabled="enquete.archived" class="radio" />
               <span class="row-label">{{ enquete.title }}</span>
             </label>
           </div>
@@ -150,7 +150,8 @@ const addBankItemsToEnquete = async () => {
           <div v-if="bankItems.length === 0" class="empty">Pas de banques d'items</div>
           <div v-else class="rows">
             <label v-for="bankItem in bankItems" :key="bankItem.id" class="row-item">
-              <input type="checkbox" :value="bankItem.id" v-model="bankItemIds" class="checkbox" />
+              
+              <input type="checkbox" :value="bankItem.id" v-model="bankItemIds" :disabled="bankItem.archived" class="checkbox" />
               <span class="row-label">{{ bankItem.name }}</span>
             </label>
           </div>

@@ -3,13 +3,14 @@ import { computed, ref } from "vue";
 import DOMPurify from "dompurify";
 import { useAuthStore } from "@/stores/auth";
 
+//interface pour l'enquête
 interface Enquete {
   id?: number;
   title: string;
   description: string;
   start_message: string;
   end_message: string;
-  archiver: boolean;
+  archived: boolean;
 }
 
 const authStore = useAuthStore();
@@ -18,11 +19,12 @@ const enquete = ref<Enquete>({
   description: "",
   start_message: "",
   end_message: "",
-  archiver: false,
+  archived: false,
 });
 
 const loading = ref(false);
 
+//fonction pour choisir les balises HTML autorisées et interdire les balises dangereuses
 const sanitizeHtml = (content: string) =>
   DOMPurify.sanitize(content, {
     ALLOWED_TAGS: [
@@ -49,6 +51,8 @@ const sanitizeHtml = (content: string) =>
     FORBID_ATTR: ["style", "onerror", "onclick", "onload"],
   });
 
+//computed pour afficher un aperçu HTML en temps réel et pour compter les caractères
+
 const previewDescription = computed(() =>
   sanitizeHtml(enquete.value.description),
 );
@@ -67,6 +71,7 @@ const isSubmit = computed(() => {
   return enquete.value !== null;
 });
 
+//fonction pour créer une enquête
 const createEnquete = async () => {
   loading.value = true;
   await fetch("http://localhost:8000/api/v1/enquetes", {
@@ -82,7 +87,7 @@ const createEnquete = async () => {
       description: sanitizeHtml(enquete.value.description),
       start_message: sanitizeHtml(enquete.value.start_message),
       end_message: sanitizeHtml(enquete.value.end_message),
-      archiver: enquete.value.archiver,
+      archived: enquete.value.archived,
     }),
   })
     .then((response) => response.json())
@@ -95,7 +100,7 @@ const createEnquete = async () => {
         description: "",
         start_message: "",
         end_message: "",
-        archiver: false,
+        archived: false,
       };
     })
     .catch((error) => console.error("Error:", error));
@@ -118,7 +123,7 @@ const createEnquete = async () => {
           <p class="char-count">{{ descriptionLength }}/800</p>
           <div class="html-preview-wrapper">
             <p class="preview-label">Aperçu HTML</p>
-            <div class="html-preview" v-html="previewDescription"></div>
+            <div class="html-preview" v-html="previewDescription"></div> <!-- permet d'afficher un aperçu HTML en temps réel de la description de l'enquête -->
           </div>
         </div>
 

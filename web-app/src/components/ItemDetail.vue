@@ -14,16 +14,21 @@ interface FormatReponse {
   type: string
 }
 
-interface Item {
-  id?: number
-  question: string
-  obligatoire : boolean 
-}
-
 interface ModaliteReponse {
+  id?: number
   intitule?: string | null
   v1?: string | null
   v2?: string | null
+  format_reponse?: FormatReponse
+}
+
+interface Item {
+  id?: number
+  question: string
+  obligatoire : boolean
+  archived: boolean
+  format_reponse?: FormatReponse | null
+  modalite_reponses?: ModaliteReponse[]
 }
 
 const item = ref<Item | null>(null)
@@ -65,9 +70,39 @@ const onConfirm = async (newQuestion: string) => {
     })
     .catch(err => console.error(err))
     .finally(() => loading.value = false
-  )}
+  )
+}
 
-const getItemDetail = async () => {
+const toggleArchiveItem = async () => {
+  loading.value = true
+  if (!item.value) return
+  
+  try {
+    const response = await fetch(`http://localhost:8000/api/v1/items/${itemId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${storeAuth.token}`,
+      },
+      body: JSON.stringify({
+        archived: !item.value.archived
+      })
+    })
+    
+    if (response.ok) {
+      await getItemDetailWithModalitesAndFormatReponse()
+      loading.value = false
+    }
+  } catch (err) {
+    console.error('Error:', err)
+    loading.value = false
+    alert('Erreur lors de la mise à jour')
+  }
+}
+
+
+// Récupère les détails de l'item, son format de réponse et ses modalités
+const getItemDetailWithModalitesAndFormatReponse = async () => {
   loading.value = true
   error.value = null
   
@@ -99,6 +134,7 @@ const getItemDetail = async () => {
   }
 }
 
+// Récupère tous les bank items avec leurs items associés pour un userId donné
 const deleteItem = async () => {
   if (!confirm('Êtes-vous sûr de vouloir supprimer cet item ?')) {
     return
@@ -138,7 +174,7 @@ const toggleObligatoire = async () => {
     })
     
     if (response.ok) {
-      await getItemDetail()
+      await getItemDetailWithModalitesAndFormatReponse()
     }
   } catch (err) {
     console.error('Error:', err)
@@ -155,7 +191,7 @@ const goToModalites = () => {
 }
 
 onMounted(() => {
-  getItemDetail()
+  getItemDetailWithModalitesAndFormatReponse()
 })
 </script>
 
@@ -223,6 +259,9 @@ onMounted(() => {
         </div>
 
         <div class="actions">
+          <button @click="toggleArchiveItem" class="btn-archive">
+          {{ item.archived ? 'Desarchiver' : 'Archiver' }}
+        </button>
           <button @click="toggleObligatoire" class="btn-archive">
              {{ item.obligatoire ? 'Ne pas rendre obligatoire' : 'Rendre obligatoire' }}
           </button>

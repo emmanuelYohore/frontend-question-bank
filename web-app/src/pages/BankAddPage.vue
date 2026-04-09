@@ -17,7 +17,8 @@ const bankItems = ref<BankItem[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-const getBanks = async () => {
+// Récupère les banques associées à l'enquête
+const getBanksAssociatedToEnquete = async () => {
 	loading.value = true
 	error.value = null
 
@@ -46,6 +47,7 @@ const getBanks = async () => {
 	}
 }
 
+// Supprime une banque de l'enquête
 const removeBankFromEnquete = async (bankItemId: number) => {
 	if (!confirm("Etes-vous sur de vouloir supprimer la banque de cette enquete ?")) {
 		return
@@ -68,7 +70,7 @@ const removeBankFromEnquete = async (bankItemId: number) => {
 			throw new Error('Erreur lors de la suppression de la banque')
 		}
 
-		await getBanks()
+		await getBanksAssociatedToEnquete()
 	} catch (err) {
 		console.error('Error:', err)
 		alert('Impossible de supprimer la banque de l\'enquete')
@@ -80,7 +82,7 @@ const goBack = () => {
 }
 
 onMounted(() => {
-	getBanks()
+	getBanksAssociatedToEnquete()
 })
 </script>
 

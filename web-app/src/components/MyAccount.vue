@@ -21,6 +21,7 @@ onMounted(() => {
   getInfoUser()
 })
 
+//fonction pour récupérer les informations de l'utilisateur connecté
 const getInfoUser = async () => {
   loading.value = true
   try {
@@ -42,10 +43,6 @@ const getInfoUser = async () => {
   } finally {
     loading.value = false
   }
-}
-
-const goBack = () => {
-  router.back()
 }
 
 const confirmPopupName = async ( newName: string ) => {
@@ -137,7 +134,7 @@ const confirmPopupEmail = async ( newEmail: string ) => {
 
     <div class="page-wrapper">
       <div class="header-row">
-        <button class="back-button" @click="goBack">
+        <button class="back-button" @click="router.back()">
           <span class="back-circle">&#8592;</span>
           <span>Retour</span>
         </button>

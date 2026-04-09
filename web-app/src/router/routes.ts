@@ -19,6 +19,7 @@ import MyAccountPage from '@/pages/MyAccountPage.vue'
 import ModaliteItemPage from '@/pages/ModaliteItemPage.vue'
 import ItemAddPage from '@/pages/ItemAddPage.vue'
 import BankAddPage from '@/pages/BankAddPage.vue'
+import EnqueteStartPage from '@/pages/EnqueteStartPage.vue'
 
 const routes = [
   {
@@ -129,8 +130,14 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/enquete-start/:enqueteStartId',
+    name: 'enquete-start',
+    component: EnqueteStartPage,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/my-account',
-    name: 'my-accoun',
+    name: 'my-account',
     component: MyAccountPage,
     meta: { requiresAuth: true }
   },

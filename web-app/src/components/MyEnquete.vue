@@ -16,7 +16,7 @@ interface Enquete {
   description: string
   start_message: string
   end_message: string
-  archiver: boolean
+  archived: boolean
 }
 
 const storeAuth = useAuthStore()
@@ -25,6 +25,7 @@ const userId = storeAuth.user?.id
 const loading = ref(true)
 const input = ref('')
 
+//fonction pour récupérer tous les enquêtes avec leurs items associés pour un userId
 const getAllEnquetesForUser = async () => {
   loading.value = true
   await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes`, {
@@ -42,6 +43,7 @@ const getAllEnquetesForUser = async () => {
     .catch(error => console.error('Error:', error))
 }
 
+// filtre tous les enquêtes
 const filterEnquetes = async () => {
   loading.value = true
   await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes?search=${input.value}`, {
@@ -97,8 +99,8 @@ watch(input, () => {
             class="enquete-card"
           >
             <span class="card-name">{{ enquete.title }}</span>
-            <span class="enquete-status" :class="{ archived: enquete.archiver }">
-              {{ enquete.archiver ? 'Archivée' : 'Active' }}
+            <span class="enquete-status" :class="{ archived: enquete.archived }">
+              {{ enquete.archived ? 'Archiver' : 'Active' }}
             </span>
           </router-link>
         </div>
