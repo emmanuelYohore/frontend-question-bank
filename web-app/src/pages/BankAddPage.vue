@@ -81,8 +81,8 @@ const goBack = () => {
 	router.push({ name: 'enquete-detail', params: { enqueteId } })
 }
 
-onMounted(() => {
-	getBanksAssociatedToEnquete()
+onMounted(async() => {
+	await getBanksAssociatedToEnquete()
 })
 </script>
 

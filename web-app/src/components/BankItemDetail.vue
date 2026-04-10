@@ -24,6 +24,9 @@ const error = ref<string | null>(null)
 
 const bankItemId = route.params.bankItemId
 
+/**
+ * Récupère les détails d'une banque d'items
+ */
 const getBankItemDetail = async () => {
   loading.value = true
   error.value = null
@@ -50,6 +53,9 @@ const getBankItemDetail = async () => {
   }
 }
 
+/**
+ * Supprime une banque d'items
+ */
 const deleteBankItem = async () => {
   if (!confirm('Êtes-vous sûr de vouloir supprimer cette banque ?')) {
     return
@@ -73,6 +79,9 @@ const deleteBankItem = async () => {
   }
 }
 
+/**
+ * Bascule le statut d'archivage d'une banque d'items
+ */
 const toggleArchive = async () => {
   loading.value = true
   if (!bankItem.value) return

@@ -38,6 +38,9 @@ const isSelectAll = computed(() => {
   return enqueteId.value != null && bankItemIds.value.length > 0;
 });
 
+/**
+ * Récupère les enquêtes de l'utilisateur connecté
+ */
 const getAllEnqueteForUser = async () => {
   loading.value = true;
   await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes`, {
@@ -57,6 +60,9 @@ const getAllEnqueteForUser = async () => {
     .catch((error) => console.error("Error:", error));
 };
 
+/**
+ * Récupère les banques d'items de l'utilisateur connecté
+ */
 const getAllBankItemForUser = async () => {
   loading.value = true;
   await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items`, {
@@ -85,6 +91,9 @@ const loadData = async () => {
   }
 };
 
+/**
+ * Ajoute des banques d'items à une enquête 
+ */
 const addBankItemsToEnquete = async () => {
   loading.value = true;
   await fetch(

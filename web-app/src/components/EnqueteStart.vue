@@ -51,8 +51,8 @@ interface Enquete {
 const enquete = ref<Enquete | null>(null)
 const bankItems = ref<BankItem[]>([])
 const items = ref<Item[]>([])
-const formatReponses = ref<FormatReponse[]>([])
-const modalites = ref<ModaliteReponse[]>([])
+// const formatReponses = ref<FormatReponse[]>([])
+// const modalites = ref<ModaliteReponse[]>([])
 
 const error = ref<string | null>(null)
 
@@ -150,7 +150,6 @@ const getAllBankItemDetailWithItems = async () => {
   }
 }
 
-
 </script>
 
 <template>
@@ -159,14 +158,40 @@ const getAllBankItemDetailWithItems = async () => {
             <p>{{ b.name }}</p>
             <div v-for="i in b.items" :key="i.id">
                 <p>{{ i.question }}</p>
-                <div v-for=" m in i.modalite_reponses" :key="m.id">
-                    <p>Modalité : {{ m.intitule }}</p>
-                    
+                
+                <p>Format: {{ i.format_reponse?.type }}</p>
+                
+                <div v-if="i.format_reponse?.type === 'texte'">
+                    <input type="text" name="text" id="text" placeholder="Entrez votre réponse" />
+                </div>
+                <div v-else-if="i.format_reponse?.type === 'qcm'">
+                    <div v-for="m in i.modalite_reponses" :key="m.id">
+                        <label>
+                            <input type="checkbox" name="qcm" />
+                            {{ m.intitule }}
+                        </label>
+                    </div>
+                </div>
+                <div v-else-if="i.format_reponse?.type === 'qcu'">
+                    <div v-for="m in i.modalite_reponses" :key="m.id">
+                        <label>
+                            <input type="radio" name="qcu"/>
+                            {{ m.intitule }}
+                        </label>
+                    </div>
+                </div>
+                <div v-else-if="i.format_reponse?.type === 'evn'">
+                    <div v-for="m in i.modalite_reponses" :key="m.id">
+                        <p>
+                          {{ m.v1 }} <input type="range" name="evn" list="value"/> {{ m.v2 }}
+                        </p>
+                    </div>
+                </div>
+                <div v-else>
+                    <p>Type de format inconnu: {{ i.format_reponse?.type }}</p>
                 </div>
                
-                <p>format de réponse :</p>
-                <p>{{ i.format_reponse?.id }}</p>
-               
+                            
             </div>
         </div>
 </template>

@@ -24,7 +24,9 @@ const enquete = ref<Enquete>({
 
 const loading = ref(false);
 
-//fonction pour choisir les balises HTML autorisées et interdire les balises dangereuses
+/**
+ * fonction pour choisir les balises HTML autorisées et interdire les balises dangereuses
+ */
 const sanitizeHtml = (content: string) =>
   DOMPurify.sanitize(content, {
     ALLOWED_TAGS: [
@@ -71,7 +73,9 @@ const isSubmit = computed(() => {
   return enquete.value !== null;
 });
 
-//fonction pour créer une enquête
+/**
+ * fonction pour créer une enquête
+ */
 const createEnquete = async () => {
   loading.value = true;
   await fetch("http://localhost:8000/api/v1/enquetes", {

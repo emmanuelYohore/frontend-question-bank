@@ -17,7 +17,9 @@ const items = ref<Item[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-// Récupère les items associés à la banque pour un userId
+/**
+ * Récupère les items associés à la banque pour un userId
+ */
 const getItemsAssociatedToBanks = async () => {
 	loading.value = true
 	error.value = null
@@ -47,7 +49,9 @@ const getItemsAssociatedToBanks = async () => {
 	}
 }
 
-// Supprime l'association d'un item à la banque
+/**
+ * Supprime l'association d'un item à la banque
+ */
 const removeItemFromBank = async (itemId: number) => {
 	if (!confirm("Etes-vous sur de vouloir supprimer l'item de cette banque ?")) {
 		return
@@ -81,8 +85,8 @@ const goBack = () => {
 	router.push({ name: 'bank-item-detail', params: { bankItemId } })
 }
 
-onMounted(() => {
-	getItemsAssociatedToBanks()
+onMounted(async() => {
+	await getItemsAssociatedToBanks()
 })
 </script>
 

@@ -9,7 +9,9 @@ const name = ref('');
 const archived = ref(false);
 const loading = ref(false)
 
-//fonction pour créer une banque d'item
+/**
+ * fonction pour créer une banque d'item
+ */
 const createBankItem = async () => { 
   loading.value = true;
   await fetch("http://localhost:8000/api/v1/bank-items", {
