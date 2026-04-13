@@ -7,19 +7,18 @@ const router = useRouter();
 const goBack = () => {
   router.back();
 };
+
 </script>
 
 <template>
   <div class="page-container">
+    <button class="btn-back" @click="goBack">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Retour
+    </button>
     <div class="header">
-      <button class="btn-back" @click="goBack">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 8 8 12 12 16"/>
-          <line x1="16" y1="12" x2="8" y2="12"/>
-        </svg>
-        Retour
-      </button>
       <h1 class="page-title">Créer un item</h1>
     </div>
     <CreateItemForm />

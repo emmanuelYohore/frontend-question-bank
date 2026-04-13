@@ -2,6 +2,7 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
+import { VueDraggableNext as draggable } from 'vue-draggable-next'
 
 interface BankItem {
 	id: number
@@ -99,7 +100,10 @@ onMounted(async() => {
 		<div v-if="loading" class="loading">Chargement...</div>
 		<div v-else-if="error" class="error">{{ error }}</div>
 
+
 		<ul v-else class="banks-list">
+
+		<draggable v-model="bankItems" :animation="150" item-key="id">
 			<li v-for="bank in bankItems" :key="bank.id" class="bank-row">
 				<span class="bank-text">{{ bank.name }}</span>
 				<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
@@ -112,6 +116,8 @@ onMounted(async() => {
 					</svg>
 				</button>
 			</li>
+		</draggable>
+			
 		</ul>
 	</div>
 </template>

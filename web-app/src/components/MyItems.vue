@@ -116,6 +116,15 @@ watch(input, () => {
  * {
    font-family: 'Arial', sans-serif;
  }
+
+ input[type="text"] {
+  width: 50%;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+}
+
 .page-wrapper {
   max-width: 1100px;
   margin: 2rem auto;

@@ -93,17 +93,19 @@ watch(input, () => {
 
         <div v-else class="bank-items-container">
           
-          <router-link
-            v-for="bankItem in bankItems"
-            :key="bankItem.id"
-            :to="`/bank-item/${bankItem.id}`"
-            class="bank-item-card"
-          >
-            <span class="card-name">{{ bankItem.name }}</span>
-            <span class="bank-status" :class="{ archived: bankItem.archived }">
-              {{ bankItem.archived ? 'Archivée' : 'Active' }}
-            </span>
-          </router-link>
+             <router-link
+              v-for="bankItem in bankItems"
+              :key="bankItem.id"
+              :to="`/bank-item/${bankItem.id}`"
+              class="bank-item-card"
+            >
+              <span class="card-name">{{ bankItem.name }}</span>
+              <span class="bank-status" :class="{ archived: bankItem.archived }">
+                {{ bankItem.archived ? 'Archivée' : 'Active' }}
+              </span>
+            </router-link>
+       
+         
         </div>
 
         <div class="actions">
@@ -120,6 +122,15 @@ watch(input, () => {
    padding: 0;
    font-family: 'Arial', sans-serif;
  }
+
+ input[type="text"] {
+  width: 50%;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+}
+
 .page-wrapper {
   max-width: 1100px;
   margin: 2rem auto;

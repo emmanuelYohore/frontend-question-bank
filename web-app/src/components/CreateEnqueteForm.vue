@@ -169,6 +169,20 @@ const createEnquete = async () => {
   font-family: "Arial", sans-serif;
 }
 
+input[type="text"] {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #5b9aff;
+}
+
 .form-wrapper {
   max-width: 500px;
   margin: 0 auto;
