@@ -156,8 +156,8 @@ const getAllBankItemDetailWithItems = async () => {
     <p>{{ enquete?.title }}</p>
         <div v-for="b in bankItems" :key="b.id">
             <p>{{ b.name }}</p>
-            <div v-for="(i, index) in b.items" :key="i.id">
-                <p>{{ index + 1 }}. {{ i.question }}</p>
+            <div v-for="i in b.items" :key="i.id">
+                <p>{{ i.question }}</p>
                 
                 <p>Format: {{ i.format_reponse?.type }}</p>
                 

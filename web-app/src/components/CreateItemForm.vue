@@ -223,8 +223,8 @@ const createItem = async () => {
             @click="removeModalite(index)"
             :disabled="modalites.length <= 2"
             class="btn-remove"
-          >
-            <FontAwesomeIcon :icon="faDeleteLeft"/>
+          >X
+            
           </button>
         </div>
         <button 

@@ -78,6 +78,41 @@ const removeBankFromEnquete = async (bankItemId: number) => {
 	}
 }
 
+const saveBankItemsOrder = async () => {
+	loading.value = true
+	error.value = null
+
+	try {
+		const orderedIds = bankItems.value.map((b) => b.id)
+
+		const response = await fetch(
+			`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/enquetes/${enqueteId}/bank-items/order`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${storeAuth.token}`,
+				},
+				body: JSON.stringify({ bank_item_ids: orderedIds }),
+			}
+		)
+
+		if (!response.ok) {
+			const errData = await response.json().catch(() => null)
+			throw new Error(errData?.error || 'Erreur lors de la sauvegarde de l\'ordre des banques')
+		}
+
+		await getBanksAssociatedToEnquete()
+		alert('Ordre sauvegardé avec succès')
+	} catch (err) {
+		error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
+		console.error(err)
+		alert(error.value)
+	} finally {
+		loading.value = false
+	}
+}
+
 const goBack = () => {
 	router.push({ name: 'enquete-detail', params: { enqueteId } })
 }
@@ -103,7 +138,7 @@ onMounted(async() => {
 
 		<ul v-else class="banks-list">
 
-		<draggable v-model="bankItems" :animation="150" item-key="id">
+				<draggable v-model="bankItems" :animation="150" item-key="id" @end="saveBankItemsOrder">
 			<li v-for="bank in bankItems" :key="bank.id" class="bank-row">
 				<span class="bank-text">{{ bank.name }}</span>
 				<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
@@ -117,7 +152,6 @@ onMounted(async() => {
 				</button>
 			</li>
 		</draggable>
-			
 		</ul>
 	</div>
 </template>
