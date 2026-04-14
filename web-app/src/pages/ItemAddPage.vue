@@ -2,6 +2,8 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
+import { VueDraggableNext as draggable } from 'vue-draggable-next'
+
 
 interface Item {
 	id: number
@@ -81,6 +83,35 @@ const removeItemFromBank = async (itemId: number) => {
 	}
 }
 
+const saveItemsOrder = async () => {
+	loading.value = true
+
+	try {
+		const response = await fetch(
+			`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/bank-items/${bankItemId}/items/order`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${storeAuth.token}`,
+				},
+				body: JSON.stringify({
+					ordered_item_ids: items.value.map((item) => item.id),
+				}),
+			}
+		)
+
+		if (!response.ok) {
+			throw new Error('Erreur lors de la mise à jour de l\'ordre des items')
+		}
+	} catch (err) {
+		console.error('Error:', err)
+		alert('Impossible de mettre à jour l\'ordre des items')
+	} finally {
+		loading.value = false
+	}
+}
+
 const goBack = () => {
 	router.push({ name: 'bank-item-detail', params: { bankItemId } })
 }
@@ -104,6 +135,7 @@ onMounted(async() => {
 		<div v-else-if="error" class="error">{{ error }}</div>
         <div v-else-if="items.length === 0" class="error">Aucun item ajouté à cette banque</div>
 		<ul v-else class="items-list">
+		<draggable v-model="items" :animation="150" item-key="id" @end="saveItemsOrder">
 			<li v-for="item in items" :key="item.id" class="item-row">
 				<span class="item-text">{{ item.question }}</span>
 				<button class="icon-btn" @click="removeItemFromBank(item.id)" title="Supprimer">
@@ -116,6 +148,7 @@ onMounted(async() => {
 					</svg>
 				</button>
 			</li>
+		</draggable>	
 		</ul>
 	</div>
 </template>

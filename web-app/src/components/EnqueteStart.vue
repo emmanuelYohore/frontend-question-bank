@@ -49,7 +49,8 @@ interface Enquete {
 }
 
 const enquete = ref<Enquete | null>(null)
-const bankItems = ref<BankItem[]>([])
+const bankItemsEnquete = ref<BankItem[]>([])
+const allBankItems = ref<BankItem[]>([])
 const items = ref<Item[]>([])
 // const formatReponses = ref<FormatReponse[]>([])
 // const modalites = ref<ModaliteReponse[]>([])
@@ -65,6 +66,9 @@ onMounted(() => {
   getAllBankItemDetailWithItems()
 })
 
+/**
+ * Récupère les banque qui ont été ajouter à l'enquête
+ */
 const getEnqueteDetailWithBanksAdd = async () => {
   loading.value = true
   error.value = null
@@ -84,7 +88,7 @@ const getEnqueteDetailWithBanksAdd = async () => {
     
     const data = await response.json()
     enquete.value = data
-    bankItems.value = data.bank_items
+    bankItemsEnquete.value = data.bank_items
 
     console.log(`enquete : ${enquete.value}`)
   } catch (err) {
@@ -123,7 +127,9 @@ const getItemDetailWithModalitesAndFormatReponse = async () => {
   }
 }
 
-// Récupère tous les bank items avec leurs items associés pour un userId donné
+/**
+ * Récupère toute les banque de l'utilisateur avec les items associés
+ */
 const getAllBankItemDetailWithItems = async () => {
   loading.value = true
   error.value = null
@@ -142,7 +148,7 @@ const getAllBankItemDetailWithItems = async () => {
     }
     
     const data = await response.json()
-    bankItems.value = data
+    allBankItems.value = data
   } catch (err) {
     console.error('Error:', err)
   } finally {
@@ -154,7 +160,7 @@ const getAllBankItemDetailWithItems = async () => {
 
 <template>
     <p>{{ enquete?.title }}</p>
-        <div v-for="b in bankItems" :key="b.id">
+        <div v-for="b in bankItemsEnquete" :key="b.id">
             <p>{{ b.name }}</p>
             <div v-for="i in b.items" :key="i.id">
                 <p>{{ i.question }}</p>
