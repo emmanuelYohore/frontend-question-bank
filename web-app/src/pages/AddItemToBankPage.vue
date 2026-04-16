@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import NavigationBar from "@/components/NavigationBar.vue";
 
@@ -30,8 +30,9 @@ const storeAuth = useAuthStore();
 const bankItems = ref<BankItem[]>([]);
 const userId = storeAuth.user?.id;
 const loading = ref(true);
-const itemIds = ref([]);
+const itemIds = ref<number[]>([]);
 const bankItemId = ref();
+const associatedItemIds = ref<number[]>([]);
 
 const isSelectAll = computed(() => {
   return bankItemId.value !== null && itemIds.value.length > 0;
@@ -83,6 +84,49 @@ const loadData = async () => {
     loading.value = false;
   }
 };
+
+const getItemsForBank = async (bankId: number) => {
+  if (!bankId) return;
+  loading.value = true;
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/users/${userId}/bank-items/${bankId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${storeAuth.token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération des items de la banque");
+    }
+
+    const data = await response.json();
+    // data.items should be an array of items associated to the bank
+    associatedItemIds.value = Array.isArray(data.items)
+      ? data.items.map((i: any) => i.id)
+      : [];
+    // ensure associated items are checked in the selection
+    itemIds.value = Array.from(new Set([...itemIds.value, ...associatedItemIds.value]));
+  } catch (err) {
+    console.error(err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+watch(bankItemId, async (newVal) => {
+  if (!newVal) {
+    associatedItemIds.value = [];
+    itemIds.value = [];
+    return;
+  }
+
+  await getItemsForBank(newVal as number);
+});
 
 const addItemsToBank = async () => {
   loading.value = true;
@@ -159,10 +203,24 @@ const addItemsToBank = async () => {
                 type="checkbox"
                 :value="item.id"
                 v-model="itemIds"
-                :disabled="item.archived"
+                :disabled="item.archived || associatedItemIds.includes(item.id)"
                 class="checkbox"
               />
               <span class="row-label">{{ item.question }}</span>
+              <span
+                v-if="item.archived"
+                class="badge badge-archived"
+                title="Item archivé"
+              >
+                Archivé
+              </span>
+              <span
+                v-else-if="associatedItemIds.includes(item.id)"
+                class="badge badge-associated"
+                title="Item déjà dans la banque"
+              >
+                Déjà dans la banque
+              </span>
             </label>
           </div>
         </div>
@@ -333,6 +391,27 @@ const addItemsToBank = async () => {
   font-size: 1.95rem;
   color: #111827;
   line-height: 1.2;
+}
+
+.badge {
+  margin-left: 0.8rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  color: #374151;
+}
+
+.badge-archived {
+ background: #eef2ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+
+}
+
+.badge-associated {
+  background: #eef2ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
 }
 
 .radio,

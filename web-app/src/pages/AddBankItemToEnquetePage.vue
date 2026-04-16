@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import NavigationBar from "@/components/NavigationBar.vue";
 
@@ -31,8 +31,9 @@ const storeAuth = useAuthStore();
 const enquetes = ref<Enquete[]>([]);
 const userId = storeAuth.user?.id;
 const loading = ref(true);
-const bankItemIds = ref([]);
+const bankItemIds = ref<number[]>([]);
 const enqueteId = ref();
+const associatedBankItemIds = ref<number[]>([]);
 
 const isSelectAll = computed(() => {
   return enqueteId.value != null && bankItemIds.value.length > 0;
@@ -90,6 +91,46 @@ const loadData = async () => {
     loading.value = false;
   }
 };
+
+const getBanksForEnquete = async (id: number) => {
+  if (!id) return;
+  loading.value = true;
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/users/${userId}/enquetes/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${storeAuth.token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération des banques de l'enquête");
+    }
+
+    const data = await response.json();
+    associatedBankItemIds.value = Array.isArray(data.bank_items)
+      ? data.bank_items.map((b: any) => b.id)
+      : [];
+    bankItemIds.value = Array.from(new Set([...bankItemIds.value, ...associatedBankItemIds.value]));
+  } catch (err) {
+    console.error(err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+watch(enqueteId, async (newVal) => {
+  if (!newVal) {
+    associatedBankItemIds.value = [];
+    bankItemIds.value = [];
+    return;
+  }
+  await getBanksForEnquete(newVal as number);
+});
 
 /**
  * Ajoute des banques d'items à une enquête 
@@ -159,9 +200,16 @@ const addBankItemsToEnquete = async () => {
           <div v-if="bankItems.length === 0" class="empty">Pas de banques d'items</div>
           <div v-else class="rows">
             <label v-for="bankItem in bankItems" :key="bankItem.id" class="row-item">
-              
-              <input type="checkbox" :value="bankItem.id" v-model="bankItemIds" :disabled="bankItem.archived" class="checkbox" />
+              <input
+                type="checkbox"
+                :value="bankItem.id"
+                v-model="bankItemIds"
+                :disabled="bankItem.archived || associatedBankItemIds.includes(bankItem.id)"
+                class="checkbox"
+              />
               <span class="row-label">{{ bankItem.name }}</span>
+              <span v-if="bankItem.archived" class="badge badge-archived" title="Banque archivée">Archivé</span>
+              <span v-else-if="associatedBankItemIds.includes(bankItem.id)" class="badge badge-associated" title="Banque déjà dans l'enquête">Déjà dans l'enquête</span>
             </label>
           </div>
         </div>
@@ -327,6 +375,26 @@ const addBankItemsToEnquete = async () => {
   font-size: 1.95rem;
   color: #111827;
   line-height: 1.2;
+}
+
+.badge {
+  margin-left: 0.8rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  color: #374151;
+}
+
+.badge-archived {
+  background: #eef2ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+}
+
+.badge-associated {
+  background: #eef2ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
 }
 
 .radio,

@@ -20,6 +20,7 @@ import ModaliteItemPage from '@/pages/ModaliteItemPage.vue'
 import ItemAddPage from '@/pages/ItemAddPage.vue'
 import BankAddPage from '@/pages/BankAddPage.vue'
 import EnqueteStartPage from '@/pages/EnqueteStartPage.vue'
+import PublicSurveyPage from '@/pages/PublicSurveyPage.vue'
 
 const routes = [
   {
@@ -123,6 +124,7 @@ const routes = [
     component: MyBankItemsPage,
     meta: { requiresAuth: true }
   },
+  
   {
     path: '/my-items',
     name: 'my-items',
@@ -133,7 +135,13 @@ const routes = [
     path: '/enquete-start/:enqueteStartId',
     name: 'enquete-start',
     component: EnqueteStartPage,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/survey/:url(.*)',
+    name: 'public-survey',
+    component: PublicSurveyPage,
+    meta: { requiresAuth: false }
   },
   {
     path: '/my-account',
