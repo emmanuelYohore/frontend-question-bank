@@ -1,9 +1,10 @@
 <script lang="ts" setup>
+import PopupStartMessageEnquete from '@/modals/PopupStartMessageEnquete.vue';
+import PopupEndMessageEnquete from '@/modals/PopupEndMessageEnquete.vue';
 import { onMounted, ref, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const router = useRouter();
 
 // Extract URL from route parameter - supports both old route format and new survey URL format
 const enqueteUrl = computed(() => {
@@ -11,9 +12,7 @@ const enqueteUrl = computed(() => {
   if (route.params.url) {
     return (route.params.url as string).split('/').pop() || '';
   }
-  // Old route: /enquete-start/:enqueteStartId
-  const id = route.params.enqueteStartId as string;
-  return id ? id.split('/').pop() : '';
+ 
 });
 
 // Generate unique session ID
@@ -78,10 +77,15 @@ const error = ref<string | null>(null);
 const loading = ref(false);
 const submitting = ref(false);
 const success = ref(false);
+const showStartModal = ref(false);
+const showEndModal = ref(false);
+const sessionCreated = ref(false);
+const sessionId = ref<string>('');
 
 onMounted(() => {
-  const sessionId = sessionStorage.getItem('repondant_session_id') || generateSessionId();
-  sessionStorage.setItem('repondant_session_id', sessionId);
+  const sessionIdStored = sessionStorage.getItem('repondant_session_id') || generateSessionId();
+  sessionStorage.setItem('repondant_session_id', sessionIdStored);
+  sessionId.value = sessionIdStored;
   
   getEnqueteByUrl();
 });
@@ -109,8 +113,8 @@ const getEnqueteByUrl = async () => {
     enquete.value = data;
     bankItemsEnquete.value = data.bank_items || [];
 
-    // Create repondant session after fetching enquete
-    await createRepondantSession();
+    // Afficher le modal de démarrage
+    showStartModal.value = true;
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Une erreur est survenue lors du chargement de l\'enquête';
     console.error('Error:', err);
@@ -120,23 +124,20 @@ const getEnqueteByUrl = async () => {
 };
 
 /**
- * Create anonymous repondant session
+ * Create anonymous repondant session (called when user clicks "Commencer")
  */
 const createRepondantSession = async () => {
   if (!enquete.value?.id) return;
 
   try {
-    const sessionId = sessionStorage.getItem('repondant_session_id') || generateSessionId();
     const response = await fetch('http://localhost:8000/api/v1/repondants', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        session_id: sessionId,
+        session_id: sessionId.value,
         enquete_id: enquete.value.id,
-        ip_address: await getClientIp(),
-        user_agent: navigator.userAgent,
         started_at: new Date().toISOString(),
       }),
     });
@@ -150,36 +151,11 @@ const createRepondantSession = async () => {
     const data = await response.json();
     repondantId.value = data.repondant.id;
     sessionStorage.setItem('repondant_id', data.repondant.id);
+    sessionCreated.value = true;
   } catch (err) {
     console.error('Error creating repondant session:', err);
     error.value = 'Erreur lors de l\'initialisation de la session';
   }
-};
-
-/**
- * Get client IP address - simplified version
- */
-const getClientIp = async (): Promise<string> => {
-  // Try to get real IP from ipify (non-blocking, timeout after 2s)
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
-    
-    const response = await fetch('https://api.ipify.org?format=json', {
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    
-    if (response.ok) {
-      const data = await response.json();
-      return data.ip;
-    }
-  } catch {
-    // Timeout or error - use fallback
-  }
-  
-  // Fallback: use a placeholder
-  return 'anonymous';
 };
 
 /**
@@ -318,11 +294,8 @@ const submitResponses = async () => {
       console.warn('Warning: Could not mark repondant as completed');
     }
 
-    success.value = true;
-    setTimeout(() => {
-      sessionStorage.removeItem('repondant_session_id');
-      sessionStorage.removeItem('repondant_id');
-    }, 2000);
+    // Afficher le modal de fin
+    showEndModal.value = true;
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Une erreur est survenue lors de l\'envoi des réponses';
     console.error('Error:', err);
@@ -330,10 +303,56 @@ const submitResponses = async () => {
     submitting.value = false;
   }
 };
+
+/**
+ * Handle start survey button
+ */
+/**
+ * Handle start survey button - create session and show form
+ */
+const handleStartSurvey = async () => {
+  await createRepondantSession();
+  if (sessionCreated.value) {
+    showStartModal.value = false;
+  }
+};
+
+/**
+ * Handle start modal close
+ */
+const handleModalClose = () => {
+  showStartModal.value = false;
+};
+
+/**
+ * Handle end modal close - cleanup and redirect
+ */
+const handleEndModalClose = () => {
+  showEndModal.value = false;
+  sessionStorage.removeItem('repondant_session_id');
+  sessionStorage.removeItem('repondant_id');
+  // Optional: redirect to home
+  // router.push('/');
+};
 </script>
 
 <template>
   <div class="enquete-container">
+    <!-- Start Message Modal -->
+    <PopupStartMessageEnquete
+      :enquete="enquete"
+      :isOpen="showStartModal"
+      @start="handleStartSurvey"
+      @close="handleModalClose"
+    />
+
+    <!-- End Message Modal -->
+    <PopupEndMessageEnquete
+      :enquete="enquete"
+      :isOpen="showEndModal"
+      @close="handleEndModalClose"
+    />
+
     <!-- Loading State -->
     <div v-if="loading" class="loading">
       <p>Chargement de l'enquête...</p>
@@ -351,7 +370,7 @@ const submitResponses = async () => {
     </div>
 
     <!-- Survey Form -->
-    <div v-else-if="enquete" class="survey-form">
+    <div v-else-if="enquete && sessionCreated && !showStartModal && !showEndModal" class="survey-form">
       <!-- Header -->
       <div class="survey-header">
         <h1>{{ enquete.title }}</h1>

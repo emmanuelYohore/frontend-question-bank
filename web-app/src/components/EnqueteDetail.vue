@@ -225,9 +225,6 @@ const goToBanksPage = () => {
   router.push({ name: 'enquete-banks', params: { enqueteId } })
 }
 
-const goToEnqueteStart = () => {
-  router.push({ name: 'enquete-start', params: { enqueteStartId: enqueteId } })
-}
 
 onMounted(() => {
   getEnqueteDetail()
@@ -338,7 +335,6 @@ onMounted(() => {
           {{ enquete.archived ? 'Desarchiver' : 'Archiver' }}
         </button>
         <button @click="deleteEnquete" class="btn btn-delete">Supprimer</button>
-        <button @click="goToEnqueteStart" class="btn btn-start">Commencer l'enquête</button>
 
       </div>
     </section>
@@ -506,9 +502,7 @@ onMounted(() => {
   background: #ef4423;
 }
 
-.btn-start {
-  background: #16a34a;
-}
+
 
 @media (max-width: 900px) {
   .page-title {
