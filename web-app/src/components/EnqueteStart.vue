@@ -373,7 +373,7 @@ const handleEndModalClose = () => {
     <div v-else-if="enquete && sessionCreated && !showStartModal && !showEndModal" class="survey-form">
       <!-- Header -->
       <div class="survey-header">
-        <h1>{{ enquete.title }}</h1>
+        <h1>Enquête: {{ enquete.title }}</h1>
         <p class="description">{{ enquete.description }}</p>       
       </div>
 
@@ -481,10 +481,14 @@ const handleEndModalClose = () => {
   padding: 0;
   font-family: 'Arial', sans-serif;
 }
+
 .enquete-container {
-  max-width: 900px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
 }
 
 .loading,
@@ -518,53 +522,56 @@ const handleEndModalClose = () => {
   border: 1px solid #cfc;
 }
 
+.survey-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .survey-header {
-  margin-bottom: 40px;
+  padding: 30px 20px 20px;
   text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .survey-header h1 {
-  margin: 0 0 10px 0;
-  font-size: 28px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
   color: #333;
 }
 
 .description {
-  color: #666;
-  margin-bottom: 15px;
-  font-size: 16px;
-}
-
-.start-message {
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-left: 4px solid #007bff;
-  margin-top: 15px;
-  border-radius: 4px;
+  display: none;
 }
 
 .survey-content {
-  margin-bottom: 40px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  counter-reset: item-counter;
 }
 
 .bank-item-section {
-  margin-bottom: 30px;
+  margin-bottom: 0;
 }
 
 .bank-item-name {
-  font-size: 20px;
-  color: #444;
-  border-bottom: 2px solid #007bff;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
+  display: none;
 }
 
 .item-card {
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   padding: 20px;
+  margin-bottom: 15px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  counter-increment: item-counter;
+}
+
+.item-card:last-child {
   margin-bottom: 20px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
 }
 
 .item-header {
@@ -572,14 +579,19 @@ const handleEndModalClose = () => {
 }
 
 .question {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   color: #333;
 }
 
+.question::before {
+  content: counter(item-counter) ". ";
+  font-weight: 600;
+}
+
 .required {
   color: #d00;
-  margin-right: 5px;
+  margin-left: 3px;
 }
 
 .response-area {
@@ -588,7 +600,7 @@ const handleEndModalClose = () => {
 
 .text-input {
   width: 100%;
-  padding: 10px;
+  padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
@@ -670,23 +682,27 @@ const handleEndModalClose = () => {
 
 .submit-section {
   text-align: center;
-  margin-top: 30px;
+  padding: 20px;
+  flex-shrink: 0;
+  border-top: 1px solid #e0e0e0;
+  background-color: #fafafa;
 }
 
 .submit-btn {
-  padding: 12px 40px;
-  font-size: 16px;
-  font-weight: 600;
+  width: 150px;
+  padding: 12px 30px;
+  font-size: 15px;
+  font-weight: 500;
   color: white;
-  background-color: #007bff;
+  background-color: #5b8ee6;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .submit-btn:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #4a7fdb;
 }
 
 .submit-btn:disabled {
