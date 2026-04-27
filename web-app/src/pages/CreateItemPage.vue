@@ -26,6 +26,11 @@ const goBack = () => {
 </template>
 
 <style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
 .page-container {
   min-height: 100vh;
   background-color: #f5f5f5;

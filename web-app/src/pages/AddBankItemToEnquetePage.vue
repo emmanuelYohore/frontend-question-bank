@@ -225,6 +225,11 @@ const addBankItemsToEnquete = async () => {
 </template>
 
 <style scoped>
+* {
+   font-family: 'Arial', sans-serif;
+   font-size: 14px;
+}
+
 .hidden-nav {
   display: none;
 }
@@ -249,7 +254,7 @@ const addBankItemsToEnquete = async () => {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 14px;
   color: #1f2937;
   padding: 0;
   white-space: nowrap;
@@ -263,12 +268,12 @@ const addBankItemsToEnquete = async () => {
   height: 2.5rem;
   border: 2px solid #1f2937;
   border-radius: 50%;
-  font-size: 1.2rem;
+  font-size: 14px;
 }
 
 .page-title {
   flex: 1;
-  font-size: 2.1rem;
+  font-size: 14px;
   font-weight: 700;
   color: #111827;
   text-align: center;
@@ -299,7 +304,7 @@ const addBankItemsToEnquete = async () => {
 }
 
 .col-title {
-  font-size: 2.35rem;
+  font-size: 14px;
   font-weight: 700;
   color: #111827;
   margin: 0 0 1rem 0;
@@ -320,7 +325,7 @@ const addBankItemsToEnquete = async () => {
   align-items: center;
   justify-content: center;
   color: #111827;
-  font-size: 2.2rem;
+  font-size: 14px;
   margin-bottom: 1.1rem;
   background: #f7f7f7;
 }
@@ -354,7 +359,7 @@ const addBankItemsToEnquete = async () => {
 
 .empty {
   color: #6c757d;
-  font-size: 1rem;
+  font-size: 14px;
 }
 
 .rows {
@@ -372,7 +377,7 @@ const addBankItemsToEnquete = async () => {
 }
 
 .row-label {
-  font-size: 1.95rem;
+  font-size: 14px;
   color: #111827;
   line-height: 1.2;
 }
@@ -381,7 +386,7 @@ const addBankItemsToEnquete = async () => {
   margin-left: 0.8rem;
   padding: 0.15rem 0.45rem;
   border-radius: 8px;
-  font-size: 1.05rem;
+  font-size: 14px;
   color: #374151;
 }
 
@@ -419,7 +424,7 @@ const addBankItemsToEnquete = async () => {
   color: #fff;
   border: none;
   border-radius: 12px;
-  font-size: 1.35rem;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -439,7 +444,7 @@ const addBankItemsToEnquete = async () => {
   .col-title,
   .select-label,
   .row-label {
-    font-size: clamp(1.1rem, 2.3vw, 1.9rem);
+    font-size: 14px;
   }
 
   .two-col {

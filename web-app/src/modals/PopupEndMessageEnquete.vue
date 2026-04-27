@@ -42,6 +42,11 @@ const handleClose = () => {
 </template>
 
 <style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
 .modal-overlay {
   position: fixed;
   top: 0;

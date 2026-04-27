@@ -374,10 +374,7 @@ const handleEndModalClose = () => {
       <!-- Header -->
       <div class="survey-header">
         <h1>{{ enquete.title }}</h1>
-        <p class="description">{{ enquete.description }}</p>
-        <div v-if="enquete.start_message" class="start-message">
-          {{ enquete.start_message }}
-        </div>
+        <p class="description">{{ enquete.description }}</p>       
       </div>
 
       <!-- Bank Items and Questions -->
@@ -478,6 +475,12 @@ const handleEndModalClose = () => {
 </template>
 
 <style scoped>
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+}
 .enquete-container {
   max-width: 900px;
   margin: 0 auto;
