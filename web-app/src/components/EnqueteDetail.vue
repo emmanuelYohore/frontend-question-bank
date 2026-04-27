@@ -230,6 +230,66 @@ const copyClipboard = async (copyText: string ) => {
   alert("texte copié");
 }
 
+// Export des réponses en CSV
+const exportResponsesCSV = async () => {
+  if (!enqueteId) return
+
+  try {
+    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}/reponses`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${storeAuth.token}`,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des réponses')
+    }
+
+    const data = await response.json()
+    const reponses = Array.isArray(data) ? data : data.reponses || []
+
+    // Créer le CSV
+    if (reponses.length === 0) {
+      alert('Aucune réponse à exporter')
+      return
+    }
+
+    // Extraire les headers
+    const headers = Object.keys(reponses[0])
+    const csv = [
+      headers.join(','),
+      ...reponses.map((row: { [x: string]: any }) => 
+        headers.map(header => {
+          const value = row[header]
+          // Échapper les guillemets et les valeurs contenant des virgules
+          if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+            return `"${value.replace(/"/g, '""')}"`
+          }
+          return value || ''
+        }).join(',')
+      )
+    ].join('\n')
+
+    // Créer un blob et télécharger
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    
+    link.setAttribute('href', url)
+    link.setAttribute('download', `reponses-enquete-${enquete.value?.title || enqueteId}.csv`)
+    link.style.visibility = 'hidden'
+    
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  } catch (err) {
+    console.error('Error:', err)
+    alert('Erreur lors de l\'export des réponses')
+  }
+}
+
 onMounted(() => {
   getEnqueteDetail()
 })
@@ -357,6 +417,7 @@ onMounted(() => {
 
       <div class="actions-row">
         <button @click="goToBanksPage" class="btn btn-banks">Voir les banques ajoutes</button>
+        <button @click="exportResponsesCSV" class="btn btn-export">Exporter les réponses en CSV</button>
       </div>
 
       <div class="actions-row">
@@ -520,7 +581,6 @@ onMounted(() => {
 }
 
 .btn {
-  width: 210px;
   border: none;
   border-radius: 8px;
   padding: 0.6rem 1rem;
@@ -540,6 +600,14 @@ onMounted(() => {
 
 .btn-delete {
   background: #ef4423;
+}
+
+.btn-export {
+  background: #6366f1;
+}
+
+.btn-export:hover {
+  background: #4f46e5;
 }
 
 

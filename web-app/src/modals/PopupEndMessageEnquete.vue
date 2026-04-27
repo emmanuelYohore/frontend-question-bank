@@ -30,7 +30,7 @@ const handleClose = () => {
   <div v-if="isOpen" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-body">
-        <h2 class="modal-title">{{ enquete?.title }}</h2>
+        <h2 class="modal-title">Enquête : {{ enquete?.title }}</h2>
         
         <div v-if="enquete?.end_message" class="modal-message" v-html="enquete.end_message"></div>
 
