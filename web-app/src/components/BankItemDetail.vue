@@ -226,6 +226,12 @@ onMounted(() => {
    padding: 0;
    font-family: 'Arial', sans-serif;
  }
+
+ .edit-icon {
+  width: 1.9rem;
+  height: 1.9rem;
+}
+
 .detail-page {
   max-width: 1100px;
   margin: 1.5rem auto;

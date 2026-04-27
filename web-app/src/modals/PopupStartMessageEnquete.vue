@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+
 interface Enquete {
   id?: number;
   title: string;
@@ -25,22 +26,16 @@ const handleStart = () => {
   emit('start');
 };
 
-// const handleClose = () => {
-//   emit('close');
-// };
 </script>
 
 <template>
   <div v-if="isOpen" class="modal-overlay">
     <div class="modal-content">
-      <!-- <div class="modal-close">
-        <button @click="handleClose" class="close-btn">&times;</button>
-      </div> -->
 
       <div class="modal-body">
-        <h2 class="modal-title">{{ enquete?.title }}</h2>
+        <h2 class="modal-title">Enquete : {{ enquete?.title }}</h2>
         
-        <p class="modal-description">{{ enquete?.description }}</p>
+        <p class="modal-description">Description : {{ enquete?.description }}</p>
 
         <div v-if="enquete?.start_message" class="modal-message" v-html="enquete.start_message"></div>
 
@@ -56,7 +51,7 @@ const handleStart = () => {
 * {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Arial', sans-serif;
 }
 
 .modal-overlay {
@@ -65,21 +60,20 @@ const handleStart = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  backdrop-filter: blur(2px);
 }
 
 .modal-content {
   background-color: white;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 0;
-  max-width: 600px;
+  max-width: 700px;
   width: 90%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   animation: slideIn 0.3s ease-out;
 }
@@ -95,59 +89,34 @@ const handleStart = () => {
   }
 }
 
-.modal-close {
-  display: flex;
-  justify-content: flex-end;
-  padding: 15px 20px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 32px;
-  color: #999;
-  cursor: pointer;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s;
-}
-
-.close-btn:hover {
-  color: #333;
-}
-
 .modal-body {
-  padding: 40px 30px;
+  padding: 50px 50px;
   text-align: center;
 }
 
 .modal-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 15px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 30px 0;
 }
 
 .modal-description {
-  font-size: 14px;
-  color: #666;
-  margin: 0 0 25px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 20px 0;
   line-height: 1.5;
 }
 
 .modal-message {
-  background-color: #f9f9f9;
-  border-left: 4px solid #007bff;
-  padding: 20px;
-  border-radius: 4px;
-  margin: 25px 0;
-  text-align: left;
-  font-size: 14px;
+  background-color: transparent;
+  border: none;
+  padding: 0 0 30px 0;
+  border-radius: 0;
+  margin: 0 0 30px 0;
+  text-align: center;
+  font-size: 15px;
   color: #555;
   line-height: 1.6;
 }
@@ -165,12 +134,12 @@ const handleStart = () => {
 }
 
 .btn-start {
-  background-color: #007bff;
+  background-color: #5b8ee6;
   color: white;
   border: none;
-  padding: 14px 40px;
-  font-size: 16px;
-  font-weight: 600;
+  padding: 14px 60px;
+  font-size: 15px;
+  font-weight: 500;
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
@@ -178,7 +147,7 @@ const handleStart = () => {
 }
 
 .btn-start:hover {
-  background-color: #0056b3;
+  background-color: #4a7fdb;
   transform: translateY(-2px);
 }
 
@@ -192,11 +161,15 @@ const handleStart = () => {
   }
 
   .modal-body {
-    padding: 30px 20px;
+    padding: 40px 25px;
   }
 
   .modal-title {
-    font-size: 20px;
+    font-size: 18px;
+  }
+
+  .modal-description {
+    font-size: 14px;
   }
 }
 </style>

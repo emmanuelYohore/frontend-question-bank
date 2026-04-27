@@ -40,12 +40,12 @@ const logout = async () => {
  <template>
    <nav class="navbar">
      <div class="navbar-container">
-      <div class="logo-section">
+      <div class="logo-section" @click="router.push('/home')">
         <div class="logo">
           <img src="../assets/img/logo.png" alt="Logo" />
         </div>
-        <h1 class="app-title">ENQUETE APP</h1>
-       </div>
+        <h1 class="app-title" >ENQUETE APP</h1>
+      </div>
       
        <ul class="nav-links">
         <li>
@@ -100,19 +100,23 @@ const logout = async () => {
   display: flex;
   align-items: center;
   gap: 1rem;
+  cursor: pointer;
+
 }
 
 .logo img {
   height: 50px;
   width: auto;
+
 }
 
 .app-title {
-  font-family: 'Kufam', sans-serif;
+  font-family: 'Arial', sans-serif;
   font-size: 1.25rem;
   font-weight: bold;
   color: #000;
   margin: 0;
+
 }
 
 .nav-links {

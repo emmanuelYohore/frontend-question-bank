@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   currentDescription: string
@@ -11,6 +11,7 @@ const emit = defineEmits<{
 }>()
 
 const newDescription = ref(props.currentDescription)
+const descriptionLength = computed(() => newDescription.value.length);
 
 const handleConfirm = () => {
   if (!newDescription.value.trim()) return
@@ -22,15 +23,16 @@ const handleConfirm = () => {
   <div class="overlay" @click.self="emit('cancel')">
     <div class="modal">
       <h3>Modifier la description</h3>
-
-      <input
+      <textarea 
         v-model="newDescription"
         type="text"
         placeholder="Nouvelle description..."
         @keyup.enter="handleConfirm"
         @keydown.escape="emit('cancel')"
         autofocus
-      />
+        maxlength="800">
+      </textarea>
+          <p class="char-count">{{ descriptionLength }}/800</p>
 
       <div class="actions">
         <button class="btn-cancel" @click="emit('cancel')">Annuler</button>
@@ -45,6 +47,16 @@ const handleConfirm = () => {
   margin: 0;
   padding: 0;
   font-family: 'Inter', sans-serif;
+}
+textarea {
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  resize: none;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .overlay {
   position: fixed;

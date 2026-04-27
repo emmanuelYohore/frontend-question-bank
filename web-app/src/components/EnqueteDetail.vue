@@ -225,6 +225,10 @@ const goToBanksPage = () => {
   router.push({ name: 'enquete-banks', params: { enqueteId } })
 }
 
+const copyClipboard = async (copyText: string ) => {
+  navigator.clipboard.writeText(copyText);
+  alert("texte copié");
+}
 
 onMounted(() => {
   getEnqueteDetail()
@@ -279,12 +283,19 @@ onMounted(() => {
           <div class="detail-line">
             <span class="label">Lien de l'enquête :</span>
             <span class="value">{{ enquete.url_enquete }}</span>
+            <button @click="copyClipboard(enquete.url_enquete || '')" class="btn-copy">Copier</button>
           </div>
         </div>
 
         <div class="edit-column">
           <div class="edit-placeholder">
-            <button @click="showTitleModal = true">✏️ Modifier</button>
+            <button @click="showTitleModal = true">
+              <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>Modifier</span>
+            </button>
               <PopupUpdateTitleEnquete
                 v-if="showTitleModal"
                 :currentTitle="enquete.title || ''"
@@ -294,7 +305,13 @@ onMounted(() => {
       
           </div>
           <div class="edit-placeholder">
-            <button @click="showDescriptionModal = true">✏️ Modifier</button>
+            <button @click="showDescriptionModal = true">
+              <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>Modifier</span>
+            </button>
                       <PopupUpdateDescriptionEnquete
                         v-if="showDescriptionModal"
                         :currentDescription="enquete.description || ''"
@@ -304,7 +321,13 @@ onMounted(() => {
       
           </div>
           <div class="edit-placeholder">
-            <button @click="showStartMessageModal = true">✏️ Modifier</button>
+            <button @click="showStartMessageModal = true">
+              <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>Modifier</span>
+            </button>
                       <PopupUpdateStartMessageEnquete
                         v-if="showStartMessageModal"
                         :currentStartMessage="enquete.start_message || ''"
@@ -314,7 +337,13 @@ onMounted(() => {
             
           </div>
           <div class="edit-placeholder">
-            <button @click="showEndMessageModal = true">✏️ Modifier</button>
+            <button @click="showEndMessageModal = true">
+              <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>Modifier</span>
+            </button>
                       <PopupUpdateEndMessageEnquete
                         v-if="showEndMessageModal"
                         :currentEndMessage="enquete.end_message || ''"
@@ -348,6 +377,17 @@ onMounted(() => {
   font-family: 'Arial', sans-serif;
 }
 
+.edit-icon {
+  width: 1.9rem;
+  height: 1.9rem;
+}
+
+.btn-copy{
+  background-color: #EEC05D;
+  padding: 1%;
+  border-radius: 15px;
+  cursor: pointer;
+}
 .detail-page {
   max-width: 1100px;
   margin: 1.5rem auto;

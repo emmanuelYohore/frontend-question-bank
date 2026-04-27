@@ -229,7 +229,13 @@ onMounted(() => {
           <div class="info-group">
             <label>Question :</label>
             <span>{{ item.question }}</span>
-            <button @click="showModal = true">✏️ Modifier</button>
+            <button @click="showModal = true">
+            <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>Modifier</span>
+            </button>
 
     <PopupUpdateItem
       v-if="showModal"
@@ -279,6 +285,11 @@ onMounted(() => {
   margin: 0;
   padding: 0;
   font-family: 'Arial', sans-serif;
+}
+
+.edit-icon {
+  width: 1.9rem;
+  height: 1.9rem;
 }
 
 .bank-item-detail {

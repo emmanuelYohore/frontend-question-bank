@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   currentEndMessage: string
@@ -11,6 +11,7 @@ const emit = defineEmits<{
 }>()
 
 const newEndMessage = ref(props.currentEndMessage)
+const endMessageLength = computed(() => newEndMessage.value.length);
 
 const handleConfirm = () => {
   if (!newEndMessage.value.trim()) return
@@ -23,14 +24,16 @@ const handleConfirm = () => {
     <div class="modal">
       <h3>Modifier le message de fin</h3>
 
-      <input
+      <textarea 
         v-model="newEndMessage"
         type="text"
         placeholder="Nouveau message de fin..."
         @keyup.enter="handleConfirm"
         @keydown.escape="emit('cancel')"
         autofocus
-      />
+        maxlength="800">
+      </textarea>
+          <p class="char-count">{{ endMessageLength }}/800</p>
 
       <div class="actions">
         <button class="btn-cancel" @click="emit('cancel')">Annuler</button>
@@ -45,6 +48,17 @@ const handleConfirm = () => {
   margin: 0;
   padding: 0;
   font-family: 'Inter', sans-serif;
+}
+
+textarea {
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  resize: none;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .overlay {
   position: fixed;

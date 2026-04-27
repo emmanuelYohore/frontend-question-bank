@@ -100,7 +100,7 @@ const confirmPopupEmail = async ( newEmail: string ) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
   if (!emailRegex.test(email)) {
-    alert('Veuillez entrer un email valide.')
+    alert('Veuillez entrer un email valide. Exemple : user@gmail.com')
     return
   }
   loading.value = true

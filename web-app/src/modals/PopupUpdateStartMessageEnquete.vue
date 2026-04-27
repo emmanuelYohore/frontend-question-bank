@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   currentStartMessage: string
@@ -11,7 +11,7 @@ const emit = defineEmits<{
 }>()
 
 const newStartMessage = ref(props.currentStartMessage)
-
+const startMessageLength = computed(() => newStartMessage.value.length)
 const handleConfirm = () => {
   if (!newStartMessage.value.trim()) return
   emit('confirm', newStartMessage.value.trim())
@@ -23,14 +23,16 @@ const handleConfirm = () => {
     <div class="modal">
       <h3>Modifier le message de début</h3>
 
-      <input
+      <textarea 
         v-model="newStartMessage"
         type="text"
         placeholder="Nouveau message de début..."
         @keyup.enter="handleConfirm"
         @keydown.escape="emit('cancel')"
         autofocus
-      />
+        maxlength="800">
+      </textarea>
+          <p class="char-count">{{ startMessageLength }}/800</p>
 
       <div class="actions">
         <button class="btn-cancel" @click="emit('cancel')">Annuler</button>
@@ -46,6 +48,18 @@ const handleConfirm = () => {
   padding: 0;
   font-family: 'Inter', sans-serif;
 }
+
+textarea {
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  resize: none;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .overlay {
   position: fixed;
   top: 0;

@@ -331,8 +331,6 @@ const handleEndModalClose = () => {
   showEndModal.value = false;
   sessionStorage.removeItem('repondant_session_id');
   sessionStorage.removeItem('repondant_id');
-  // Optional: redirect to home
-  // router.push('/');
 };
 </script>
 
