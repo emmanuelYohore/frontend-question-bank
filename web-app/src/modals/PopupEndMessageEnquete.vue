@@ -22,6 +22,7 @@ const emit = defineEmits<{
 
 const handleClose = () => {
   emit('close');
+  window.location.href = 'https://www.google.com';
 };
 </script>
 

@@ -25,17 +25,17 @@ const handleStart = () => {
   emit('start');
 };
 
-const handleClose = () => {
-  emit('close');
-};
+// const handleClose = () => {
+//   emit('close');
+// };
 </script>
 
 <template>
   <div v-if="isOpen" class="modal-overlay">
     <div class="modal-content">
-      <div class="modal-close">
+      <!-- <div class="modal-close">
         <button @click="handleClose" class="close-btn">&times;</button>
-      </div>
+      </div> -->
 
       <div class="modal-body">
         <h2 class="modal-title">{{ enquete?.title }}</h2>
