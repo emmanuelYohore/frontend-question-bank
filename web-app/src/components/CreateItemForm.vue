@@ -9,13 +9,13 @@ const authStore = useAuthStore();
 
 //interface pour le format de réponse
 interface FormatReponse {
-  id?: number 
+  id?: string 
   type: string
 }
 
 //interface pour les modalités de réponse
 interface ModaliteReponse {
-  id?: number
+  id?: string
   intitule?: string | null
   v1?: string | null
   v2?: string | null
@@ -24,7 +24,7 @@ interface ModaliteReponse {
 
 //interface pour l'item
 interface Item {
-  id?: number
+  id?: string
   question: string
   obligatoire : boolean
   format_reponse?: FormatReponse | null

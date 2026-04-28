@@ -21,12 +21,12 @@ const generateSessionId = (): string => {
 };
 
 interface FormatReponse {
-  id?: number;
+  id?: string;
   type: string;
 }
 
 interface ModaliteReponse {
-  id?: number;
+  id?: string;
   intitule?: string | null;
   v1?: string | null;
   v2?: string | null;
@@ -34,7 +34,7 @@ interface ModaliteReponse {
 }
 
 interface Item {
-  id?: number;
+  id?: string;
   question: string;
   obligatoire: boolean;
   format_reponse?: FormatReponse | null;
@@ -42,14 +42,14 @@ interface Item {
 }
 
 interface BankItem {
-  id: number;
+  id: string;
   name: string;
   archived: boolean;
   items?: Item[];
 }
 
 interface Enquete {
-  id?: number;
+  id?: string;
   title: string;
   description: string;
   start_message: string;
@@ -60,9 +60,9 @@ interface Enquete {
 }
 
 interface Response {
-  [itemId: number]: {
-    modaliteReponseId?: number;
-    modaliteReponseIds?: number[];
+  [itemId: string]: {
+    modaliteReponseId?: string;
+    modaliteReponseIds?: string[];
     valeurTexte?: string;
     valeurEvn?: string;
     [key: string]: any;
@@ -72,7 +72,7 @@ interface Response {
 const enquete = ref<Enquete | null>(null);
 const bankItemsEnquete = ref<BankItem[]>([]);
 const responses = ref<Response>({});
-const repondantId = ref<number | null>(null);
+const repondantId = ref<string | null>(null);
 const error = ref<string | null>(null);
 const loading = ref(false);
 const submitting = ref(false);
@@ -161,7 +161,7 @@ const createRepondantSession = async () => {
 /**
  * Update response value
  */
-const updateResponse = (itemId: number, fieldName: string, value: any, isQcm: boolean = false) => {
+const updateResponse = (itemId: string, fieldName: string, value: any, isQcm: boolean = false) => {
   if (!responses.value[itemId]) {
     responses.value[itemId] = {};
   }
@@ -172,7 +172,7 @@ const updateResponse = (itemId: number, fieldName: string, value: any, isQcm: bo
     }
     
     const ids = responses.value[itemId].modaliteReponseIds!;
-    const modaliteId: number = value.id;
+    const modaliteId: string = value.id;
     const isChecked: boolean = value.checked;
     
     if (isChecked) {

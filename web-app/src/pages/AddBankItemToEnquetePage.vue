@@ -11,14 +11,14 @@ onMounted(async () => {
 });
 
 interface BankItem {
-  id: number;
-  user_id: number;
+  id: string;
+  user_id: string;
   name: string;
   archived: boolean;
 }
 
 interface Enquete {
-  id?: number;
+  id?: string;
   title: string;
   description: string;
   start_message: string;
@@ -31,9 +31,9 @@ const storeAuth = useAuthStore();
 const enquetes = ref<Enquete[]>([]);
 const userId = storeAuth.user?.id;
 const loading = ref(true);
-const bankItemIds = ref<number[]>([]);
+const bankItemIds = ref<string[]>([]);
 const enqueteId = ref();
-const associatedBankItemIds = ref<number[]>([]);
+const associatedBankItemIds = ref<string[]>([]);
 
 const isSelectAll = computed(() => {
   return enqueteId.value != null && bankItemIds.value.length > 0;
@@ -92,7 +92,7 @@ const loadData = async () => {
   }
 };
 
-const getBanksForEnquete = async (id: number) => {
+const getBanksForEnquete = async (id: string) => {
   if (!id) return;
   loading.value = true;
   try {
@@ -129,7 +129,7 @@ watch(enqueteId, async (newVal) => {
     bankItemIds.value = [];
     return;
   }
-  await getBanksForEnquete(newVal as number);
+  await getBanksForEnquete(newVal as string);
 });
 
 /**

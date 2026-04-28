@@ -10,7 +10,7 @@ const storeAuth = useAuthStore()
 
 
 export interface BankItem {
-  id: number
+  id: string
   name: string
   archived: boolean
  

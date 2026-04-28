@@ -11,14 +11,14 @@ onMounted(async () => {
 });
 
 interface BankItem {
-  id: number;
-  user_id: number;
+  id: string;
+  user_id: string;
   name: string;
   archived: boolean;
 }
 
 interface Item {
-  id: number;
+  id: string;
   question: string;
   obligatoire: boolean;
   archived: boolean;
@@ -30,9 +30,9 @@ const storeAuth = useAuthStore();
 const bankItems = ref<BankItem[]>([]);
 const userId = storeAuth.user?.id;
 const loading = ref(true);
-const itemIds = ref<number[]>([]);
+const itemIds = ref<string[]>([]);
 const bankItemId = ref();
-const associatedItemIds = ref<number[]>([]);
+const associatedItemIds = ref<string[]>([]);
 
 const isSelectAll = computed(() => {
   return bankItemId.value !== null && itemIds.value.length > 0;
@@ -85,7 +85,7 @@ const loadData = async () => {
   }
 };
 
-const getItemsForBank = async (bankId: number) => {
+const getItemsForBank = async (bankId: string) => {
   if (!bankId) return;
   loading.value = true;
   try {
@@ -125,7 +125,7 @@ watch(bankItemId, async (newVal) => {
     return;
   }
 
-  await getItemsForBank(newVal as number);
+  await getItemsForBank(newVal as string);
 });
 
 const addItemsToBank = async () => {

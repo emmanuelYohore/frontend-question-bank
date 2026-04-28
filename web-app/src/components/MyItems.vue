@@ -11,7 +11,7 @@ onMounted(() => {
 })
 
 interface Item {
-  id: number
+  id: string
   question: string
   obligatoire: boolean
   archived: boolean

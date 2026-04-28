@@ -11,12 +11,12 @@ const router = useRouter()
 const storeAuth = useAuthStore()
 
 interface FormatReponse {
-  id?: number 
+  id?: string 
   type: string
 }
 
 interface ModaliteReponse {
-  id: number
+  id: string
   intitule?: string | null
   v1?: string | null
   v2?: string | null
@@ -24,7 +24,7 @@ interface ModaliteReponse {
 }
 
 interface Item {
-  id?: number
+  id?: string
   question: string
   obligatoire: boolean
   format_reponse?: FormatReponse | null
@@ -166,7 +166,7 @@ const getModalites = async () => {
   }
 }
 
-const removeModalite = async (modaliteId: number) => {
+const removeModalite = async (modaliteId: string) => {
   if (!confirm("Etes-vous sur de vouloir supprimer cette modalité ?")) {
     return
   }

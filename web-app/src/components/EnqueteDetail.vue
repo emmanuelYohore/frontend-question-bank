@@ -13,7 +13,7 @@ const router = useRouter()
 const storeAuth = useAuthStore()
 
 interface Enquete {
-  id?: number;
+  id?: string;
   title: string;
   description: string;
   start_message: string;

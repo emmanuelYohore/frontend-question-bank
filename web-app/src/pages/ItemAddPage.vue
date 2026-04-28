@@ -6,7 +6,7 @@ import { VueDraggableNext as draggable } from 'vue-draggable-next'
 
 
 interface Item {
-	id: number
+	id: string
 	question: string
 }
 
@@ -54,7 +54,7 @@ const getItemsAssociatedToBanks = async () => {
 /**
  * Supprime l'association d'un item à la banque
  */
-const removeItemFromBank = async (itemId: number) => {
+const removeItemFromBank = async (itemId: string) => {
 	if (!confirm("Etes-vous sur de vouloir supprimer l'item de cette banque ?")) {
 		return
 	}

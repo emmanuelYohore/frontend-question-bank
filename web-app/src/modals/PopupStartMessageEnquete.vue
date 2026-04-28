@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
 interface Enquete {
-  id?: number;
+  id?: string;
   title: string;
   description: string;
   start_message: string;

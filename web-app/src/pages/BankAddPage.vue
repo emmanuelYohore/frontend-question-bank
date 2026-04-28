@@ -5,7 +5,7 @@ import { onMounted, ref } from 'vue'
 import { VueDraggableNext as draggable } from 'vue-draggable-next'
 
 interface BankItem {
-	id: number
+	id: string
 	name: string
 }
 
@@ -49,7 +49,7 @@ const getBanksAssociatedToEnquete = async () => {
 }
 
 // Supprime une banque de l'enquête
-const removeBankFromEnquete = async (bankItemId: number) => {
+const removeBankFromEnquete = async (bankItemId: string) => {
 	if (!confirm("Etes-vous sur de vouloir supprimer la banque de cette enquete ?")) {
 		return
 	}
