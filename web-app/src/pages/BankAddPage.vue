@@ -15,8 +15,11 @@ const storeAuth = useAuthStore()
 
 const enqueteId = route.params.enqueteId
 const bankItems = ref<BankItem[]>([])
+const originalBankItems = ref<BankItem[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
+const hasChanged = ref(false)
+const isSaving = ref(false)
 
 // Récupère les banques associées à l'enquête
 const getBanksAssociatedToEnquete = async () => {
@@ -41,6 +44,8 @@ const getBanksAssociatedToEnquete = async () => {
 
 		const data = await response.json()
 		bankItems.value = data.bank_items
+		originalBankItems.value = JSON.parse(JSON.stringify(data.bank_items))
+		hasChanged.value = false
 	} catch (err) {
 		error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
 	} finally {
@@ -79,7 +84,7 @@ const removeBankFromEnquete = async (bankItemId: string) => {
 }
 
 const saveBankItemsOrder = async () => {
-	loading.value = true
+	isSaving.value = true
 	error.value = null
 
 	try {
@@ -102,15 +107,20 @@ const saveBankItemsOrder = async () => {
 			throw new Error(errData?.error || 'Erreur lors de la sauvegarde de l\'ordre des banques')
 		}
 
-		await getBanksAssociatedToEnquete()
+		originalBankItems.value = JSON.parse(JSON.stringify(bankItems.value))
+		hasChanged.value = false
 		alert('Ordre sauvegardé avec succès')
 	} catch (err) {
 		error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
 		console.error(err)
 		alert(error.value)
 	} finally {
-		loading.value = false
+		isSaving.value = false
 	}
+}
+
+const onDragEnd = () => {
+	hasChanged.value = true
 }
 
 const goBack = () => {
@@ -138,7 +148,7 @@ onMounted(async() => {
 
 		<ul v-else class="banks-list">
 
-				<draggable v-model="bankItems" :animation="150" item-key="id" @end="saveBankItemsOrder">
+				<draggable v-model="bankItems" :animation="150" item-key="id" @end="onDragEnd">
 			<li v-for="bank in bankItems" :key="bank.id" class="bank-row">
 				<span class="bank-text">
 					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <rect width="24" height="24" fill="white"></rect> <circle cx="9.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> </g></svg>
@@ -156,6 +166,12 @@ onMounted(async() => {
 			</li>
 		</draggable>
 		</ul>
+
+		<div v-if="hasChanged" class="action-buttons">
+			<button class="confirm-btn" @click="saveBankItemsOrder" :disabled="isSaving">
+				{{ isSaving ? 'Enregistrement...' : 'Confirmer' }}
+			</button>
+		</div>
 	</div>
 </template>
 
@@ -249,6 +265,35 @@ onMounted(async() => {
 	width: 1.8rem;
 	height: 1.8rem;
 	color: #ef4423;
+}
+
+.action-buttons {
+	display: flex;
+	justify-content: center;
+	margin-top: 2rem;
+	gap: 1rem;
+}
+
+.confirm-btn {
+	padding: 0.75rem 2rem;
+	background-color: #10b981;
+	color: white;
+	border: none;
+	border-radius: 0.375rem;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.confirm-btn:hover:not(:disabled) {
+	background-color: #059669;
+}
+
+.confirm-btn:disabled {
+	background-color: #9ca3af;
+	cursor: not-allowed;
+	opacity: 0.6;
 }
 
 @media (max-width: 900px) {

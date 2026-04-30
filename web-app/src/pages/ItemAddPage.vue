@@ -16,8 +16,11 @@ const storeAuth = useAuthStore()
 
 const bankItemId = route.params.bankItemId
 const items = ref<Item[]>([])
+const originalItems = ref<Item[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
+const hasChanged = ref(false)
+const isSaving = ref(false)
 
 /**
  * Récupère les items associés à la banque pour un userId
@@ -44,6 +47,8 @@ const getItemsAssociatedToBanks = async () => {
 
 		const data = await response.json()
 		items.value = data.items
+		originalItems.value = JSON.parse(JSON.stringify(data.items))
+		hasChanged.value = false
 	} catch (err) {
 		error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
 	} finally {
@@ -84,7 +89,8 @@ const removeItemFromBank = async (itemId: string) => {
 }
 
 const saveItemsOrder = async () => {
-	loading.value = true
+	isSaving.value = true
+	error.value = null
 
 	try {
 		const response = await fetch(
@@ -104,12 +110,21 @@ const saveItemsOrder = async () => {
 		if (!response.ok) {
 			throw new Error('Erreur lors de la mise à jour de l\'ordre des items')
 		}
+
+		originalItems.value = JSON.parse(JSON.stringify(items.value))
+		hasChanged.value = false
+		alert('Ordre sauvegardé avec succès')
 	} catch (err) {
-		console.error('Error:', err)
-		alert('Impossible de mettre à jour l\'ordre des items')
+		error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
+		console.error(err)
+		alert(error.value)
 	} finally {
-		loading.value = false
+		isSaving.value = false
 	}
+}
+
+const onDragEnd = () => {
+	hasChanged.value = true
 }
 
 const goBack = () => {
@@ -135,7 +150,7 @@ onMounted(async() => {
 		<div v-else-if="error" class="error">{{ error }}</div>
         <div v-else-if="items.length === 0" class="error">Aucun item ajouté à cette banque</div>
 		<ul v-else class="items-list">
-		<draggable v-model="items" :animation="150" item-key="id" @end="saveItemsOrder">
+		<draggable v-model="items" :animation="150" item-key="id" @end="onDragEnd">
 			<li v-for="item in items" :key="item.id" class="item-row">
 				<span class="item-text">{{ item.question }}</span>
 				<button class="icon-btn" @click="removeItemFromBank(item.id)" title="Supprimer">
@@ -150,6 +165,12 @@ onMounted(async() => {
 			</li>
 		</draggable>	
 		</ul>
+
+		<div v-if="hasChanged" class="action-buttons">
+			<button class="confirm-btn" @click="saveItemsOrder" :disabled="isSaving">
+				{{ isSaving ? 'Enregistrement...' : 'Confirmer' }}
+			</button>
+		</div>
 	</div>
 </template>
 
@@ -230,6 +251,7 @@ onMounted(async() => {
 .item-text {
 	color: #111827;
 	font-size: 1.05rem;
+	cursor: move;
 }
 
 .icon-btn {
@@ -243,6 +265,35 @@ onMounted(async() => {
 	width: 1.2rem;
 	height: 1.2rem;
 	color: #ef4423;
+}
+
+.action-buttons {
+	display: flex;
+	justify-content: center;
+	margin-top: 2rem;
+	gap: 1rem;
+}
+
+.confirm-btn {
+	padding: 0.75rem 2rem;
+	background-color: #10b981;
+	color: white;
+	border: none;
+	border-radius: 0.375rem;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.confirm-btn:hover:not(:disabled) {
+	background-color: #059669;
+}
+
+.confirm-btn:disabled {
+	background-color: #9ca3af;
+	cursor: not-allowed;
+	opacity: 0.6;
 }
 
 @media (max-width: 900px) {
