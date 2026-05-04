@@ -144,15 +144,30 @@ onMounted(async() => {
 
 		<div v-if="loading" class="loading">Chargement...</div>
 		<div v-else-if="error" class="error">{{ error }}</div>
-
+		<ul v-else-if="bankItems.length === 1" class="banks-list">
+			<li v-for="bank in bankItems" :key="bank.id" class="bank-row">
+				<span class="bank-text">
+					<span>{{ bank.name }}</span>
+				</span>
+				<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
+					<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M3 6h18" />
+						<path d="M8 6V4h8v2" />
+						<path d="M19 6l-1 14H6L5 6" />
+						<path d="M10 11v6" />
+						<path d="M14 11v6" />
+					</svg>
+				</button>
+			</li>
+		</ul>
 
 		<ul v-else class="banks-list">
 
 				<draggable v-model="bankItems" :animation="150" item-key="id" @end="onDragEnd">
 			<li v-for="bank in bankItems" :key="bank.id" class="bank-row">
-				<span class="bank-text">
-					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <rect width="24" height="24" fill="white"></rect> <circle cx="9.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> </g></svg>
-					{{ bank.name }}
+				<span class="bank-text-draggable">
+					<svg class="bank-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <rect width="24" height="24" fill="white"></rect> <circle cx="9.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> </g></svg>
+					<span>{{ bank.name }}</span>
 				</span>
 				<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
 					<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -249,9 +264,28 @@ onMounted(async() => {
 	margin-bottom: 1rem;
 }
 
-.bank-text {
+.bank-text-draggable {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
 	color: #111827;
 	font-size: 1.05rem;
+	cursor: move;
+}
+
+.bank-text {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	color: #111827;
+	font-size: 1.05rem;
+	cursor: pointer;
+}
+
+.bank-icon {
+	width: 1.5rem;
+	height: 1.5rem;
+	flex-shrink: 0;
 }
 
 .icon-btn {

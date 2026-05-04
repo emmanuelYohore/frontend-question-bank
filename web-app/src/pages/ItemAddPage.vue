@@ -149,21 +149,37 @@ onMounted(async() => {
 		<div v-if="loading" class="loading">Chargement...</div>
 		<div v-else-if="error" class="error">{{ error }}</div>
         <div v-else-if="items.length === 0" class="error">Aucun item ajouté à cette banque</div>
+		<ul v-else-if="items.length === 1" class="items-list">
+				<li v-for="item in items" :key="item.id" class="item-row">
+					<span class="item-text">{{ item.question }}</span>
+					<button class="icon-btn" @click="removeItemFromBank(item.id)" title="Supprimer">
+						<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M3 6h18" />
+							<path d="M8 6V4h8v2" />
+							<path d="M19 6l-1 14H6L5 6" />
+							<path d="M10 11v6" />
+							<path d="M14 11v6" />
+						</svg>
+					</button>
+				</li>
+			</ul>
 		<ul v-else class="items-list">
-		<draggable v-model="items" :animation="150" item-key="id" @end="onDragEnd">
-			<li v-for="item in items" :key="item.id" class="item-row">
-				<span class="item-text">{{ item.question }}</span>
-				<button class="icon-btn" @click="removeItemFromBank(item.id)" title="Supprimer">
-					<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M3 6h18" />
-						<path d="M8 6V4h8v2" />
-						<path d="M19 6l-1 14H6L5 6" />
-						<path d="M10 11v6" />
-						<path d="M14 11v6" />
-					</svg>
-				</button>
-			</li>
-		</draggable>	
+			<draggable v-model="items" :animation="150" item-key="id" @end="onDragEnd">
+				<li v-for="item in items" :key="item.id" class="item-row">
+					<svg class="item-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <rect width="24" height="24" fill="white"></rect> <circle cx="9.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> </g></svg>
+
+					<span class="item-text-draggable">{{ item.question }}</span>
+					<button class="icon-btn" @click="removeItemFromBank(item.id)" title="Supprimer">
+						<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M3 6h18" />
+							<path d="M8 6V4h8v2" />
+							<path d="M19 6l-1 14H6L5 6" />
+							<path d="M10 11v6" />
+							<path d="M14 11v6" />
+						</svg>
+					</button>
+				</li>
+			</draggable>	
 		</ul>
 
 		<div v-if="hasChanged" class="action-buttons">
@@ -248,10 +264,29 @@ onMounted(async() => {
 	margin-bottom: 1rem;
 }
 
-.item-text {
+.item-text-draggable {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
 	color: #111827;
 	font-size: 1.05rem;
 	cursor: move;
+}
+
+.item-text {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	color: #111827;
+	font-size: 1.05rem;
+	cursor: pointer;
+}
+
+.item-icon {
+	width: 1.5rem;
+	height: 1.5rem;
+	flex-shrink: 0;
+	margin-right: 0.75rem;
 }
 
 .icon-btn {
