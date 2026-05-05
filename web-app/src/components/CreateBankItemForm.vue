@@ -7,6 +7,7 @@ const authStore = useAuthStore();
 const name = ref('');
 
 const archived = ref(false);
+const mode = ref("systematique");
 const loading = ref(false)
 
 /**
@@ -24,7 +25,8 @@ const createBankItem = async () => {
       },
       body: JSON.stringify({
         name: name.value,
-        archived: archived.value
+        archived: archived.value,
+        mode: mode.value
       }),
     })
     .then(response => response.json())

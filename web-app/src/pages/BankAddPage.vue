@@ -6,6 +6,7 @@ import { VueDraggableNext as draggable } from 'vue-draggable-next'
 
 interface BankItem {
 	id: string
+	mode: string
 	name: string
 }
 
@@ -123,9 +124,43 @@ const onDragEnd = () => {
 	hasChanged.value = true
 }
 
+
+
+const updateBankMode = async (bankId: string, newMode: string) => {
+	try {
+		const response = await fetch(
+			`http://localhost:8000/api/v1/bank-items/${bankId}`,
+			{
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${storeAuth.token}`,
+				},
+				body: JSON.stringify({ 
+					mode: newMode 
+				}),
+			}
+		)
+
+		if (!response.ok) {
+			throw new Error('Erreur lors de la mise à jour du mode')
+		}
+
+		const bank = bankItems.value.find(b => b.id === bankId)
+		if (bank) {
+			bank.mode = newMode
+			console.log(`Mode de la banque ${bank.name} mis à jour`)
+		}
+	} catch (err) {
+		console.error('Error:', err)
+		alert('Impossible de mettre à jour le mode de la banque')
+	}
+}
+
 const goBack = () => {
 	router.push({ name: 'enquete-detail', params: { enqueteId } })
 }
+
 
 onMounted(async() => {
 	await getBanksAssociatedToEnquete()
@@ -148,6 +183,10 @@ onMounted(async() => {
 			<li v-for="bank in bankItems" :key="bank.id" class="bank-row">
 				<span class="bank-text">
 					<span>{{ bank.name }}</span>
+					<select class="mode-select" :value="bank.mode" @change="(e) => updateBankMode(bank.id, (e.target as HTMLSelectElement).value)">
+						<option value="systematique">Systématique</option>
+						<option value="aleatoire">Aléatoire</option>
+					</select>
 				</span>
 				<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
 					<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -168,6 +207,11 @@ onMounted(async() => {
 				<span class="bank-text-draggable">
 					<svg class="bank-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <rect width="24" height="24" fill="white"></rect> <circle cx="9.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> </g></svg>
 					<span>{{ bank.name }}</span>
+					<select class="mode-select" :value="bank.mode" @change="(e) => updateBankMode(bank.id, (e.target as HTMLSelectElement).value)">
+						<option value="systematique">Systématique</option>
+						<option value="aleatoire">Aléatoire</option>
+					</select>
+
 				</span>
 				<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
 					<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -280,6 +324,27 @@ onMounted(async() => {
 	color: #111827;
 	font-size: 1.05rem;
 	cursor: pointer;
+}
+
+.mode-select {
+	padding: 0.5rem 0.75rem;
+	border: 1px solid #d1d5db;
+	border-radius: 0.375rem;
+	font-size: 0.95rem;
+	color: #111827;
+	background-color: #fff;
+	cursor: pointer;
+	transition: border-color 0.2s;
+}
+
+.mode-select:hover {
+	border-color: #9ca3af;
+}
+
+.mode-select:focus {
+	outline: none;
+	border-color: #3b82f6;
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .bank-icon {

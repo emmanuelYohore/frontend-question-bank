@@ -44,6 +44,7 @@ interface Item {
 interface BankItem {
   id: string;
   name: string;
+  mode: string;
   archived: boolean;
   items?: Item[];
 }

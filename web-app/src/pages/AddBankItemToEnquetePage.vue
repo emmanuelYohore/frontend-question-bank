@@ -115,7 +115,7 @@ const getBanksForEnquete = async (id: string) => {
     associatedBankItemIds.value = Array.isArray(data.bank_items)
       ? data.bank_items.map((b: any) => b.id)
       : [];
-    bankItemIds.value = Array.from(new Set([...bankItemIds.value, ...associatedBankItemIds.value]));
+    bankItemIds.value = [...associatedBankItemIds.value];
   } catch (err) {
     console.error(err);
   } finally {
@@ -157,6 +157,7 @@ const addBankItemsToEnquete = async () => {
       alert("Les banques d'items ont bien été ajouté");
       console.log(data);
       bankItemIds.value = [];
+      enqueteId.value = null;
       loading.value = false;
     })
     .catch((error) => console.error("Error:", error));

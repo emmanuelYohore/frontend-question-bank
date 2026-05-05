@@ -1,16 +1,19 @@
 <script setup lang="ts">
-
-import { router } from '@/router/routes';
-import { useAuthStore } from '@/stores/auth';
-import { ref } from 'vue'
-import { faEnvelope, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
-
+import { router } from "@/router/routes";
+import { useAuthStore } from "@/stores/auth";
+import { ref } from "vue";
+import {
+  faEnvelope,
+  faLock,
+  faEye,
+  faEyeSlash,
+} from "@fortawesome/free-solid-svg-icons";
 
 const storeAuth = useAuthStore();
 
-const email = ref('');
-const password = ref('');
-const loading = ref(false)
+const email = ref("");
+const password = ref("");
+const loading = ref(false);
 const showPassword = ref(false);
 
 const togglePasswordVisibility = () => {
@@ -18,43 +21,41 @@ const togglePasswordVisibility = () => {
 };
 
 //fonction pour se connecter
-const login = async () =>{ 
-  loading.value = true
-  
-  await fetch("http://localhost:8000/api/v1/auth/login",{
-  method: "POST",
-  credentials: "include",
-  headers:{
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-  },
-  body: JSON.stringify({
-          email: email.value,
-          password: password.value,
-        }),
-})
-.then(response => response.json())
-.then(data => {
-    if (data.access_token) {
-      storeAuth.setToken(data.access_token)
-       if(data.user){
-         storeAuth.setUser(data.user)
-       }
-      console.log( data)
-      router.push('/home')  
-    }
-        email.value = '',
-        password.value = ''
-        loading.value = false
+const login = async () => {
+  loading.value = true;
 
+  await fetch("http://localhost:8000/api/v1/auth/login", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      email: email.value,
+      password: password.value,
+    }),
   })
-.catch(error => console.error('Error:', error))
-
-}
-
-
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.access_token) {
+        storeAuth.setToken(data.access_token);
+        if (data.user) {
+          storeAuth.setUser(data.user);
+        }
+        console.log(data);
+        router.push("/home");
+      }
+      ((email.value = ""), (password.value = ""));
+      loading.value = false;
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("Erreur lors de la connexion, veuillez vérifier vos identifiants");
+      loading.value = false;
+    });
+};
 </script>
-
 
 <template>
   <div class="container">
@@ -62,22 +63,19 @@ const login = async () =>{
       <div class="logo">
         <img src="../assets/img/logo.png" alt="Logo" />
       </div>
-      
-      <h1>Se connecter</h1>
-      
-      <form @submit.prevent="login">
-        
 
+      <h1>Se connecter</h1>
+
+      <form @submit.prevent="login">
         <div class="form-group">
           <label for="email">Email</label>
           <div class="input-field">
-  <FontAwesomeIcon :icon="faEnvelope" />
-            <input 
-              type="email" 
+            <FontAwesomeIcon :icon="faEnvelope" />
+            <input
+              type="email"
               id="email"
               v-model="email"
-            placeholder="Ex : user@gmail.com "
-
+              placeholder="Ex : user@gmail.com "
               required
             />
           </div>
@@ -86,50 +84,56 @@ const login = async () =>{
         <div class="form-group">
           <label for="password">Mot de passe</label>
           <div class="input-field">
-             <FontAwesomeIcon :icon="faLock" />
-  <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Mot de passe" min="6" required />
-  <FontAwesomeIcon 
-    :icon="showPassword ? faEyeSlash : faEye" 
-    class="toggle-password" 
-    @click="togglePasswordVisibility" 
-  />
+            <FontAwesomeIcon :icon="faLock" />
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              placeholder="Mot de passe"
+              min="6"
+              required
+            />
+            <FontAwesomeIcon
+              :icon="showPassword ? faEyeSlash : faEye"
+              class="toggle-password"
+              @click="togglePasswordVisibility"
+            />
           </div>
         </div>
 
         <button type="submit" class="submit-btn">
-          {{loading? "Chargement..." : "Se connecter"}}
+          {{ loading ? "Chargement..." : "Se connecter" }}
         </button>
       </form>
 
       <p class="register-link">
-        Vous n'avez pas de compte ? 
+        Vous n'avez pas de compte ?
         <router-link to="/register">S'inscrire</router-link>
       </p>
     </div>
   </div>
- </template>
- 
- <style scoped>
- * {
+</template>
+
+<style scoped>
+* {
   margin: 0;
   padding: 0;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   box-sizing: border-box;
- }
- 
- .container {
+}
+
+.container {
   width: 100%;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: white;
- }
- 
- .form-box {
+}
+
+.form-box {
   width: 600px;
   padding: 40px 50px;
-  background-color: #EFEFEF;
+  background-color: #efefef;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
 }
@@ -143,7 +147,7 @@ const login = async () =>{
 .logo img {
   height: 80px;
   border-radius: 8px;
- }
+}
 
 h1 {
   text-align: center;
@@ -240,4 +244,4 @@ label {
 .register-link a:hover {
   text-decoration: underline;
 }
- </style>
+</style>

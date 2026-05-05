@@ -110,7 +110,7 @@ const getItemsForBank = async (bankId: string) => {
       ? data.items.map((i: any) => i.id)
       : [];
     // ensure associated items are checked in the selection
-    itemIds.value = Array.from(new Set([...itemIds.value, ...associatedItemIds.value]));
+    itemIds.value = [...associatedItemIds.value];
   } catch (err) {
     console.error(err);
   } finally {
@@ -150,6 +150,7 @@ const addItemsToBank = async () => {
       alert("Les items ont bien été ajouté");
       console.log(data);
       itemIds.value = [];
+      bankItemId.value = null;
       loading.value = false;
     })
     .catch((error) => console.error("Error:", error));
