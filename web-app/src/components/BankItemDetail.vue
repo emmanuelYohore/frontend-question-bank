@@ -323,10 +323,15 @@ onMounted(() => {
   min-width: 140px;
   font-weight: 700;
   color: #111827;
+  flex-shrink: 0;
 }
 
 .value {
   color: #1f2937;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.5;
 }
 
 .status {

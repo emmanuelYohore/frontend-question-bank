@@ -46,7 +46,7 @@ const logout = async () => {
         </div>
         <h1 class="app-title" >ENQUETE APP</h1>
       </div>
-      
+
        <ul class="nav-links">
         <li>
           <router-link to="/home" class="nav-link">Accueil</router-link>
@@ -160,4 +160,5 @@ const logout = async () => {
 .logout-btn:hover {
   background-color: #c0392b;
 }
+
  </style>

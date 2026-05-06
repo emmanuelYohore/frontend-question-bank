@@ -68,7 +68,7 @@ const login = async () => {
 
       <form @submit.prevent="login">
         <div class="form-group">
-          <label for="email">Email</label>
+          <label for="email">*Email</label>
           <div class="input-field">
             <FontAwesomeIcon :icon="faEnvelope" />
             <input
@@ -82,7 +82,7 @@ const login = async () => {
         </div>
 
         <div class="form-group">
-          <label for="password">Mot de passe</label>
+          <label for="password">*Mot de passe</label>
           <div class="input-field">
             <FontAwesomeIcon :icon="faLock" />
             <input

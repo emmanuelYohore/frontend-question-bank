@@ -99,7 +99,9 @@ watch(input, () => {
               :to="`/bank-item/${bankItem.id}`"
               class="bank-item-card"
             >
-              <span class="card-name">{{ bankItem.name }}</span>
+              <span class="card-name" :title="bankItem.name">
+                {{ bankItem.name }}
+              </span>
               <span class="bank-status" :class="{ archived: bankItem.archived }">
                 {{ bankItem.archived ? 'Archivée' : 'Active' }}
               </span>
@@ -194,6 +196,13 @@ watch(input, () => {
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 2.5rem;
+  max-width: 1200px;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
 }
 
 .bank-item-card {
@@ -222,6 +231,10 @@ watch(input, () => {
   font-size: 0.95rem;
   color: #2c3e50;
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .bank-status {

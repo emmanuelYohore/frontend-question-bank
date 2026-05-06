@@ -271,6 +271,11 @@ onMounted(async() => {
 	color: #111827;
 	font-size: 1.05rem;
 	cursor: move;
+	flex: 1;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	word-break: break-word;
+	line-height: 1.5;
 }
 
 .item-text {
@@ -280,6 +285,11 @@ onMounted(async() => {
 	color: #111827;
 	font-size: 1.05rem;
 	cursor: pointer;
+	flex: 1;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	word-break: break-word;
+	line-height: 1.5;
 }
 
 .item-icon {

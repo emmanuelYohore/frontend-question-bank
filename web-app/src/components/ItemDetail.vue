@@ -216,15 +216,8 @@ onMounted(() => {
       </div>
 
       <div class="details-card">
-        <div class="card-header">
-          <h2>{{ item.question }}</h2>
-        </div>
-
+        
         <div class="info-section">
-          <div class="info-group">
-            <label>Propriétaire:</label>
-            <span>{{ storeAuth.user?.surname }}</span>
-          </div>
           
           <div class="info-group">
             <label>Question :</label>
@@ -260,7 +253,7 @@ onMounted(() => {
             <button v-if="isQCMorQCU || isEVN" @click="goToModalites" class="btn-see-modalites">
               Voir les modalités
             </button>
-            <span v-else>Pas de modalités</span>
+            <span v-else>Pas de modalités pour ce type de format de réponse</span>
           </div>
         </div>
 
@@ -401,18 +394,23 @@ onMounted(() => {
   display: flex;
   margin-bottom: 1rem;
   align-items: flex-start;
+  gap: 1rem;
 }
 
 .info-group label {
   font-weight: 600;
   color: #000;
   min-width: 200px;
-  margin-right: 1rem;
+  flex-shrink: 0;
 }
 
 .info-group span {
   color: #333;
   flex: 1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.5;
 }
 
 .btn-see-modalites {

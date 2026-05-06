@@ -4,20 +4,14 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const goBack = () => {
-  router.back();
-};
-
 </script>
 
 <template>
   <div class="page-container">
-    <button class="btn-back" @click="goBack">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-      </svg>
-      Retour
-    </button>
+   <button class="back-button" @click="router.back()">
+          <span class="back-circle">&#8592;</span>
+          <span>Retour</span>
+        </button>
     <div class="header">
       <h1 class="page-title">Créer un item</h1>
     </div>
@@ -29,7 +23,7 @@ const goBack = () => {
 * {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Arial', sans-serif;
 }
 .page-container {
   min-height: 100vh;
@@ -43,27 +37,28 @@ const goBack = () => {
   margin: 0 auto 30px;
 }
 
-.btn-back {
-  display: flex;
+.back-button {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.8rem;
   background: none;
   border: none;
-  color: #666;
-  font-size: 14px;
   cursor: pointer;
-  padding: 8px;
-  margin-bottom: 20px;
-  transition: color 0.2s;
+  padding: 0;
+  font-size: 1rem;
+  color: #1f2937;
 }
 
-.btn-back:hover {
-  color: #333;
-}
-
-.btn-back svg {
-  width: 20px;
-  height: 20px;
+.back-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.7rem;
+  height: 2.7rem;
+  border: 2px solid #2d2d2d;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
 .page-title {

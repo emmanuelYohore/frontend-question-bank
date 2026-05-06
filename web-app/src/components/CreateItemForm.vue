@@ -185,7 +185,7 @@ const createItem = async () => {
     <div class="form-card">
       <form @submit.prevent="createItem">
         <div class="form-group">
-          <label>Type de réponse :</label>
+          <label>*Type de réponse :</label>
           <select v-model="formatReponse.type" required>
             <option value="">--- Choisir un type ---</option>
             <option v-for="option in options" :key="option.value" :value="option.value">
@@ -195,12 +195,13 @@ const createItem = async () => {
         </div>
 
         <div class="form-group">
-          <label>Question :</label>
-          <input type="text" v-model="item.question" placeholder="Entrez la question" required>
+          <label>*Question :</label>
+          <input type="text" v-model="item.question" placeholder="Entrez la question" maxlength="300" required>
+          <p>{{ item.question.length }}/300</p>
         </div>
 
         <div class="form-group checkbox-group">
-          <label>Obligatoire :</label>
+          <label>*Obligatoire :</label>
           <div class="checkbox-wrapper">
             <input type="checkbox" id="obligatoire" :value="true" v-model="item.obligatoire" />
             <label for="obligatoire" class="checkbox-label">OUI</label>
@@ -210,20 +211,22 @@ const createItem = async () => {
 
 
       <div v-if="isQCMorQCU" class="modalites-section">
-        <h3>Modalités de réponse (minimum 2)</h3>
+        <h3>Modalités de réponse (minimum 2, maximum 20)</h3>
         <div v-for="(modalite, index) in modalites" :key="index" class="modalite-item">
           <input 
             type="text" 
             v-model="modalite.intitule" 
             :placeholder="'Intitulé ' + (index + 1)" 
             required
+            maxlength="300"
           >
+          <p>{{ modalite.intitule?.length }}/300</p>
          <button 
             type="button" 
             @click="removeModalite(index)"
             :disabled="modalites.length <= 2"
             class="btn-remove"
-          >X
+          >
             
           </button>
         </div>
@@ -240,12 +243,14 @@ const createItem = async () => {
       <div v-if="isEVN" class="evn-section">
         <h3>Valeurs de l'échelle</h3>
         <div class="form-group">
-          <label>Valeur 1 :</label>
-          <input type="text" v-model="modaliteEVN.v1" placeholder="Ex: bien" required>
+          <label>*Valeur 1 :</label>
+          <input type="text" v-model="modaliteEVN.v1" placeholder="Ex: bien" required maxlength="300">
+          <p>{{ modaliteEVN.v1?.length }}/300</p>
         </div>
         <div class="form-group">
-          <label>Valeur 2 :</label>
-          <input type="text" v-model="modaliteEVN.v2" placeholder="Ex: très bien" required>
+          <label>*Valeur 2 :</label>
+          <input type="text" v-model="modaliteEVN.v2" placeholder="Ex: très bien" required maxlength="300">
+          <p>{{ modaliteEVN.v2?.length }}/300</p>
         </div>
       </div>
 

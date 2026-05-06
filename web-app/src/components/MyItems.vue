@@ -97,7 +97,9 @@ watch(input, () => {
             :to="`/item/${item.id}`"
             class="item-card"
           >
-            <span class="card-name">{{ item.question }}</span>
+            <span class="card-name" :title="item.question">
+              {{ item.question }}
+            </span>
             <span class="item-status" :class="{ 'non': !item.archived }">
               Archivé : {{ item.archived ? 'oui' : 'non' }}
             </span>
@@ -188,6 +190,13 @@ watch(input, () => {
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 2.5rem;
+  max-width: 1200px;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
 }
 
 .item-card {
@@ -216,6 +225,10 @@ watch(input, () => {
   font-size: 0.95rem;
   color: #2c3e50;
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .item-status {

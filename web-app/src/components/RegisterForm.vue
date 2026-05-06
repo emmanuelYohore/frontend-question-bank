@@ -100,7 +100,7 @@ const togglePasswordVisibility = () => {
 
       <form @submit.prevent="register">
         <div class="form-group">
-          <label for="nom">Nom</label>
+          <label for="nom">*Nom</label>
           <div class="input-field">
             <FontAwesomeIcon :icon="faUser" />
             <input
@@ -109,13 +109,15 @@ const togglePasswordVisibility = () => {
               v-model="formRegister.name"
               placeholder="Nom"
               min="3"
+              maxlength="150"
               required
             />
           </div>
+          <p>{{  formRegister.name.length }}/150</p>
         </div>
 
         <div class="form-group">
-          <label for="prenom">Prénom</label>
+          <label for="prenom">*Prénom</label>
           <div class="input-field">
             <FontAwesomeIcon :icon="faUser" />
             <input
@@ -124,13 +126,15 @@ const togglePasswordVisibility = () => {
               v-model="formRegister.surname"
               placeholder="Prénom"
               min="3"
+              maxlength="150"
               required
             />
           </div>
+          <p>{{  formRegister.surname.length }}/150</p>
         </div>
 
         <div class="form-group">
-          <label for="email">Email</label>
+          <label for="email">*Email</label>
           <div class="input-field">
             <FontAwesomeIcon :icon="faEnvelope" />
             <input
@@ -144,7 +148,7 @@ const togglePasswordVisibility = () => {
         </div>
 
         <div class="form-group">
-          <label for="password">Mot de passe</label>
+          <label for="password">*Mot de passe</label>
           <div class="input-field">
             <FontAwesomeIcon :icon="faLock" />
             <input
@@ -158,7 +162,7 @@ const togglePasswordVisibility = () => {
               :icon="showPassword ? faEyeSlash : faEye"
               class="toggle-password"
               @click="togglePasswordVisibility"
-            />
+            />        
           </div>
         </div>
 

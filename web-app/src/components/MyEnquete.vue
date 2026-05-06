@@ -98,7 +98,9 @@ watch(input, () => {
             :to="`/enquete/${enquete.id}`"
             class="enquete-card"
           >
-            <span class="card-name">{{ enquete.title }}</span>
+            <span class="card-name" :title="enquete.title">
+              {{ enquete.title }}
+            </span>
             <span class="enquete-status" :class="{ archived: enquete.archived }">
               {{ enquete.archived ? 'Archiver' : 'Active' }}
             </span>
@@ -189,8 +191,15 @@ input[type="text"] {
 .enquetes-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 1rem;
   margin-bottom: 2.5rem;
+  max-width: 1200px;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
 }
 
 .enquete-card {
@@ -215,10 +224,14 @@ input[type="text"] {
 }
 
 .card-name {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #1f2937;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #2c3e50;
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .enquete-status {

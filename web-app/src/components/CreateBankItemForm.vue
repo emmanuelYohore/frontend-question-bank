@@ -45,13 +45,15 @@ const createBankItem = async () => {
     <div class="form-card">
       <form @submit.prevent="createBankItem()">
         <div class="form-group">
-          <label for="name">Nom :</label>
+          <label for="name">*Nom :</label>
           <input 
             type="text" 
             v-model="name" 
             placeholder="Entrez un nom" 
+            maxlength="250"
             :required="true"
           >
+          <p>{{ name.length }}/250</p>
         </div>
         
         <button type="submit" class="btn-submit" :disabled="loading">

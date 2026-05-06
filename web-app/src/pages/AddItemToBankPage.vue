@@ -333,7 +333,7 @@ const addItemsToBank = async () => {
 
 .select-label {
   width: 100%;
-  max-width: 360px;
+  max-width: 500px;
   height: 52px;
   border: 1px solid #4b5563;
   border-radius: 12px;
@@ -343,7 +343,6 @@ const addItemsToBank = async () => {
   color: #111827;
   font-size: 14px;
   margin-bottom: 1.1rem;
-  background: #f7f7f7;
 }
 
 .col-right .select-label {
@@ -352,13 +351,12 @@ const addItemsToBank = async () => {
 
 .list-box {
   width: 100%;
-  max-width: 360px;
+  max-width: 500px;
   min-height: 356px;
   max-height: 356px;
   overflow-y: auto;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  background: #f3f4f6;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   padding: 1rem 1.2rem;
 }

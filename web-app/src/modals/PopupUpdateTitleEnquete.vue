@@ -23,14 +23,16 @@ const handleConfirm = () => {
     <div class="modal">
       <h3>Modifier le titre</h3>
 
-      <input
+      <textarea
         v-model="newTitle"
         type="text"
         placeholder="Nouveau titre..."
         @keyup.enter="handleConfirm"
         @keydown.escape="emit('cancel')"
         autofocus
-      />
+        maxlength="800">
+      </textarea>
+          <p class="char-count">{{ newTitle.length }}/800</p>
 
       <div class="actions">
         <button class="btn-cancel" @click="emit('cancel')">Annuler</button>
@@ -44,7 +46,7 @@ const handleConfirm = () => {
 * {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Arial', sans-serif;
 }
 .overlay {
   position: fixed;
@@ -56,6 +58,48 @@ const handleConfirm = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+h3{
+  margin-bottom: 1rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-cancel {
+  background: #E73F1D;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-confirm {
+  background: #5A93E8;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+textarea {
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  resize: none;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .modal {
   background: white;
