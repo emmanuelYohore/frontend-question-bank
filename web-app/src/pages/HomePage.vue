@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import NavigationBar from '@/components/NavigationBar.vue';
+import { useAuthStore } from '@/stores/auth';
  
 const router = useRouter();
-
+const authStore = useAuthStore();
 const navigateTo = (routeName: string) => {
   router.push({ name: routeName });
 };
@@ -66,6 +67,44 @@ const navigateTo = (routeName: string) => {
         <button class="card-button" @click="navigateTo('')">
           Commencer une enquête
         </button>
+      </div>
+
+      <div class="cards-container" v-if="authStore.user?.role === 'admin'">
+        <div class="card">
+          <div class="card-image">
+            <img src="../assets/img/admin.png" alt="Admin" />
+          </div>
+          <button class="card-button" @click="navigateTo('admin-gestion-users')">
+            Gérer les utilisateurs
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-image">
+            <img src="../assets/img/admin.png" alt="Admin" />
+          </div>
+            <button class="card-button" @click="navigateTo('admin-gestion-banks')">
+              Gérer les banques d'items
+            </button>
+        </div>
+
+        <div class="card">
+          <div class="card-image">
+            <img src="../assets/img/admin.png" alt="Admin" />
+          </div>
+          <button class="card-button" @click="navigateTo('admin-gestion-items')">
+            Gérer les items
+          </button> 
+        </div>
+
+        <div class="card">
+          <div class="card-image">
+            <img src="../assets/img/admin.png" alt="Admin" />
+          </div>
+          <button class="card-button" @click="navigateTo('admin-gestion-enquetes')">
+            Gérer les enquetes
+          </button>
+        </div>
       </div>
     </div>
   </div>

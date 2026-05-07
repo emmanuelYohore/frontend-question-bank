@@ -20,6 +20,10 @@ import ModaliteItemPage from '@/pages/ModaliteItemPage.vue'
 import ItemAddPage from '@/pages/ItemAddPage.vue'
 import BankAddPage from '@/pages/BankAddPage.vue'
 import EnqueteStartPage from '@/pages/EnqueteStartPage.vue'
+import AdminGestionUsersPage from '@/pages/AdminGestionUsersPage.vue'
+import AdminGestionItemsPage from '@/pages/AdminGestionItemsPage.vue'
+import AdminGestionBanksPage from '@/pages/AdminGestionBanksPage.vue'
+import AdminGestionEnquetesPage from '@/pages/AdminGestionEnquetesPage.vue'
 
 const routes = [
   {
@@ -144,6 +148,30 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/admin-gestion-items',
+    name: 'admin-gestion-items',
+    component: AdminGestionItemsPage,
+    meta: { requiresAuth: true }
+  },
+    {
+    path: '/admin-gestion-banks',
+    name: 'admin-gestion-banks',
+    component: AdminGestionBanksPage,
+    meta: { requiresAuth: true }
+  },
+    {
+    path: '/admin-gestion-users',
+    name: 'admin-gestion-users',
+    component: AdminGestionUsersPage,
+    meta: { requiresAuth: true }
+  },
+    {
+    path: '/admin-gestion-enquetes',
+    name: 'admin-gestion-enquetes',
+    component: AdminGestionEnquetesPage,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: NotFoundPage
@@ -159,7 +187,14 @@ export const router = createRouter({
 router.beforeEach((to, from, next) => {
   const storeAuth = useAuthStore()
   const authenticated = storeAuth.getToken()
-  const requiresAuth = to.meta.requiresAuth
+  const requiresAuth = to.meta.requiresAuth 
+  const userRole = storeAuth.user?.role
+
+  if (to.name === 'admin-gestion-users' || to.name === 'admin-gestion-banks' || to.name === 'admin-gestion-enquetes') {
+    if (userRole !== 'admin') {
+      next('/home');
+    }
+  }
 
   if (requiresAuth && !authenticated ) {
     next('/login');  
