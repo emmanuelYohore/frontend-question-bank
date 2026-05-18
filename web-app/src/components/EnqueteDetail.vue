@@ -42,7 +42,7 @@ const getEnqueteDetail = async () => {
   error.value = null
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/enquetes/${enqueteId}`, {
+    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

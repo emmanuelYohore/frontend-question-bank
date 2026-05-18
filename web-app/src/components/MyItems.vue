@@ -19,7 +19,7 @@ interface Item {
 
 const storeAuth = useAuthStore()
 const items = ref<Item[]>([])
-const userId = storeAuth.user?.id
+const userId = storeAuth.userId
 const loading = ref(true)
 const input = ref('')
 

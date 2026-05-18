@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import {  ref } from 'vue'
+import { ref } from 'vue'
 
 export interface User {
   id?: string
@@ -11,36 +11,46 @@ export interface User {
 
 export const useAuthStore = defineStore('auth', () => {
 
-const token = ref<string | null>(localStorage.getItem('access-token'))
-const user = ref<User | null>(JSON.parse(localStorage.getItem('user') || 'null'))
+  const token = ref<string | null>(localStorage.getItem('access-token'))
+  const userId = ref<string | null>(localStorage.getItem('user-id'))
 
-const getToken = () => {
-  return token.value
-}
+  // user uniquement en mémoire
+  const user = ref<User | null>(null)
 
-const setToken = (newToken: string) => {
-  token.value = newToken
-  localStorage.setItem('access-token', newToken)
-}
+  const getToken = () => token.value
 
-const setUser = (newUser: User) => {
-  user.value = newUser
-  localStorage.setItem('user', JSON.stringify(newUser))
-}
+  const setToken = (newToken: string) => {
+    token.value = newToken
+    localStorage.setItem('access-token', newToken)
+  }
 
-const clearAuth = () => {
-  token.value = null
-  user.value = null
-  localStorage.removeItem('access-token')
-  localStorage.removeItem('user')
-}
+  const setUser = (newUser: User) => {
+    user.value = newUser
+  }
 
-  return { 
+  const setUserId = (id: string) => {
+    userId.value = id
+    localStorage.setItem('user-id', id)
+  }
+
+  const clearAuth = () => {
+    token.value = null
+    user.value = null
+    userId.value = null
+    localStorage.removeItem('access-token')
+        localStorage.removeItem('user-id')
+  }
+
+
+
+  return {
     token,
     user,
+    userId,
     getToken,
     setToken,
     setUser,
     clearAuth,
-    }
+    setUserId
+  }
 })

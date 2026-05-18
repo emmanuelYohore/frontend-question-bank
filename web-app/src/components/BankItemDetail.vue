@@ -33,7 +33,7 @@ const getBankItemDetail = async () => {
   error.value = null
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/bank-items/${bankItemId}`, {
+    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.userId}/bank-items/${bankItemId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

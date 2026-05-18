@@ -9,7 +9,7 @@ import PopupUpdateEmailUser from '@/modals/PopupUpdateEmailUser.vue'
 
 const router = useRouter()
 const storeAuth = useAuthStore()
-const userId = storeAuth.user?.id
+const userId = storeAuth.userId
 const loading = ref(false)
 const user = ref<User | null>(null)
 

@@ -19,7 +19,7 @@ interface BankItem {
 
 const storeAuth = useAuthStore()
 const bankItems = ref<BankItem[]>([])
-const userId = storeAuth.user?.id
+const userId = storeAuth.userId
 const loading = ref(true)
 const input = ref('')
 

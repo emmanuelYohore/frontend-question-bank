@@ -21,7 +21,7 @@ interface Enquete {
 
 const storeAuth = useAuthStore()
 const enquetes = ref<Enquete[]>([])
-const userId = storeAuth.user?.id
+const userId = storeAuth.userId
 const loading = ref(true)
 const input = ref('')
 

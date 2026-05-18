@@ -29,7 +29,7 @@ const getBanksAssociatedToEnquete = async () => {
 
 	try {
 		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/enquetes/${enqueteId}`,
+			`http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}`,
 			{
 				method: 'GET',
 				headers: {
@@ -62,7 +62,7 @@ const removeBankFromEnquete = async (bankItemId: string) => {
 
 	try {
 		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/enquetes/${enqueteId}/bank-items/detach`,
+			`http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}/bank-items/detach`,
 			{
 				method: 'DELETE',
 				headers: {
@@ -92,7 +92,7 @@ const saveBankItemsOrder = async () => {
 		const orderedIds = bankItems.value.map((b) => b.id)
 
 		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/enquetes/${enqueteId}/bank-items/order`,
+			`http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}/bank-items/order`,
 			{
 				method: 'POST',
 				headers: {

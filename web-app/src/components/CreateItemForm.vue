@@ -3,7 +3,6 @@
 import { ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { router } from '@/router/routes';
-import { faDeleteLeft } from '@fortawesome/free-solid-svg-icons';
 
 const authStore = useAuthStore();
 

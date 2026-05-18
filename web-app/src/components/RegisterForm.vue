@@ -62,6 +62,7 @@ const register = async () => {
 
     if (data.access_token) {
       storeAuth.setToken(data.access_token);
+        storeAuth.setUserId(data.user.id)
       if (data.user) {
         storeAuth.setUser(data.user);
       }

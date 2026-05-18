@@ -107,7 +107,7 @@ const getItemDetailWithModalitesAndFormatReponse = async () => {
   error.value = null
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/items/${itemId}`, {
+    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.userId}/items/${itemId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

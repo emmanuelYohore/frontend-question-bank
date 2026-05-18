@@ -28,7 +28,7 @@ interface Item {
 const items = ref<Item[]>([]);
 const storeAuth = useAuthStore();
 const bankItems = ref<BankItem[]>([]);
-const userId = storeAuth.user?.id;
+const userId = storeAuth.userId
 const loading = ref(true);
 const itemIds = ref<string[]>([]);
 const bankItemId = ref();

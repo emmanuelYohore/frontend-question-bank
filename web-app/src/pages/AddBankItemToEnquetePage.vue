@@ -29,7 +29,7 @@ interface Enquete {
 const bankItems = ref<BankItem[]>([]);
 const storeAuth = useAuthStore();
 const enquetes = ref<Enquete[]>([]);
-const userId = storeAuth.user?.id;
+const userId = storeAuth.userId
 const loading = ref(true);
 const bankItemIds = ref<string[]>([]);
 const enqueteId = ref();

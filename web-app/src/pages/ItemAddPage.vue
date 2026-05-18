@@ -31,7 +31,7 @@ const getItemsAssociatedToBanks = async () => {
 
 	try {
 		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/bank-items/${bankItemId}`,
+			`http://localhost:8000/api/v1/users/${storeAuth.userId}/bank-items/${bankItemId}`,
 			{
 				method: 'GET',
 				headers: {
@@ -66,7 +66,7 @@ const removeItemFromBank = async (itemId: string) => {
 
 	try {
 		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/bank-items/${bankItemId}/items/detach`,
+			`http://localhost:8000/api/v1/users/${storeAuth.userId}/bank-items/${bankItemId}/items/detach`,
 			{
 				method: 'DELETE',
 				headers: {
@@ -94,7 +94,7 @@ const saveItemsOrder = async () => {
 
 	try {
 		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.user?.id}/bank-items/${bankItemId}/items/order`,
+			`http://localhost:8000/api/v1/users/${storeAuth.userId}/bank-items/${bankItemId}/items/order`,
 			{
 				method: 'POST',
 				headers: {

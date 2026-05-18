@@ -2,13 +2,21 @@
 import { useRouter } from 'vue-router';
 import NavigationBar from '@/components/NavigationBar.vue';
 import { useAuthStore } from '@/stores/auth';
- 
+// import { onMounted } from 'vue';
+
+// onMounted(() => {
+//   getInfoUserForRole()
+// })
+
+
+
 const router = useRouter();
 const authStore = useAuthStore();
 const navigateTo = (routeName: string) => {
   router.push({ name: routeName });
 };
- 
+
+
 </script>
 
  <template>
