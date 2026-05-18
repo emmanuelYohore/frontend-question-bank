@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useAuthStore, type User } from '@/stores/auth'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, Teleport } from 'vue'
 import { useRouter } from 'vue-router'
 import NavigationBar from './NavigationBar.vue'
 import PopupUpdateNameUser from '@/modals/PopupUpdateNameUser.vue'
@@ -191,12 +191,13 @@ const confirmPopupEmail = async ( newEmail: string ) => {
       </div>
     </div>
 
-    <PopupUpdateNameUser
-      v-if="showPopupName"
-      :current-name="user?.name || ''"
-      @confirm="confirmPopupName"
-      @cancel="showPopupName = false"
-    />
+      <PopupUpdateNameUser
+        v-if="showPopupName"
+        :current-name="user?.name || ''"
+        @confirm="confirmPopupName"
+        @cancel="showPopupName = false"
+      />
+
 
     <PopupUpdateSurnameUser
       v-if="showPopupSurname"

@@ -12,7 +12,7 @@ interface BankData {
 
 const banks = ref<BankData[]>([])
 const currentPage = ref(1)
-const itemsPerPage = 10
+const itemsPerPage = 8
 
 const storeAuth = useAuthStore()
 
@@ -77,5 +77,10 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   gap: 5px;
+}
+.page-item {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  cursor: pointer;
 }
 </style>

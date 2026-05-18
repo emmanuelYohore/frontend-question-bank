@@ -314,10 +314,7 @@ onMounted(() => {
     <section v-else-if="enquete" class="card details-card">
       <div class="details-grid">
         <div class="details-left">
-          <div class="detail-line">
-            <span class="label">Propriétaire:</span>
-            <span class="value">{{ storeAuth.user?.surname }}</span>
-          </div>
+          
           <div class="detail-line">
             <span class="label">Titre :</span>
             <span class="value">{{ enquete.title }}</span>

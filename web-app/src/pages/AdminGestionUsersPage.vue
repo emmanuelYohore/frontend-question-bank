@@ -12,7 +12,7 @@ interface UserData {
 
 const users = ref<UserData[]>([])
 const currentPage = ref(1)
-const itemsPerPage = 10
+const itemsPerPage = 8
 
 const storeAuth = useAuthStore()
 

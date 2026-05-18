@@ -12,7 +12,7 @@ interface ItemData {
 
 const items = ref<ItemData[]>([])
 const currentPage = ref(1)
-const itemsPerPage = 10
+const itemsPerPage = 8
 const storeAuth = useAuthStore()
 
 const paginatedData = computed(() => {
@@ -72,23 +72,14 @@ onMounted(() => {
 </template>
 
 <style scoped>
-@import "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css";
 .pagination {
   display: flex;
   justify-content: center;
   gap: 5px;
 }
-
 .page-item {
   padding: 10px 15px;
   border: 1px solid #ddd;
   cursor: pointer;
-}
-.page-item:hover {
-  background-color: #f0f0f0;
-}
-.active-page {
-  background-color: #007bff;
-  color: #fff;
 }
 </style>

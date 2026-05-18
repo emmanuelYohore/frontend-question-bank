@@ -77,7 +77,7 @@ watch(input, () => {
 
     <div class="content">
       <h2 class="page-title">Mes banques</h2>
-      <h2>Nombre de banques : {{bankItems.length}} / 50</h2>
+      <h2 class="nb-bank">Nombre de banques : {{bankItems.length}} / 50</h2>
       <input type="text" v-model="input" placeholder="Chercher une banque" />
 
       <p class="page-subtitle">Cliquez sur une banque pour voir ses détails</p>
@@ -133,6 +133,10 @@ watch(input, () => {
   border-radius: 15px;
 }
 
+.nb-bank {
+    font-size: 1rem;
+
+}
 .page-wrapper {
   max-width: 1100px;
   margin: 2rem auto;
@@ -167,7 +171,7 @@ watch(input, () => {
 }
 
 .page-title {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #2c3e50;
   margin: 0 0 0.4rem 0;
