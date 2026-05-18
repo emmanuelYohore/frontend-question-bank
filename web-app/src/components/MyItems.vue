@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import NavigationBar from './NavigationBar.vue'
 import { useRouter } from 'vue-router'
 
@@ -19,6 +19,8 @@ interface Item {
 
 const storeAuth = useAuthStore()
 const items = ref<Item[]>([])
+const currentPage = ref(1)
+const itemsPerPage = 4
 const userId = storeAuth.userId
 const loading = ref(true)
 const input = ref('')
@@ -39,6 +41,16 @@ const getAllItemForUser = async () => {
       loading.value = false
     })
     .catch(error => console.error('Error:', error))
+}
+
+const paginatedItemsUsers = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return items.value.slice(start, end);
+});
+
+const handlePageChange = (pageNum: number) => {
+  currentPage.value = pageNum;
 }
 
 // filtre tous les items
@@ -92,7 +104,7 @@ watch(input, () => {
 
         <div v-else class="items-container">
           <router-link
-            v-for="item in items"
+            v-for="item in paginatedItemsUsers"
             :key="item.id"
             :to="`/item/${item.id}`"
             class="item-card"
@@ -100,11 +112,20 @@ watch(input, () => {
             <span class="card-name" :title="item.question">
               {{ item.question }}
             </span>
-            <span class="item-status" :class="{ 'non': !item.archived }">
-              Archivé : {{ item.archived ? 'oui' : 'non' }}
+            <span class="item-status" :class="{ archived: item.archived }">
+              {{ item.archived ? 'Archiver' : 'Active' }}
             </span>
           </router-link>
         </div>
+
+        <paginate
+      :page-count="Math.ceil(items.length / itemsPerPage)"
+      :click-handler="handlePageChange"
+      :prev-text="'Prev'"
+      :next-text="'Next'"
+      :container-class="'pagination'"
+      :page-class="'page-item'"
+    />
 
         <div class="actions">
           <router-link to="/create-item" class="btn-create">+ Créer un item</router-link>
@@ -115,20 +136,72 @@ watch(input, () => {
 </template>
 
 <style scoped>
- * {
-   font-family: 'Arial', sans-serif;
- }
-
- input[type="text"] {
-  width: 50%;
-  padding: 0.75rem 1rem;
-  margin: 1rem 0;
-  border: 1px solid #ccc;
-  border-radius: 15px;
+* {
+  font-family: 'Arial', sans-serif;
 }
 
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin: 1.5rem 0;
+  list-style: none;
+  padding: 0;
+}
+
+:deep(.page-item a),
+:deep(.page-item span) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #555;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+:deep(.page-item.active a),
+:deep(.page-item.active span) {
+  background-color: #2c3e50;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 6px;
+}
+
+:deep(.page-item a:hover) {
+  background-color: #f0f0f0;
+}
+
+/* Search input */
+input[type="text"] {
+  width: 100%;
+  max-width: 480px;
+  padding: 0.75rem 1rem 0.75rem 2.8rem;
+  margin: 1rem 0;
+  border: none;
+  border-radius: 12px;
+  background-color: #f0f2f5;
+  font-size: 0.95rem;
+  color: #333;
+  outline: none;
+  display: block;
+}
+
+input[type="text"]:focus {
+  background-color: #e8eaf0;
+}
+
+/* Layout */
 .page-wrapper {
-  max-width: 1100px;
+  max-width: 900px;
   margin: 2rem auto;
   padding: 0 2rem;
 }
@@ -153,15 +226,15 @@ watch(input, () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 2.4rem;
+  height: 2.4rem;
   border: 2px solid #2c3e50;
   border-radius: 50%;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .page-title {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #2c3e50;
   margin: 0 0 0.4rem 0;
@@ -185,79 +258,79 @@ watch(input, () => {
   margin-bottom: 1.5rem;
 }
 
+/* Items list */
 .items-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 2.5rem;
-  max-width: 1200px;
-  max-height: 250px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1.5rem;
-  background-color: #f9f9f9;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .item-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 145px;
-  padding: 1rem 0.75rem;
+  width: 100%;
+  padding: 1rem 1.25rem;
   background: #fff;
   border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   text-decoration: none;
   color: inherit;
   transition: box-shadow 0.2s ease;
-  gap: 0.35rem;
+  gap: 0.3rem;
+  box-sizing: border-box;
 }
 
 .item-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.13);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .card-name {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.95rem;
   color: #2c3e50;
-  text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
 }
 
+/* "Obligatoire" shown in green, "Archivé: non" in grey */
 .item-status {
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #27ae60;
+  
 }
 
-.item-status.non {
+.item-status.actions {
+  font-size: 0.85rem;
+  font-weight: 600;
   color: #95a5a6;
 }
 
+/* Actions */
 .actions {
   display: flex;
   justify-content: center;
+  margin-top: 0.5rem;
 }
 
 .btn-create {
   display: inline-block;
-  padding: 0.75rem 2rem;
+  padding: 0.85rem 2.5rem;
   background-color: #5b9bd5;
   color: white;
   text-decoration: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 500;
+  font-size: 1rem;
   transition: background-color 0.3s ease;
 }
 
 .btn-create:hover {
   background-color: #4a8bc4;
 }
+
 </style>
