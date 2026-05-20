@@ -121,8 +121,8 @@ watch(input, () => {
             <paginate
       :page-count="Math.ceil(bankItems.length / itemsPerPage)"
       :click-handler="handlePageChange"
-      :prev-text="'Prev'"
-      :next-text="'Next'"
+      :prev-text="'Précédent'"
+      :next-text="'Suivant'"
       :container-class="'pagination'"
       :page-class="'page-item'"
     />
@@ -148,7 +148,7 @@ watch(input, () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 15px;
   margin: 1.5rem 0;
   list-style: none;
   padding: 0;

@@ -30,9 +30,13 @@ const storeAuth = useAuthStore();
 const bankItems = ref<BankItem[]>([]);
 const userId = storeAuth.userId
 const loading = ref(true);
+const loadingSearchItems = ref(false);
+const loadingSearchBankItems = ref(false);
 const itemIds = ref<string[]>([]);
 const bankItemId = ref();
 const associatedItemIds = ref<string[]>([]);
+const inputSearchItems = ref('')
+const inputSearchBankItems = ref('')
 
 const isSelectAll = computed(() => {
   return bankItemId.value !== null && itemIds.value.length > 0;
@@ -75,6 +79,50 @@ const getAllItemForUser = async () => {
     })
     .catch((error) => console.error("Error:", error));
 };
+
+const filterItems = async () => {
+  loadingSearchItems.value = true
+  await fetch(`http://localhost:8000/api/v1/users/${userId}/items?search=${inputSearchItems.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${storeAuth.token}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      items.value = data
+      loadingSearchItems.value = false
+    })
+    .catch(error => console.error('Error:', error))
+}
+
+const filterBanks = async () => {
+  loadingSearchBankItems.value = true
+  await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items?search=${inputSearchBankItems.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${storeAuth.token}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      bankItems.value = data
+      loadingSearchBankItems.value = false
+    })
+    .catch(error => console.error('Error:', error))
+}
+
+
+watch(inputSearchBankItems, () => {  
+      filterBanks()
+  })
+  
+watch(inputSearchItems, () => {  
+      filterItems()
+})
+
 
 const loadData = async () => {
   loading.value = true;
@@ -173,10 +221,13 @@ const addItemsToBank = async () => {
     <div v-else class="two-col">
       <div class="col">
         <h3 class="col-title">Mes banques d'items</h3>
+        
         <div class="select-label">Sélectionner une banque</div>
-
+              <input type="text" v-model="inputSearchBankItems" placeholder="Chercher une banque..." />
         <div class="list-box" :class="{ 'list-box-empty': bankItems.length === 0 }">
           <div v-if="bankItems.length === 0" class="empty">Pas de banques</div>
+          <div v-if="loadingSearchBankItems" class="loading">Chargement...</div>      
+
           <div v-else class="rows">
             <label v-for="bankItem in bankItems" :key="bankItem.id" class="row-item">
               <input
@@ -195,9 +246,10 @@ const addItemsToBank = async () => {
       <div class="col col-right">
         <h3 class="col-title col-title-right">Mes items</h3>
         <div class="select-label">Sélectionner des items</div>
-
+              <input type="text" v-model="inputSearchItems" placeholder="Chercher un item..." />
         <div class="list-box" :class="{ 'list-box-empty': items.length === 0 }">
           <div v-if="items.length === 0" class="empty">Pas d'items</div>
+          <div v-if="loadingSearchItems" class="loading">Chargement...</div>      
           <div v-else class="rows">
             <label v-for="item in items" :key="item.id" class="row-item">
               <input

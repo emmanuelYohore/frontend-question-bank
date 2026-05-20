@@ -42,7 +42,7 @@ const itemId = route.params.itemId
 const isQCMorQCU = computed(() => 
    formatReponse.value?.type === 'qcm' || formatReponse.value?.type === 'qcu'
  )
- const isEVN = computed(() => formatReponse.value?.type === 'evn')
+const isEVN = computed(() => formatReponse.value?.type === 'evn')
  //const isTexte = computed(() => formatReponse.value?.type === 'texte')
 
 

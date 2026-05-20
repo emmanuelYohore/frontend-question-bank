@@ -26,6 +26,7 @@ interface ModaliteReponse {
 interface Item {
   id?: string
   question: string
+  name_variable_export: string
   obligatoire : boolean
   format_reponse?: FormatReponse | null
   modalite_reponses?: ModaliteReponse[]
@@ -42,7 +43,7 @@ const loading = ref(false)
 
 
 const formatReponse = ref<FormatReponse>({ type: '' })
-const item = ref<Item>({ question: '', obligatoire: true })
+const item = ref<Item>({ question: '', obligatoire: false , name_variable_export: '' })
 
 const modalites = ref<ModaliteReponse[]>([
   { intitule: '' },
@@ -106,6 +107,7 @@ const createItem = async () => {
       body: JSON.stringify({
             format_reponse_id: data1.formatReponse.id,
             question: item.value.question,
+            name_variable_export: item.value.name_variable_export,
             obligatoire: item.value.obligatoire,
       })
     })
@@ -198,13 +200,19 @@ const createItem = async () => {
           <label>*Question :</label>
           <input type="text" v-model="item.question" placeholder="Entrez la question" maxlength="300" required>
           <p>{{ item.question.length }}/300</p>
+
+          <label>*Nom de la variable d'export :</label>
+          <input type="text" v-model="item.name_variable_export" placeholder="Entrez le nom de la variable" maxlength="255" required>
+          <p>{{ item.name_variable_export.length }}/255</p>
         </div>
 
-        <div class="form-group checkbox-group">
+        <div class="form-group radio-group">
           <label>*Obligatoire :</label>
-          <div class="checkbox-wrapper">
-            <input type="checkbox" id="obligatoire" :value="true" v-model="item.obligatoire" />
-            <label for="obligatoire" class="checkbox-label">OUI</label>
+          <div class="radio-wrapper">
+            <input type="radio" id="obligatoire-oui" :value="true" v-model="item.obligatoire" />
+            <label for="obligatoire-oui" class="radio-label">OUI</label>
+            <input type="radio" id="obligatoire-non" :value="false" v-model="item.obligatoire" />
+            <label for="obligatoire-non" class="radio-label">NON</label>
           </div>
         </div>
 
@@ -322,25 +330,25 @@ form {
   color: #aaa;
 }
 
-.checkbox-group {
+.radio-group {
   flex-direction: row;
   align-items: center;
   gap: 12px;
 }
 
-.checkbox-wrapper {
+.radio-wrapper {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.checkbox-wrapper input[type="checkbox"] {
+.radio-wrapper input[type="radio"] {
   width: 18px;
   height: 18px;
   cursor: pointer;
 }
 
-.checkbox-label {
+.radio-label {
   font-weight: 400;
   margin: 0;
   cursor: pointer;

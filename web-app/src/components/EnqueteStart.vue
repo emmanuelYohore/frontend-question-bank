@@ -92,7 +92,8 @@ onMounted(() => {
 });
 
 /**
- * Fetch enquete by URL (public access)
+ *     //si l'enquete est archivée on retourne l'enquete est archivée, sinon on retourne l'enquete avec les items mélangés si le mode de la banque est aléatoire
+
  */
 const getEnqueteByUrl = async () => {
   loading.value = true;
@@ -106,10 +107,15 @@ const getEnqueteByUrl = async () => {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Enquête non trouvée');
+     if (response.status === 410) {
+      const errorData = await response.json();
+      alert(errorData.message);
+      window.location.href = 'https://www.google.com';
+    } else if (!response.ok) {
+      throw new Error('Erreur lors du chargement de l\'enquête');
+      
     }
-
+   
     const data: Enquete = await response.json();
     enquete.value = data;
     bankItemsEnquete.value = data.bank_items || [];
@@ -579,7 +585,7 @@ const handleEndModalClose = () => {
 
 .question {
    font-size: 15px;
-  font-weight: 500;
+  font-weight: bold;
   color: #333;
   word-break: break-word;
   overflow-wrap: break-word;

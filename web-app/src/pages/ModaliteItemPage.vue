@@ -186,40 +186,37 @@ const removeModalite = async (modaliteId: string) => {
   }
 }
 
-// const saveModalitesOrder = async () => {
-//   isSaving.value = true
-//   error.value = null
+ const saveModalitesOrder = async () => {
 
-//   try {
-//     const response = await fetch(
-//       `http://localhost:8000/api/v1/users/${storeAuth.userId}/items/${itemId}/modalites/order`,
-//       {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           Authorization: `Bearer ${storeAuth.token}`,
-//         },
-//         body: JSON.stringify({
-//           ordered_modalite_ids: modalites.value.map((m) => m.id),
-//         }),
-//       }
-//     )
+  loading.value = true
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/items/${itemId}/modalite-reponses/order`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${storeAuth.token}`,
+        },
+        body: JSON.stringify({
+          modalite_ids: modalites.value.map((m) => m.id),
+        }),
+      }
+    )
 
-//     if (!response.ok) {
-//       throw new Error("Erreur lors de la mise à jour de l'ordre des modalités")
-//     }
+    if (!response.ok) {
+      throw new Error('Erreur lors de la sauvegarde de l\'ordre des modalités')
+    }
 
-//     originalModalites.value = JSON.parse(JSON.stringify(modalites.value))
-//     hasChanged.value = false
-//     alert('Ordre sauvegardé avec succès')
-//   } catch (err) {
-//     error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
-//     console.error(err)
-//     alert(error.value)
-//   } finally {
-//     isSaving.value = false
-//   }
-// }
+    hasChanged.value = false
+  } catch (err) {
+    console.error('Error:', err)
+    alert('Impossible de sauvegarder l\'ordre des modalités')
+  } finally {
+    loading.value = false
+  }
+
+}
 
 const onDragEnd = () => {
   hasChanged.value = true
@@ -419,7 +416,7 @@ onMounted(() => {
 
     <!-- Confirm order button -->
     <div v-if="hasChanged" class="action-buttons">
-      <button class="confirm-btn" :disabled="isSaving" @click="">
+      <button class="confirm-btn" :disabled="isSaving" @click="saveModalitesOrder">
         {{ isSaving ? 'Enregistrement...' : 'Confirmer' }}
       </button>
     </div>
