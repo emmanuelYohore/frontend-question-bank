@@ -388,12 +388,21 @@ const addItemsToBank = async () => {
   gap: 0.95rem;
   min-height: 48px;
   cursor: pointer;
+
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .row-label {
   font-size: 14px;
   color: #111827;
   line-height: 1.2;
+
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  display: block;
 }
 
 .badge {

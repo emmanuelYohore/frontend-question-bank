@@ -144,6 +144,45 @@ watch(input, () => {
   font-family: 'Arial', sans-serif;
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin: 1.5rem 0;
+  list-style: none;
+  padding: 0;
+}
+
+:deep(.page-item a),
+:deep(.page-item span) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #555;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+:deep(.page-item.active a),
+:deep(.page-item.active span) {
+  background-color: #2c3e50;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 6px;
+}
+
+:deep(.page-item a:hover) {
+  background-color: #f0f0f0;
+}
+
 /* Search input */
 input[type="text"] {
   width: 100%;

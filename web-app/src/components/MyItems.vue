@@ -113,7 +113,7 @@ watch(input, () => {
               {{ item.question }}
             </span>
             <span class="item-status" :class="{ archived: item.archived }">
-              {{ item.archived ? 'Archiver' : 'Active' }}
+              {{ item.archived ? 'Archiver' : 'Actif' }}
             </span>
           </router-link>
         </div>

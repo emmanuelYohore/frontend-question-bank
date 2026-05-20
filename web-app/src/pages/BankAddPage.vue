@@ -125,7 +125,6 @@ const onDragEnd = () => {
 }
 
 
-
 const updateBankMode = async (bankId: string, newMode: string) => {
 	try {
 		const response = await fetch(
@@ -174,11 +173,12 @@ onMounted(async() => {
 				<span class="back-circle">&#8592;</span>
 				<span>Retour</span>
 			</button>
-			<h1 class="page-title">banques ajoutées</h1>
+			<h1 class="page-title">Banques ajoutées</h1>
 		</div>
 
 		<div v-if="loading" class="loading">Chargement...</div>
 		<div v-else-if="error" class="error">{{ error }}</div>
+		<div v-else-if="bankItems.length === 0" class="error">Aucune banque ajoutée à cette enquête</div>
 		<ul v-else-if="bankItems.length === 1" class="banks-list">
 			<li v-for="bank in bankItems" :key="bank.id" class="bank-row">
 				<span class="bank-text">
@@ -201,29 +201,28 @@ onMounted(async() => {
 		</ul>
 
 		<ul v-else class="banks-list">
-
-				<draggable v-model="bankItems" :animation="150" item-key="id" @end="onDragEnd">
-			<li v-for="bank in bankItems" :key="bank.id" class="bank-row">
-				<span class="bank-text-draggable">
+			<draggable v-model="bankItems" :animation="150" item-key="id" @end="onDragEnd">
+				<li v-for="bank in bankItems" :key="bank.id" class="bank-row">
 					<svg class="bank-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <rect width="24" height="24" fill="white"></rect> <circle cx="9.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> </g></svg>
-					<span>{{ bank.name }}</span>
-					<select class="mode-select" :value="bank.mode" @change="(e) => updateBankMode(bank.id, (e.target as HTMLSelectElement).value)">
-						<option value="systematique">Systématique</option>
-						<option value="aleatoire">Aléatoire</option>
-					</select>
 
-				</span>
-				<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
-					<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M3 6h18" />
-						<path d="M8 6V4h8v2" />
-						<path d="M19 6l-1 14H6L5 6" />
-						<path d="M10 11v6" />
-						<path d="M14 11v6" />
-					</svg>
-				</button>
-			</li>
-		</draggable>
+					<span class="bank-text-draggable">
+						<span>{{ bank.name }}</span>
+						<select class="mode-select" :value="bank.mode" @change="(e) => updateBankMode(bank.id, (e.target as HTMLSelectElement).value)">
+							<option value="systematique">Systématique</option>
+							<option value="aleatoire">Aléatoire</option>
+						</select>
+					</span>
+					<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
+						<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M3 6h18" />
+							<path d="M8 6V4h8v2" />
+							<path d="M19 6l-1 14H6L5 6" />
+							<path d="M10 11v6" />
+							<path d="M14 11v6" />
+						</svg>
+					</button>
+				</li>
+			</draggable>
 		</ul>
 
 		<div v-if="hasChanged" class="action-buttons">
@@ -242,9 +241,9 @@ onMounted(async() => {
 }
 
 .banks-added-page {
-	max-width: 930px;
+	max-width: 900px;
 	margin: 1rem auto;
-	padding: 0 1rem;
+	padding: 0 2rem;
 }
 
 .header-row {
@@ -266,8 +265,8 @@ onMounted(async() => {
 }
 
 .back-circle {
-	width: 2.2rem;
-	height: 2.2rem;
+	width: 2.4rem;
+	height: 2.4rem;
 	border: 2px solid #111827;
 	border-radius: 999px;
 	display: inline-flex;
@@ -295,17 +294,35 @@ onMounted(async() => {
 	color: #ef4423;
 }
 
+/* Scrollable container */
 .banks-list {
-	list-style: disc;
-	padding-left: 2.4rem;
+	list-style: none;
+	padding: 0;
 	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	max-height: 70vh;
+	overflow-y: auto;
+	padding-right: 0.25rem;
 }
 
+/* Each bank is now a card */
 .bank-row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 1rem;
+	padding: 1rem 1.25rem;
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 14px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+	gap: 0.75rem;
+	transition: box-shadow 0.2s ease;
+}
+
+.bank-row:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .bank-text-draggable {
@@ -313,12 +330,12 @@ onMounted(async() => {
 	align-items: center;
 	gap: 0.75rem;
 	color: #111827;
-	font-size: 1.05rem;
+	font-size: 0.95rem;
 	cursor: move;
 	flex: 1;
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-	word-break: break-word;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	line-height: 1.5;
 }
 
@@ -327,24 +344,32 @@ onMounted(async() => {
 	align-items: center;
 	gap: 0.75rem;
 	color: #111827;
-	font-size: 1.05rem;
-	cursor: pointer;
+	font-size: 0.95rem;
 	flex: 1;
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-	word-break: break-word;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	line-height: 1.5;
 }
 
+.bank-icon {
+	width: 1.4rem;
+	height: 1.4rem;
+	flex-shrink: 0;
+	opacity: 0.4;
+	cursor: move;
+}
+
 .mode-select {
-	padding: 0.5rem 0.75rem;
+	padding: 0.35rem 0.6rem;
 	border: 1px solid #d1d5db;
-	border-radius: 0.375rem;
-	font-size: 0.95rem;
+	border-radius: 8px;
+	font-size: 0.875rem;
 	color: #111827;
 	background-color: #fff;
 	cursor: pointer;
 	transition: border-color 0.2s;
+	flex-shrink: 0;
 }
 
 .mode-select:hover {
@@ -357,29 +382,24 @@ onMounted(async() => {
 	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.bank-icon {
-	width: 1.5rem;
-	height: 1.5rem;
-	flex-shrink: 0;
-}
-
 .icon-btn {
 	border: none;
 	background: transparent;
 	cursor: pointer;
 	padding: 0.1rem;
+	flex-shrink: 0;
 }
 
 .trash-icon {
-	width: 1.8rem;
-	height: 1.8rem;
+	width: 1.2rem;
+	height: 1.2rem;
 	color: #ef4423;
 }
 
 .action-buttons {
 	display: flex;
 	justify-content: center;
-	margin-top: 2rem;
+	margin-top: 1.5rem;
 	gap: 1rem;
 }
 
@@ -388,7 +408,7 @@ onMounted(async() => {
 	background-color: #10b981;
 	color: white;
 	border: none;
-	border-radius: 0.375rem;
+	border-radius: 10px;
 	font-size: 1rem;
 	font-weight: 600;
 	cursor: pointer;

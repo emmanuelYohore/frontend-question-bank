@@ -151,7 +151,7 @@ onMounted(async() => {
         <div v-else-if="items.length === 0" class="error">Aucun item ajouté à cette banque</div>
 		<ul v-else-if="items.length === 1" class="items-list">
 				<li v-for="item in items" :key="item.id" class="item-row">
-					<span class="item-text">{{ item.question }}</span>
+					<span class="item-text" :title="item.question">{{ item.question }}</span>
 					<button class="icon-btn" @click="removeItemFromBank(item.id)" title="Supprimer">
 						<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<path d="M3 6h18" />
@@ -168,7 +168,7 @@ onMounted(async() => {
 				<li v-for="item in items" :key="item.id" class="item-row">
 					<svg class="item-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <rect width="24" height="24" fill="white"></rect> <circle cx="9.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="9.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="6" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="10" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="14" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> <circle cx="14.5" cy="18" r="0.5" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"></circle> </g></svg>
 
-					<span class="item-text-draggable">{{ item.question }}</span>
+					<span class="item-text-draggable" :title="item.question">{{ item.question }}</span>
 					<button class="icon-btn" @click="removeItemFromBank(item.id)" title="Supprimer">
 						<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<path d="M3 6h18" />
@@ -198,9 +198,9 @@ onMounted(async() => {
 }
 
 .items-added-page {
-	max-width: 930px;
+	max-width: 900px;
 	margin: 1rem auto;
-	padding: 0 1rem;
+	padding: 0 2rem;
 }
 
 .header-row {
@@ -222,8 +222,8 @@ onMounted(async() => {
 }
 
 .back-circle {
-	width: 2.2rem;
-	height: 2.2rem;
+	width: 2.4rem;
+	height: 2.4rem;
 	border: 2px solid #111827;
 	border-radius: 999px;
 	display: inline-flex;
@@ -251,17 +251,36 @@ onMounted(async() => {
 	color: #ef4423;
 }
 
+/* Scrollable container */
 .items-list {
-	list-style: disc;
-	padding-left: 2.4rem;
+	list-style: none;
+	padding: 0;
 	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	max-height: 70vh;
+	overflow-y: auto;
+	padding-right: 0.25rem;
+	background-color: #9ca3af;
 }
 
+/* Each item is now a card */
 .item-row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 1rem;
+	padding: 1rem 1.25rem;
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 14px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+	gap: 0.75rem;
+	transition: box-shadow 0.2s ease;
+}
+
+.item-row:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .item-text-draggable {
@@ -269,12 +288,12 @@ onMounted(async() => {
 	align-items: center;
 	gap: 0.75rem;
 	color: #111827;
-	font-size: 1.05rem;
+	font-size: 0.95rem;
 	cursor: move;
 	flex: 1;
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-	word-break: break-word;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	line-height: 1.5;
 }
 
@@ -283,20 +302,20 @@ onMounted(async() => {
 	align-items: center;
 	gap: 0.75rem;
 	color: #111827;
-	font-size: 1.05rem;
-	cursor: pointer;
+	font-size: 0.95rem;
 	flex: 1;
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-	word-break: break-word;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	line-height: 1.5;
 }
 
 .item-icon {
-	width: 1.5rem;
-	height: 1.5rem;
+	width: 1.4rem;
+	height: 1.4rem;
 	flex-shrink: 0;
-	margin-right: 0.75rem;
+	opacity: 0.4;
+	cursor: move;
 }
 
 .icon-btn {
@@ -304,6 +323,7 @@ onMounted(async() => {
 	background: transparent;
 	cursor: pointer;
 	padding: 0.1rem;
+	flex-shrink: 0;
 }
 
 .trash-icon {
@@ -315,7 +335,7 @@ onMounted(async() => {
 .action-buttons {
 	display: flex;
 	justify-content: center;
-	margin-top: 2rem;
+	margin-top: 1.5rem;
 	gap: 1rem;
 }
 
@@ -324,7 +344,7 @@ onMounted(async() => {
 	background-color: #10b981;
 	color: white;
 	border: none;
-	border-radius: 0.375rem;
+	border-radius: 10px;
 	font-size: 1rem;
 	font-weight: 600;
 	cursor: pointer;

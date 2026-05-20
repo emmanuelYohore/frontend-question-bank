@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { ref } from 'vue';
+
 
 interface Enquete {
   id?: string;
@@ -15,6 +17,7 @@ interface Props {
   isOpen: boolean;
 }
 
+const loading = ref(false);
 defineProps<Props>();
 
 const emit = defineEmits<{
@@ -24,6 +27,7 @@ const emit = defineEmits<{
 
 const handleStart = () => {
   emit('start');
+  loading.value = true;
 };
 
 </script>
@@ -40,7 +44,7 @@ const handleStart = () => {
         <div v-if="enquete?.start_message" class="modal-message" v-html="enquete.start_message"></div>
 
         <button @click="handleStart" class="btn-start">
-          Commencer
+          {{ loading? 'Chargement...' : 'Commencer' }}
         </button>
       </div>
     </div>

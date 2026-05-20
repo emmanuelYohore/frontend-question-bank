@@ -48,6 +48,7 @@ const handleConfirm = () => {
   padding: 0;
   font-family: 'Arial', sans-serif;
 }
+
 .overlay {
   position: fixed;
   top: 0;

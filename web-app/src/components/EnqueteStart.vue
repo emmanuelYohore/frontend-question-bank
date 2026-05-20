@@ -379,8 +379,6 @@ const handleEndModalClose = () => {
       <!-- Bank Items and Questions -->
       <div class="survey-content">
         <div v-for="bankItem in bankItemsEnquete" :key="bankItem.id" class="bank-item-section">
-          <h2 class="bank-item-name">{{ bankItem.name }}</h2>
-
           <div v-for="item in bankItem.items" :key="item.id" class="item-card">
             <div class="item-header">
               <label class="question">
@@ -564,9 +562,11 @@ const handleEndModalClose = () => {
   background-color: #ffffff;
   padding: 20px;
   margin-bottom: 15px;
-  border: 1px solid #d0d0d0;
-  border-radius: 6px;
+  border: 3px solid #d0d0d0;
+  border-radius: 10px;
   counter-increment: item-counter;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
 }
 
 .item-card:last-child {
@@ -578,9 +578,14 @@ const handleEndModalClose = () => {
 }
 
 .question {
-  font-size: 15px;
+   font-size: 15px;
   font-weight: 500;
   color: #333;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  display: block;
+  
 }
 
 .question::before {
@@ -632,6 +637,11 @@ const handleEndModalClose = () => {
   cursor: pointer;
   font-size: 14px;
   color: #333;
+
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  display: block;
 }
 
 .checkbox-item input,
@@ -661,10 +671,22 @@ const handleEndModalClose = () => {
 
 .label-left {
   text-align: left;
+   font-size: 15px;
+  color: #333;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  display: block;
 }
 
 .label-right {
   text-align: right;
+   font-size: 15px;
+  color: #333;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  display: block;
 }
 
 .range-input {

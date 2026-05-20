@@ -3,6 +3,7 @@
 import { ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { router } from '@/router/routes';
+import { faDeleteLeft } from '@fortawesome/free-solid-svg-icons';
 
 const authStore = useAuthStore();
 
@@ -226,7 +227,7 @@ const createItem = async () => {
             :disabled="modalites.length <= 2"
             class="btn-remove"
           >
-            
+          X
           </button>
         </div>
         <button 
