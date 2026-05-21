@@ -120,6 +120,8 @@ const createEnquete = async () => {
           <input type="text" v-model="enquete.title" placeholder="Entrez un titre" required="true" />
         </div>
 
+        <!-- balise autorisées -->
+        <p class="allowed-tags">Balises autorisées : &lt;p&gt;, &lt;br&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;, &lt;a&gt;, &lt;h1&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;i&gt;, &lt;b&gt;, &lt;u&gt;, &lt;span&gt;, &lt;small&gt;</p>
         <div class="form-group">
           <label for="description">*Description :</label>
           <textarea v-model="enquete.description" placeholder="Entrez une description" required="true"

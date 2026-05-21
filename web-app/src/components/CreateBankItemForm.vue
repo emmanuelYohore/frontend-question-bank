@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import PopupAddBankCreateToEnquete from '@/modals/PopupAddBankCreateToEnquete.vue';
 
 const authStore = useAuthStore();
 
 const name = ref('');
-
 const archived = ref(false);
 const mode = ref("systematique");
 const loading = ref(false)
+const showPopup = ref(false)
+const createdBankId = ref('')
+const valueBankNameCreated = ref('')  
 
 /**
  * fonction pour créer une banque d'item
@@ -16,28 +19,31 @@ const loading = ref(false)
 const createBankItem = async () => { 
   loading.value = true;
   await fetch("http://localhost:8000/api/v1/bank-items", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": `Bearer ${authStore.token}`,
-      },
-      body: JSON.stringify({
-        name: name.value,
-        archived: archived.value,
-        mode: mode.value
-      }),
-    })
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "Authorization": `Bearer ${authStore.token}`,
+    },
+    body: JSON.stringify({
+      name: name.value,
+      archived: archived.value,
+      mode: mode.value
+    }),
+  })
     .then(response => response.json())
     .then(data => {
-      alert('Banque créer avec succès')
+      createdBankId.value = data.bankItem.id
+      valueBankNameCreated.value = name.value  
+      showPopup.value = true
+
       console.log(data);
-      name.value = ''; 
+      name.value = ''  
       loading.value = false;    
     })
     .catch(error => console.error('Error:', error))
-  }
+}
 </script>
 
 <template>
@@ -61,6 +67,14 @@ const createBankItem = async () => {
         </button>
       </form>
     </div>
+
+    <PopupAddBankCreateToEnquete
+      v-if="showPopup"
+      :bank-item-id="createdBankId"
+      :bank-item-name="valueBankNameCreated"
+      @close="showPopup = false"
+      @validated="showPopup = false"
+    />
   </div>
 </template>
 

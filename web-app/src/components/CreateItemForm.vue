@@ -3,9 +3,12 @@
 import { ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { router } from '@/router/routes';
-import { faDeleteLeft } from '@fortawesome/free-solid-svg-icons';
+import PopupAddItemCreateToBank from '@/modals/PopupAddItemCreateToBank.vue';
 
 const authStore = useAuthStore();
+const showPopup = ref(false)
+const createdItemId = ref('')
+const valueItemQuestionCreated = ref('')  // ← sauvegarde la question avant reset
 
 //interface pour le format de réponse
 interface FormatReponse {
@@ -40,7 +43,6 @@ const options = ref([
 ])
 
 const loading = ref(false)
-
 
 const formatReponse = ref<FormatReponse>({ type: '' })
 const item = ref<Item>({ question: '', obligatoire: false , name_variable_export: '' })
@@ -79,17 +81,16 @@ const createItem = async () => {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
-      "Accept": "application/json",
-      "Authorization": `Bearer ${authStore.token}`,
-
-       },
+        "Accept": "application/json",
+        "Authorization": `Bearer ${authStore.token}`,
+      },
       body: JSON.stringify({
         type: formatReponse.value.type
       })
     })
 
     if (!res1.ok) {
-      alert( "Erreur lors de la création du format de réponse")
+      alert("Erreur lors de la création du format de réponse")
       return
     }
 
@@ -100,20 +101,19 @@ const createItem = async () => {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
-      "Accept": "application/json",
-      "Authorization": `Bearer ${authStore.token}`,
-
-       },
+        "Accept": "application/json",
+        "Authorization": `Bearer ${authStore.token}`,
+      },
       body: JSON.stringify({
-            format_reponse_id: data1.formatReponse.id,
-            question: item.value.question,
-            name_variable_export: item.value.name_variable_export,
-            obligatoire: item.value.obligatoire,
+        format_reponse_id: data1.formatReponse.id,
+        question: item.value.question,
+        name_variable_export: item.value.name_variable_export,
+        obligatoire: item.value.obligatoire,
       })
     })
 
     if (!res2.ok) {
-      alert( "Erreur lors de la création de l'item")
+      alert("Erreur lors de la création de l'item")
       return
     }
 
@@ -139,7 +139,7 @@ const createItem = async () => {
         })
 
         if (!resModalite.ok) {
-          alert( "Erreur lors de la création des modalités")
+          alert("Erreur lors de la création des modalités")
           return
         }
       }
@@ -162,7 +162,7 @@ const createItem = async () => {
       })
 
       if (!res3.ok) {
-        alert( "Erreur lors de la création de la modalité EVN")
+        alert("Erreur lors de la création de la modalité EVN")
         return
       }
 
@@ -170,12 +170,20 @@ const createItem = async () => {
       console.log("Modalité EVN créée:", data3)
     }
 
-    alert("Item créé avec succès")
+    createdItemId.value = data2.item.id
+    valueItemQuestionCreated.value = item.value.question
+
+    showPopup.value = true
+
   } catch (err) {
     console.error("Erreur :", err)
     alert("Erreur: " + err)
   } finally {
     loading.value = false
+    item.value = { question: '', name_variable_export: '', obligatoire: false }
+    formatReponse.value = { type: '' }
+    modalites.value = [ { intitule: '' }, { intitule: '' } ]
+    modaliteEVN.value = { v1: '', v2: '' }
   }
 }
 
@@ -215,61 +223,67 @@ const createItem = async () => {
           </div>
         </div>
 
-
-
-      <div v-if="isQCMorQCU" class="modalites-section">
-        <h3>Modalités de réponse (minimum 2, maximum 20)</h3>
-        <div v-for="(modalite, index) in modalites" :key="index" class="modalite-item">
-          <input 
-            type="text" 
-            v-model="modalite.intitule" 
-            :placeholder="'Intitulé ' + (index + 1)" 
-            required
-            maxlength="300"
-          >
-          <p>{{ modalite.intitule?.length }}/300</p>
-         <button 
+        <div v-if="isQCMorQCU" class="modalites-section">
+          <h3>Modalités de réponse (minimum 2, maximum 20)</h3>
+          <div v-for="(modalite, index) in modalites" :key="index" class="modalite-item">
+            <input 
+              type="text" 
+              v-model="modalite.intitule" 
+              :placeholder="'Intitulé ' + (index + 1)" 
+              required
+              maxlength="300"
+            >
+            <p>{{ modalite.intitule?.length }}/300</p>
+            <button 
+              type="button" 
+              @click="removeModalite(index)"
+              :disabled="modalites.length <= 2"
+              class="btn-remove"
+            >
+              X
+            </button>
+          </div>
+          <button 
             type="button" 
-            @click="removeModalite(index)"
-            :disabled="modalites.length <= 2"
-            class="btn-remove"
+            @click="addModalite"
+            :disabled="modalites.length >= 20"
+            class="btn-add"
           >
-          X
+            + Ajouter une modalité
           </button>
         </div>
-        <button 
-          type="button" 
-          @click="addModalite"
-          :disabled="modalites.length >= 20"
-          class="btn-add"
-        >
-          + Ajouter une modalité
-        </button>
-      </div>
 
-      <div v-if="isEVN" class="evn-section">
-        <h3>Valeurs de l'échelle</h3>
-        <div class="form-group">
-          <label>*Valeur minimale :</label>
-          <input type="text" v-model="modaliteEVN.v1" placeholder="Ex: bien" required maxlength="150">
-          <p>{{ modaliteEVN.v1?.length }}/150</p>
+        <div v-if="isEVN" class="evn-section">
+          <h3>Valeurs de l'échelle</h3>
+          <div class="form-group">
+            <label>*Valeur minimale :</label>
+            <input type="text" v-model="modaliteEVN.v1" placeholder="Ex: bien" required maxlength="150">
+            <p>{{ modaliteEVN.v1?.length }}/150</p>
+          </div>
+          <div class="form-group">
+            <label>*Valeur maximale :</label>
+            <input type="text" v-model="modaliteEVN.v2" placeholder="Ex: très bien" required maxlength="150">
+            <p>{{ modaliteEVN.v2?.length }}/150</p>
+          </div>
         </div>
-        <div class="form-group">
-          <label>*Valeur maximale :</label>
-          <input type="text" v-model="modaliteEVN.v2" placeholder="Ex: très bien" required maxlength="150">
-          <p>{{ modaliteEVN.v2?.length }}/150</p>
-        </div>
-      </div>
 
-      <div v-if="isTexte" class="texte-info">
-        <p>Aucune modalité requise pour le texte libre.</p>
-      </div>
+        <div v-if="isTexte" class="texte-info">
+          <p>Aucune modalité requise pour le texte libre.</p>
+        </div>
 
         <button type="submit" class="btn-submit" :disabled="loading">
           {{ loading ? 'Chargement...' : 'Créer' }}
         </button>
       </form>
     </div>
+
+    <PopupAddItemCreateToBank
+      v-if="showPopup"
+      :item-id="createdItemId"
+      :item-question="valueItemQuestionCreated"
+      @close="showPopup = false"
+      @validated="showPopup = false"
+    />
   </div>
 </template>
 
