@@ -171,7 +171,6 @@ const createItem = async () => {
     }
 
     alert("Item créé avec succès")
-    router.push('/my-items')
   } catch (err) {
     console.error("Erreur :", err)
     alert("Erreur: " + err)
@@ -251,14 +250,14 @@ const createItem = async () => {
       <div v-if="isEVN" class="evn-section">
         <h3>Valeurs de l'échelle</h3>
         <div class="form-group">
-          <label>*Valeur 1 :</label>
-          <input type="text" v-model="modaliteEVN.v1" placeholder="Ex: bien" required maxlength="300">
-          <p>{{ modaliteEVN.v1?.length }}/300</p>
+          <label>*Valeur minimale :</label>
+          <input type="text" v-model="modaliteEVN.v1" placeholder="Ex: bien" required maxlength="150">
+          <p>{{ modaliteEVN.v1?.length }}/150</p>
         </div>
         <div class="form-group">
-          <label>*Valeur 2 :</label>
-          <input type="text" v-model="modaliteEVN.v2" placeholder="Ex: très bien" required maxlength="300">
-          <p>{{ modaliteEVN.v2?.length }}/300</p>
+          <label>*Valeur maximale :</label>
+          <input type="text" v-model="modaliteEVN.v2" placeholder="Ex: très bien" required maxlength="150">
+          <p>{{ modaliteEVN.v2?.length }}/150</p>
         </div>
       </div>
 

@@ -2,8 +2,8 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
-import PopupUpdateItem from '../modals/PopupUpdateItem.vue'
-
+import PopupUpdateQuestionItem from '../modals/PopupUpdateQuestionItem.vue'
+import PopupUpdateNameVarExportItem from '../modals/PopupUpdateNameVarExportItem.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -26,6 +26,7 @@ interface Item {
   id?: string
   question: string
   obligatoire : boolean
+  name_variable_export: string
   archived: boolean
   format_reponse?: FormatReponse | null
   modalite_reponses?: ModaliteReponse[]
@@ -46,9 +47,11 @@ const isEVN = computed(() => formatReponse.value?.type === 'evn')
  //const isTexte = computed(() => formatReponse.value?.type === 'texte')
 
 
-const showModal = ref(false)
+const showModalQuestion = ref(false)
+const showModalVariableExport = ref(false)
 
-const onConfirm = async (newQuestion: string) => {
+
+const onConfirmUpdateQuestion = async (newQuestion: string) => {
   loading.value = true
 
   await fetch(`http://localhost:8000/api/v1/items/${itemId}`, {
@@ -66,7 +69,32 @@ const onConfirm = async (newQuestion: string) => {
       if (item.value) {
         item.value.question = newQuestion
       }
-      showModal.value = false
+      showModalQuestion.value = false
+    })
+    .catch(err => console.error(err))
+    .finally(() => loading.value = false
+  )
+}
+
+const onConfirmUpdateVariableExport = async (newVariableExport: string) => {
+  loading.value = true
+
+  await fetch(`http://localhost:8000/api/v1/items/${itemId}`, {
+    method: 'PUT',
+    credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${storeAuth.token}`,
+      },
+    body: JSON.stringify({ name_variable_export: newVariableExport }),
+  })
+    .then(res => res.json())
+    .then(() => {
+      if (item.value) {
+        item.value.name_variable_export = newVariableExport
+      }
+      showModalVariableExport.value = false
     })
     .catch(err => console.error(err))
     .finally(() => loading.value = false
@@ -222,7 +250,7 @@ onMounted(() => {
           <div class="info-group">
             <label>Question :</label>
             <span>{{ item.question }}</span>
-            <button @click="showModal = true">
+            <button @click="showModalQuestion = true">
             <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
@@ -230,18 +258,39 @@ onMounted(() => {
             <span>Modifier</span>
             </button>
 
-    <PopupUpdateItem
-      v-if="showModal"
-      :current-question="item.question"
-      @confirm="onConfirm"
-      @cancel="showModal = false"
-    />
+            <PopupUpdateQuestionItem
+              v-if="showModalQuestion"
+              :current-question="item.question"
+              @confirm="onConfirmUpdateQuestion"
+              @cancel="showModalQuestion = false"
+            />
           </div>
 
           <div class="info-group">
             <label>Obligatoire :</label>
             <span>{{ item.obligatoire ? 'Oui' : 'Non' }}</span>
           </div>
+
+          <div class="info-group">
+            <label>Nom de la variable d'export :</label>
+            <span>{{ item.name_variable_export }}</span>
+
+            <button @click="showModalVariableExport = true">
+            <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>Modifier</span>
+            </button>
+
+            <PopupUpdateNameVarExportItem
+              v-if="showModalVariableExport"
+              :current-name-variable-export="item.name_variable_export"
+              @confirm="onConfirmUpdateVariableExport"
+              @cancel="showModalVariableExport = false"
+            />
+          </div>
+          
 
           <div class="info-group">
             <label>Type de format de reponse :</label>
