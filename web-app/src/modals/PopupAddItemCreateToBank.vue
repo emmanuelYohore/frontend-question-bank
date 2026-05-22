@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 interface BankItem {
@@ -23,7 +23,9 @@ const userId = authStore.userId
 const bankItems = ref<BankItem[]>([])
 const selectedBankIds = ref<string[]>([])
 const loading = ref(true)
+const loadingSearch = ref(false)
 const submitting = ref(false)
+const inputSearchBankItems = ref('')
 
 const canValidate = computed(() => selectedBankIds.value.length > 0 && !submitting.value)
 
@@ -48,6 +50,31 @@ const fetchBanks = async () => {
     loading.value = false
   }
 }
+
+const filterBanks = async () => {
+  loadingSearch.value = true
+  try {
+    const res = await fetch(
+      `http://localhost:8000/api/v1/users/${userId}/bank-items?search=${inputSearchBankItems.value}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      }
+    )
+    const data = await res.json()
+    bankItems.value = data as BankItem[]
+  } catch (err) {
+    console.error('Erreur lors de la recherche:', err)
+  } finally {
+    loadingSearch.value = false
+  }
+}
+
+watch(inputSearchBankItems, () => {
+  filterBanks()
+})
 
 const validate = async () => {
   if (!canValidate.value) return
@@ -95,27 +122,40 @@ const validate = async () => {
           </label>
         </div>
 
-        <!-- Right: banks list -->
-        <div class="banks-col">
-          <div v-if="loading" class="banks-loading">Chargement...</div>
-          <div v-else-if="bankItems.length === 0" class="banks-empty">Aucune banque disponible</div>
-          <div v-else class="banks-scroll">
-            <label
-              v-for="bank in bankItems"
-              :key="bank.id"
-              class="bank-row"
-              :class="{ 'bank-row-disabled': bank.archived }"
-            >
-              <input
-                type="checkbox"
-                :value="bank.id"
-                v-model="selectedBankIds"
-                :disabled="bank.archived"
-                class="bank-checkbox"
-              />
-              <span class="bank-label" :class="{ 'label-disabled': bank.archived }">{{ bank.name }}</span>
-              <span v-if="bank.archived" class="badge-archived">Archivé</span>
-            </label>
+        <!-- Right: search + banks list -->
+        <div class="banks-right">
+          <div class="search-bar">
+            <input
+              type="text"
+              v-model="inputSearchBankItems"
+              placeholder="Chercher une banque..."
+              class="search-input"
+            />
+            <span class="search-icon">&#128269;</span>
+          </div>
+
+          <div class="banks-col">
+            <div v-if="loading" class="banks-loading">Chargement...</div>
+            <div v-else-if="loadingSearch" class="banks-loading">Chargement...</div>
+            <div v-else-if="bankItems.length === 0" class="banks-empty">Aucune banque trouvée</div>
+            <div v-else class="banks-scroll">
+              <label
+                v-for="bank in bankItems"
+                :key="bank.id"
+                class="bank-row"
+                :class="{ 'bank-row-disabled': bank.archived }"
+              >
+                <input
+                  type="checkbox"
+                  :value="bank.id"
+                  v-model="selectedBankIds"
+                  :disabled="bank.archived"
+                  class="bank-checkbox"
+                />
+                <span class="bank-label" :class="{ 'label-disabled': bank.archived }">{{ bank.name }}</span>
+                <span v-if="bank.archived" class="badge-archived">Archivé</span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -157,7 +197,7 @@ const validate = async () => {
   border-radius: 16px;
   padding: 2rem 2.5rem;
   width: 100%;
-  max-width: 680px;
+  max-width: 720px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
@@ -181,9 +221,10 @@ const validate = async () => {
   align-items: flex-start;
 }
 
-/* ── Item column ── */
+/* ── Item column (left) ── */
 .item-col {
   flex: 0 0 auto;
+  align-self: center;
 }
 
 .item-row {
@@ -211,9 +252,45 @@ const validate = async () => {
   font-weight: 500;
 }
 
-/* ── Banks column ── */
-.banks-col {
+/* ── Right column: search + list ── */
+.banks-right {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ── Search bar ── */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  gap: 0.5rem;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  color: #1a1a2e;
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.search-icon {
+  font-size: 0.9rem;
+  color: #888;
+  flex-shrink: 0;
+}
+
+/* ── Banks list ── */
+.banks-col {
   border: 1.5px solid #d0d0d0;
   border-radius: 10px;
   background: #fafafa;

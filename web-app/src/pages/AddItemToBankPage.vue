@@ -30,13 +30,14 @@ const storeAuth = useAuthStore();
 const bankItems = ref<BankItem[]>([]);
 const userId = storeAuth.userId
 const loading = ref(true);
-const loadingSearchItems = ref(false);
-const loadingSearchBankItems = ref(false);
+
 const itemIds = ref<string[]>([]);
 const bankItemId = ref();
 const associatedItemIds = ref<string[]>([]);
 const inputSearchItems = ref('')
 const inputSearchBankItems = ref('')
+const loadingSearchItems = ref(false);
+const loadingSearchBankItems = ref(false);
 
 const isSelectAll = computed(() => {
   return bankItemId.value !== null && itemIds.value.length > 0;
@@ -246,7 +247,7 @@ const addItemsToBank = async () => {
       <div class="col col-right">
         <h3 class="col-title col-title-right">Mes items</h3>
         <div class="select-label">Sélectionner des items</div>
-              <input type="text" v-model="inputSearchItems" placeholder="Chercher un item..." />
+            <input type="text" v-model="inputSearchItems" placeholder="Chercher un item..." />
         <div class="list-box" :class="{ 'list-box-empty': items.length === 0 }">
           <div v-if="items.length === 0" class="empty">Pas d'items</div>
           <div v-if="loadingSearchItems" class="loading">Chargement...</div>      

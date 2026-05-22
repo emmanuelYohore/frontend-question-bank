@@ -31,9 +31,13 @@ const storeAuth = useAuthStore();
 const enquetes = ref<Enquete[]>([]);
 const userId = storeAuth.userId
 const loading = ref(true);
+const loadingSearchBankItems = ref(false);
+const loadingSearchEnquetes = ref(false);
 const bankItemIds = ref<string[]>([]);
 const enqueteId = ref();
 const associatedBankItemIds = ref<string[]>([]);
+const inputSearchBankItems = ref('')
+const inputSearchEnquetes = ref('')
 
 const isSelectAll = computed(() => {
   return enqueteId.value != null && bankItemIds.value.length > 0;
@@ -82,6 +86,48 @@ const getAllBankItemForUser = async () => {
     })
     .catch((error) => console.error("Error:", error));
 };
+
+const filterBanks = async () => {
+  loadingSearchBankItems.value = true
+  await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items?search=${inputSearchBankItems.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${storeAuth.token}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      bankItems.value = data
+      loadingSearchBankItems.value = false
+    })
+    .catch(error => console.error('Error:', error))
+}
+
+const filterEnquetes = async () => {
+  loadingSearchEnquetes.value = true
+  await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes?search=${inputSearchEnquetes.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${storeAuth.token}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      enquetes.value = data
+      loadingSearchEnquetes.value = false
+    })
+    .catch(error => console.error('Error:', error))
+}
+
+watch(inputSearchBankItems, () => {  
+      filterBanks()
+  })
+  
+watch(inputSearchEnquetes, () => {  
+      filterEnquetes()
+})
 
 const loadData = async () => {
   loading.value = true;
@@ -181,9 +227,12 @@ const addBankItemsToEnquete = async () => {
       <div class="col">
         <h3 class="col-title">Mes enquêtes</h3>
         <div class="select-label">Sélectionner une enquête</div>
+              <input type="text" v-model="inputSearchEnquetes" placeholder="Chercher une enquête..." />
 
         <div class="list-box" :class="{ 'list-box-empty': enquetes.length === 0 }">
           <div v-if="enquetes.length === 0" class="empty">Pas d'enquêtes</div>
+           <div v-if="loadingSearchEnquetes" class="loading">Chargement...</div>      
+
           <div v-else class="rows">
             <label v-for="enquete in enquetes" :key="enquete.id" class="row-item">
               <input type="radio" :value="enquete.id" v-model="enqueteId" :disabled="enquete.archived" class="radio" />
@@ -196,9 +245,11 @@ const addBankItemsToEnquete = async () => {
       <div class="col col-right">
         <h3 class="col-title col-title-right">Mes banques</h3>
         <div class="select-label">Sélectionner des banques</div>
-
+        <input type="text" v-model="inputSearchBankItems" placeholder="Chercher une banque..." />
         <div class="list-box" :class="{ 'list-box-empty': bankItems.length === 0 }">
           <div v-if="bankItems.length === 0" class="empty">Pas de banques d'items</div>
+           <div v-if="loadingSearchBankItems" class="loading">Chargement...</div>      
+
           <div v-else class="rows">
             <label v-for="bankItem in bankItems" :key="bankItem.id" class="row-item">
               <input

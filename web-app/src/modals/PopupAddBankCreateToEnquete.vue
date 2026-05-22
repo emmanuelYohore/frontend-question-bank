@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 interface Enquete {
@@ -24,6 +24,8 @@ const enquetes = ref<Enquete[]>([])
 const selectedEnqueteIds = ref<string[]>([])
 const loading = ref(true)
 const submitting = ref(false)
+const loadingSearchEnquetes = ref(false)
+const inputSearchEnquetes = ref('')
 
 const canValidate = computed(() => selectedEnqueteIds.value.length > 0 && !submitting.value)
 
@@ -48,6 +50,27 @@ const fetchEnquetes = async () => {
     loading.value = false
   }
 }
+
+const filterEnquetes = async () => {
+  loadingSearchEnquetes.value = true
+  await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes?search=${inputSearchEnquetes.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authStore.token}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      enquetes.value = data
+      loadingSearchEnquetes.value = false
+    })
+    .catch(error => console.error('Error:', error))
+}
+
+watch(inputSearchEnquetes, () => {
+  filterEnquetes()
+})
 
 const validate = async () => {
   if (!canValidate.value) return
@@ -95,27 +118,40 @@ const validate = async () => {
           </label>
         </div>
 
-        <!-- Right: enquêtes list -->
-        <div class="enquetes-col">
-          <div v-if="loading" class="list-loading">Chargement...</div>
-          <div v-else-if="enquetes.length === 0" class="list-empty">Aucune enquête disponible</div>
-          <div v-else class="list-scroll">
-            <label
-              v-for="enquete in enquetes"
-              :key="enquete.id"
-              class="list-row"
-              :class="{ 'list-row-disabled': enquete.archived }"
-            >
-              <input
-                type="checkbox"
-                :value="enquete.id"
-                v-model="selectedEnqueteIds"
-                :disabled="enquete.archived"
-                class="list-checkbox"
-              />
-              <span class="list-label" :class="{ 'label-disabled': enquete.archived }">{{ enquete.title }}</span>
-              <span v-if="enquete.archived" class="badge-archived">Archivé</span>
-            </label>
+        <!-- Right: search + enquêtes list -->
+        <div class="enquetes-right">
+          <div class="search-bar">
+            <input
+              type="text"
+              v-model="inputSearchEnquetes"
+              placeholder="Chercher une enquête..."
+              class="search-input"
+            />
+            <span class="search-icon">&#128269;</span>
+          </div>
+
+          <div class="enquetes-col">
+            <div v-if="loading" class="list-loading">Chargement...</div>
+            <div v-else-if="loadingSearchEnquetes" class="list-loading">Chargement...</div>
+            <div v-else-if="enquetes.length === 0" class="list-empty">Aucune enquête trouvée</div>
+            <div v-else class="list-scroll">
+              <label
+                v-for="enquete in enquetes"
+                :key="enquete.id"
+                class="list-row"
+                :class="{ 'list-row-disabled': enquete.archived }"
+              >
+                <input
+                  type="checkbox"
+                  :value="enquete.id"
+                  v-model="selectedEnqueteIds"
+                  :disabled="enquete.archived"
+                  class="list-checkbox"
+                />
+                <span class="list-label" :class="{ 'label-disabled': enquete.archived }">{{ enquete.title }}</span>
+                <span v-if="enquete.archived" class="badge-archived">Archivé</span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -157,7 +193,7 @@ const validate = async () => {
   border-radius: 16px;
   padding: 2rem 2.5rem;
   width: 100%;
-  max-width: 680px;
+  max-width: 720px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
@@ -181,9 +217,10 @@ const validate = async () => {
   align-items: flex-start;
 }
 
-/* ── Item column ── */
+/* ── Item column (left) ── */
 .item-col {
   flex: 0 0 auto;
+  align-self: center;
 }
 
 .item-row {
@@ -211,9 +248,45 @@ const validate = async () => {
   font-weight: 500;
 }
 
-/* ── Enquêtes column ── */
-.enquetes-col {
+/* ── Right column: search + list ── */
+.enquetes-right {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ── Search bar ── */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  gap: 0.5rem;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  color: #1a1a2e;
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.search-icon {
+  font-size: 0.9rem;
+  color: #888;
+  flex-shrink: 0;
+}
+
+/* ── Enquêtes list ── */
+.enquetes-col {
   border: 1.5px solid #d0d0d0;
   border-radius: 10px;
   background: #fafafa;
