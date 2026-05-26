@@ -131,7 +131,6 @@ const validate = async () => {
               placeholder="Chercher une banque..."
               class="search-input"
             />
-            <span class="search-icon">&#128269;</span>
           </div>
 
           <div class="banks-col">
@@ -281,12 +280,6 @@ const validate = async () => {
 
 .search-input::placeholder {
   color: #999;
-}
-
-.search-icon {
-  font-size: 0.9rem;
-  color: #888;
-  flex-shrink: 0;
 }
 
 /* ── Banks list ── */

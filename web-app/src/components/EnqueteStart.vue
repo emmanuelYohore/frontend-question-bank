@@ -34,11 +34,14 @@ interface ModaliteReponse {
 }
 
 interface Item {
-  id?: string;
-  question: string;
-  obligatoire: boolean;
-  format_reponse?: FormatReponse | null;
-  modalite_reponses?: ModaliteReponse[];
+  id?: string
+  question: string
+  min_case_to_check: number | null    
+  max_case_to_check: number | null    
+  name_variable_export: string
+  obligatoire: boolean
+  format_reponse?: FormatReponse | null
+  modalite_reponses?: ModaliteReponse[]
 }
 
 interface BankItem {
@@ -406,6 +409,7 @@ const handleEndModalClose = () => {
 
               <!-- QCM (Multiple Choice) -->
               <div v-else-if="item.format_reponse?.type === 'qcm'" class="qcm-container">
+                <p class="qcm-info">Veuillez sélectionner entre {{ item.min_case_to_check }} et {{ item.max_case_to_check }} options</p>
                 <div v-for="modalite in item.modalite_reponses" :key="modalite.id" class="checkbox-item">
                   <input
                     v-if="modalite.id"

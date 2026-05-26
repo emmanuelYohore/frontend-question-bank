@@ -127,7 +127,6 @@ const validate = async () => {
               placeholder="Chercher une enquête..."
               class="search-input"
             />
-            <span class="search-icon">&#128269;</span>
           </div>
 
           <div class="enquetes-col">
@@ -277,12 +276,6 @@ const validate = async () => {
 
 .search-input::placeholder {
   color: #999;
-}
-
-.search-icon {
-  font-size: 0.9rem;
-  color: #888;
-  flex-shrink: 0;
 }
 
 /* ── Enquêtes list ── */

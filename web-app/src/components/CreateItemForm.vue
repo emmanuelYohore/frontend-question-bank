@@ -8,7 +8,7 @@ import PopupAddItemCreateToBank from '@/modals/PopupAddItemCreateToBank.vue';
 const authStore = useAuthStore();
 const showPopup = ref(false)
 const createdItemId = ref('')
-const valueItemQuestionCreated = ref('')  // ← sauvegarde la question avant reset
+const valueItemQuestionCreated = ref('')
 
 //interface pour le format de réponse
 interface FormatReponse {
@@ -29,8 +29,10 @@ interface ModaliteReponse {
 interface Item {
   id?: string
   question: string
+  min_case_to_check: number | null    // ← sans ?, toujours null ou number
+  max_case_to_check: number | null    // ← idem
   name_variable_export: string
-  obligatoire : boolean
+  obligatoire: boolean
   format_reponse?: FormatReponse | null
   modalite_reponses?: ModaliteReponse[]
 }
@@ -45,7 +47,13 @@ const options = ref([
 const loading = ref(false)
 
 const formatReponse = ref<FormatReponse>({ type: '' })
-const item = ref<Item>({ question: '', obligatoire: false , name_variable_export: '' })
+const item = ref<Item>({
+  question: '',
+  min_case_to_check: null,
+  max_case_to_check: null,
+  obligatoire: false,
+  name_variable_export: ''
+})
 
 const modalites = ref<ModaliteReponse[]>([
   { intitule: '' },
@@ -57,23 +65,62 @@ const modaliteEVN = ref<ModaliteReponse>({ v1: '', v2: '' })
 const isQCMorQCU = computed(() => 
   formatReponse.value.type === 'qcm' || formatReponse.value.type === 'qcu'
 )
+
+const isQCM = computed(() => formatReponse.value.type === 'qcm')
+const isQCU = computed(() => formatReponse.value.type === 'qcu')
 const isEVN = computed(() => formatReponse.value.type === 'evn')
 const isTexte = computed(() => formatReponse.value.type === 'texte')
 
-//fonctions pour ajouter ou supprimer des modalités de réponse pour les QCM/QCU
+// Options dynamiques pour min (de 1 à max-1, ou jusqu'au nombre de modalités - 1)
+const minCaseOptions = computed(() => {
+  const upperBound = item.value.max_case_to_check !== null
+    ? item.value.max_case_to_check! - 1
+    : modalites.value.length - 1
+  const result = []
+  for (let i = 1; i <= upperBound; i++) result.push(i)
+  return result
+})
+
+// Options dynamiques pour max (de min+1 jusqu'au nombre de modalités)
+const maxCaseOptions = computed(() => {
+  const lowerBound = item.value.min_case_to_check !== null
+    ? item.value.min_case_to_check! + 1
+    : 2
+  const result = []
+  for (let i = lowerBound; i <= modalites.value.length; i++) result.push(i)
+  return result
+})
+
+// Fonctions pour ajouter ou supprimer des modalités de réponse pour les QCM/QCU
 const addModalite = () => {
   if (modalites.value.length < 20) {
     modalites.value.push({ intitule: '' })
+    // Si le max était calé sur l'ancien nombre de modalités, on le met à jour
+    if (item.value.max_case_to_check === modalites.value.length - 1) {
+      item.value.max_case_to_check = modalites.value.length
+    }
   }
 }
 
 const removeModalite = (index: number) => {
   if (modalites.value.length > 2) {
     modalites.value.splice(index, 1)
+    // Recaler max si supérieur au nouveau nombre de modalités
+    if (item.value.max_case_to_check !== null && item.value.max_case_to_check > modalites.value.length) {
+      item.value.max_case_to_check = modalites.value.length
+    }
+    // Recaler min si supérieur ou égal au max
+    if (
+      item.value.min_case_to_check !== null &&
+      item.value.max_case_to_check !== null &&
+      item.value.min_case_to_check >= item.value.max_case_to_check
+    ) {
+      item.value.min_case_to_check = Math.max(1, item.value.max_case_to_check - 1)
+    }
   }
 }
 
-//fonction pour créer un item avec son format de réponse et ses modalités
+// Fonction pour créer un item avec son format de réponse et ses modalités
 const createItem = async () => {
   loading.value = true
   try {
@@ -108,6 +155,8 @@ const createItem = async () => {
         format_reponse_id: data1.formatReponse.id,
         question: item.value.question,
         name_variable_export: item.value.name_variable_export,
+        min_case_to_check: isQCM.value ?  item.value.min_case_to_check : null,
+        max_case_to_check: isQCM.value ? item.value.max_case_to_check : null,
         obligatoire: item.value.obligatoire,
       })
     })
@@ -180,9 +229,9 @@ const createItem = async () => {
     alert("Erreur: " + err)
   } finally {
     loading.value = false
-    item.value = { question: '', name_variable_export: '', obligatoire: false }
+    item.value = { question: '', name_variable_export: '', obligatoire: false, min_case_to_check: null, max_case_to_check: null }
     formatReponse.value = { type: '' }
-    modalites.value = [ { intitule: '' }, { intitule: '' } ]
+    modalites.value = [{ intitule: '' }, { intitule: '' }]
     modaliteEVN.value = { v1: '', v2: '' }
   }
 }
@@ -251,6 +300,35 @@ const createItem = async () => {
           >
             + Ajouter une modalité
           </button>
+
+          <!-- Section min/max uniquement pour QCM -->
+          <div v-if="isQCM" class="qcm-cases-section">
+            <h4>Nombre de cases à cocher</h4>
+            <div class="cases-row">
+              <div class="form-group">
+                <label>*Minimum :</label>
+                <select v-model="item.min_case_to_check" required>
+                  <option :value="null">-- Choisir --</option>
+                  <option v-for="n in minCaseOptions" :key="n" :value="n">{{ n }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>*Maximum :</label>
+                <select
+                  v-model="item.max_case_to_check"
+                  required
+                  :disabled="item.min_case_to_check === null"
+                >
+                  <option :value="null">-- Choisir --</option>
+                  <option v-for="n in maxCaseOptions" :key="n" :value="n">{{ n }}</option>
+                </select>
+              </div>
+            </div>
+            <p class="cases-hint">
+              Le maximum ne peut pas dépasser le nombre de modalités ({{ modalites.length }}).
+              Le minimum doit être au moins 1.
+            </p>
+          </div>
         </div>
 
         <div v-if="isEVN" class="evn-section">
@@ -436,6 +514,36 @@ form {
 
 .btn-add:hover:not(:disabled) {
   background-color: #218838;
+}
+
+.qcm-cases-section {
+  margin-top: 20px;
+  padding: 16px;
+  background-color: #eef4ff;
+  border-radius: 8px;
+  border: 1px solid #b3ceff;
+}
+
+.qcm-cases-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cases-row {
+  display: flex;
+  gap: 20px;
+}
+
+.cases-row .form-group {
+  flex: 1;
+}
+
+.cases-hint {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #666;
 }
 
 .texte-info {
