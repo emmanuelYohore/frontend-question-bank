@@ -86,6 +86,40 @@ const showEndModal = ref(false);
 const sessionCreated = ref(false);
 const sessionId = ref<string>('');
 
+  /**
+ * Retourne le nombre de cases cochées pour un item QCM donné
+ */
+const getCheckedCount = (itemId: string): number => {
+  return responses.value[itemId]?.modaliteReponseIds?.length || 0
+}
+
+/**
+ * Vérifie si une checkbox doit être désactivée (max atteint et non cochée)
+ */
+const isCheckboxDisabled = (itemId: string, modaliteId: string, maxCheck: number | null): boolean => {
+  if (maxCheck === null) return false
+  const ids = responses.value[itemId]?.modaliteReponseIds || []
+  const isChecked = ids.includes(modaliteId)
+  return !isChecked && ids.length >= maxCheck
+}
+
+/**
+ * Retourne un message d'erreur si le min n'est pas atteint pour un QCM obligatoire
+ */
+const getQcmValidationMessage = (item: Item): string | null => {
+  if (!item.obligatoire || item.format_reponse?.type !== 'qcm') return null
+  if (item.min_case_to_check === null) return null
+
+  const count = getCheckedCount(item.id!)
+  if (count === 0) return null // pas encore touché, on n'affiche rien
+
+  if (count < item.min_case_to_check) {
+    return `Veuillez sélectionner au moins ${item.min_case_to_check} option(s). (${count}/${item.min_case_to_check})`
+  }
+  return null
+}
+
+
 onMounted(() => {
   const sessionIdStored = sessionStorage.getItem('repondant_session_id') || generateSessionId();
   sessionStorage.setItem('repondant_session_id', sessionIdStored);
@@ -408,22 +442,51 @@ const handleEndModalClose = () => {
               />
 
               <!-- QCM (Multiple Choice) -->
-              <div v-else-if="item.format_reponse?.type === 'qcm'" class="qcm-container">
-                <p class="qcm-info">Veuillez sélectionner entre {{ item.min_case_to_check }} et {{ item.max_case_to_check }} options</p>
-                <div v-for="modalite in item.modalite_reponses" :key="modalite.id" class="checkbox-item">
-                  <input
-                    v-if="modalite.id"
-                    type="checkbox"
-                    :id="`checkbox-${item.id}-${modalite.id}`"
-                    :checked="responses[item.id!]?.modaliteReponseIds?.includes(modalite.id) || false"
-                    @change="updateResponse(item.id!, 'modaliteReponseIds', { id: modalite.id, checked: ($event.target as HTMLInputElement).checked }, true)"
-                  />
-                  <label v-if="modalite.id" :for="`checkbox-${item.id}-${modalite.id}`">
-                    {{ modalite.intitule }}
-                  </label>
-                </div>
-              </div>
+<div v-else-if="item.format_reponse?.type === 'qcm'" class="qcm-container">
+  <p class="qcm-info">
+    Veuillez sélectionner
+    <strong>entre {{ item.min_case_to_check }} et {{ item.max_case_to_check }}</strong> options
+    <span class="qcm-count">
+      ({{ getCheckedCount(item.id!) }}/{{ item.max_case_to_check }} sélectionnée(s))
+    </span>
+  </p>
 
+  <div v-for="modalite in item.modalite_reponses" :key="modalite.id" class="checkbox-item"
+    :class="{ 'checkbox-disabled': isCheckboxDisabled(item.id!, modalite.id!, item.max_case_to_check) }"
+  >
+    <input
+      v-if="modalite.id"
+      type="checkbox"
+      :id="`checkbox-${item.id}-${modalite.id}`"
+      :checked="responses[item.id!]?.modaliteReponseIds?.includes(modalite.id) || false"
+      :disabled="isCheckboxDisabled(item.id!, modalite.id!, item.max_case_to_check)"
+      @change="updateResponse(item.id!, 'modaliteReponseIds', { id: modalite.id, checked: ($event.target as HTMLInputElement).checked }, true)"
+    />
+    <label
+      v-if="modalite.id"
+      :for="`checkbox-${item.id}-${modalite.id}`"
+      :class="{ 'label-disabled': isCheckboxDisabled(item.id!, modalite.id!, item.max_case_to_check) }"
+    >
+      {{ modalite.intitule }}
+    </label>
+  </div>
+
+  <!-- Message d'erreur si min non atteint -->
+  <p
+    v-if="getQcmValidationMessage(item)"
+    class="qcm-error"
+  >
+    ⚠ {{ getQcmValidationMessage(item) }}
+  </p>
+
+  <!-- Message succès si min atteint -->
+  <p
+    v-else-if="getCheckedCount(item.id!) >= (item.min_case_to_check ?? 0) && getCheckedCount(item.id!) > 0"
+    class="qcm-success"
+  >
+    ✓ Sélection valide
+  </p>
+</div>
               <!-- QCU (Single Choice) -->
               <div v-else-if="item.format_reponse?.type === 'qcu'" class="qcu-container">
                 <div v-for="modalite in item.modalite_reponses" :key="modalite.id" class="radio-item">
@@ -601,6 +664,36 @@ const handleEndModalClose = () => {
 .question::before {
   content: counter(item-counter) ". ";
   font-weight: 600;
+}
+
+.qcm-count {
+  font-size: 13px;
+  color: #666;
+  margin-left: 4px;
+}
+
+.checkbox-item.checkbox-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.label-disabled {
+  cursor: not-allowed;
+  color: #999;
+}
+
+.qcm-error {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #dc3545;
+  font-weight: 500;
+}
+
+.qcm-success {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #28a745;
+  font-weight: 500;
 }
 
 .required {

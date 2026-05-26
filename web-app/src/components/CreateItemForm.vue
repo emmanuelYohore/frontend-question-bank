@@ -273,7 +273,7 @@ const createItem = async () => {
         </div>
 
         <div v-if="isQCMorQCU" class="modalites-section">
-          <h3>Modalités de réponse (minimum 2, maximum 20)</h3>
+          <h3>*Modalités de réponse (minimum 2, maximum 20)</h3>
           <div v-for="(modalite, index) in modalites" :key="index" class="modalite-item">
             <input 
               type="text" 
@@ -303,7 +303,7 @@ const createItem = async () => {
 
           <!-- Section min/max uniquement pour QCM -->
           <div v-if="isQCM" class="qcm-cases-section">
-            <h4>Nombre de cases à cocher</h4>
+            <h4>*Nombre de cases à cocher</h4>
             <div class="cases-row">
               <div class="form-group">
                 <label>*Minimum :</label>
@@ -332,7 +332,7 @@ const createItem = async () => {
         </div>
 
         <div v-if="isEVN" class="evn-section">
-          <h3>Valeurs de l'échelle</h3>
+          <h3>*Valeurs de l'échelle</h3>
           <div class="form-group">
             <label>*Valeur minimale :</label>
             <input type="text" v-model="modaliteEVN.v1" placeholder="Ex: bien" required maxlength="150">
