@@ -5,9 +5,10 @@ import { onMounted, ref } from 'vue'
 import { VueDraggableNext as draggable } from 'vue-draggable-next'
 
 interface BankItem {
-	id: string
-	mode: string
-	name: string
+  id: string
+  name: string
+  mode: string           // ← ajouté
+  enquete_bank_id: string
 }
 
 const route = useRoute()
@@ -22,147 +23,141 @@ const error = ref<string | null>(null)
 const hasChanged = ref(false)
 const isSaving = ref(false)
 
-// Récupère les banques associées à l'enquête
 const getBanksAssociatedToEnquete = async () => {
-	loading.value = true
-	error.value = null
+  loading.value = true
+  error.value = null
 
-	try {
-		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${storeAuth.token}`,
-				},
-			}
-		)
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${storeAuth.token}`,
+        },
+      }
+    )
 
-		if (!response.ok) {
-			throw new Error('Erreur lors de la recuperation des banques')
-		}
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des banques')
+    }
 
-		const data = await response.json()
-		bankItems.value = data.bank_items
-		originalBankItems.value = JSON.parse(JSON.stringify(data.bank_items))
-		hasChanged.value = false
-	} catch (err) {
-		error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
-	} finally {
-		loading.value = false
-	}
+    const data = await response.json()
+    bankItems.value = data.bank_items
+    originalBankItems.value = JSON.parse(JSON.stringify(data.bank_items))
+    hasChanged.value = false
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
+  } finally {
+    loading.value = false
+  }
 }
 
-// Supprime une banque de l'enquête
 const removeBankFromEnquete = async (bankItemId: string) => {
-	if (!confirm("Etes-vous sur de vouloir supprimer la banque de cette enquete ?")) {
-		return
-	}
+  if (!confirm('Etes-vous sur de vouloir supprimer la banque de cette enquete ?')) {
+    return
+  }
 
-	try {
-		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}/bank-items/detach`,
-			{
-				method: 'DELETE',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${storeAuth.token}`,
-				},
-				body: JSON.stringify({ bank_item_ids: [bankItemId] }),
-			}
-		)
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}/bank-items/detach`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${storeAuth.token}`,
+        },
+        body: JSON.stringify({ bank_item_ids: [bankItemId] }),
+      }
+    )
 
-		if (!response.ok) {
-			throw new Error('Erreur lors de la suppression de la banque')
-		}
+    if (!response.ok) {
+      throw new Error('Erreur lors de la suppression de la banque')
+    }
 
-		await getBanksAssociatedToEnquete()
-	} catch (err) {
-		console.error('Error:', err)
-		alert('Impossible de supprimer la banque de l\'enquete')
-	}
+    await getBanksAssociatedToEnquete()
+  } catch (err) {
+    console.error('Error:', err)
+    alert("Impossible de supprimer la banque de l'enquete")
+  }
 }
 
 const saveBankItemsOrder = async () => {
-	isSaving.value = true
-	error.value = null
+  isSaving.value = true
+  error.value = null
 
-	try {
-		const orderedIds = bankItems.value.map((b) => b.id)
+  try {
+    const orderedIds = bankItems.value.map((b) => b.id)
 
-		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}/bank-items/order`,
-			{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${storeAuth.token}`,
-				},
-				body: JSON.stringify({ bank_item_ids: orderedIds }),
-			}
-		)
+    const response = await fetch(
+      `http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}/bank-items/order`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${storeAuth.token}`,
+        },
+        body: JSON.stringify({ bank_item_ids: orderedIds }),
+      }
+    )
 
-		if (!response.ok) {
-			const errData = await response.json().catch(() => null)
-			throw new Error(errData?.error || 'Erreur lors de la sauvegarde de l\'ordre des banques')
-		}
+    if (!response.ok) {
+      const errData = await response.json().catch(() => null)
+      throw new Error(errData?.error || "Erreur lors de la sauvegarde de l'ordre des banques")
+    }
 
-		originalBankItems.value = JSON.parse(JSON.stringify(bankItems.value))
-		hasChanged.value = false
-		alert('Ordre sauvegardé avec succès')
-	} catch (err) {
-		error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
-		console.error(err)
-		alert(error.value)
-	} finally {
-		isSaving.value = false
-	}
+    originalBankItems.value = JSON.parse(JSON.stringify(bankItems.value))
+    hasChanged.value = false
+    alert('Ordre sauvegardé avec succès')
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
+    console.error(err)
+    alert(error.value)
+  } finally {
+    isSaving.value = false
+  }
 }
 
 const onDragEnd = () => {
-	hasChanged.value = true
+  hasChanged.value = true
 }
 
+const updateBankMode = async (enqueteBankId: string, newMode: string) => {
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/enquete-banks/${enqueteBankId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${storeAuth.token}`,
+        },
+        body: JSON.stringify({ mode: newMode }),
+      }
+    )
 
-const updateBankMode = async (bankId: string, newMode: string) => {
-	try {
-		const response = await fetch(
-			`http://localhost:8000/api/v1/bank-items/${bankId}`,
-			{
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${storeAuth.token}`,
-				},
-				body: JSON.stringify({ 
-					mode: newMode 
-				}),
-			}
-		)
+    if (!response.ok) {
+      throw new Error('Erreur lors de la mise à jour du mode')
+    }
 
-		if (!response.ok) {
-			throw new Error('Erreur lors de la mise à jour du mode')
-		}
-
-		const bank = bankItems.value.find(b => b.id === bankId)
-		if (bank) {
-			bank.mode = newMode
-			console.log(`Mode de la banque ${bank.name} mis à jour`)
-		}
-	} catch (err) {
-		console.error('Error:', err)
-		alert('Impossible de mettre à jour le mode de la banque')
-	}
+    // ← on cherche par enquete_bank_id, pas par id
+    const bank = bankItems.value.find((b) => b.enquete_bank_id === enqueteBankId)
+    if (bank) {
+      bank.mode = newMode
+    }
+  } catch (err) {
+    console.error('Error:', err)
+    alert('Impossible de mettre à jour le mode de la banque')
+  }
 }
 
 const goBack = () => {
-	router.push({ name: 'enquete-detail', params: { enqueteId } })
+  router.push({ name: 'enquete-detail', params: { enqueteId } })
 }
 
-
-onMounted(async() => {
-	await getBanksAssociatedToEnquete()
+onMounted(async () => {
+  await getBanksAssociatedToEnquete()
 })
 </script>
 
@@ -183,8 +178,11 @@ onMounted(async() => {
 			<li v-for="bank in bankItems" :key="bank.id" class="bank-row">
 				<span class="bank-text">
 					<span>{{ bank.name }}</span>
-					<select class="mode-select" :value="bank.mode" @change="(e) => updateBankMode(bank.id, (e.target as HTMLSelectElement).value)">
-						<option value="systematique">Systématique</option>
+<select
+  class="mode-select"
+  :value="bank.mode"
+  @change="(e) => updateBankMode(bank.enquete_bank_id, (e.target as HTMLSelectElement).value)"
+>						<option value="systematique">Systématique</option>
 						<option value="aleatoire">Aléatoire</option>
 					</select>
 				</span>
@@ -207,7 +205,7 @@ onMounted(async() => {
 
 					<span class="bank-text-draggable">
 						<span>{{ bank.name }}</span>
-						<select class="mode-select" :value="bank.mode" @change="(e) => updateBankMode(bank.id, (e.target as HTMLSelectElement).value)">
+						<select class="mode-select" :value="bank.mode" @change="(e) => updateBankMode(bank.enquete_bank_id, (e.target as HTMLSelectElement).value)">
 							<option value="systematique">Systématique</option>
 							<option value="aleatoire">Aléatoire</option>
 						</select>
