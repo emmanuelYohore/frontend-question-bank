@@ -19,8 +19,8 @@ interface FormatReponse {
 interface ModaliteReponse {
   id: string
   intitule?: string | null
-  v1?: string | null
-  v2?: string | null
+  min_value?: string | null
+  max_value?: string | null
   format_reponse?: FormatReponse
 }
 
@@ -88,7 +88,7 @@ const onConfirmPopupEvnV1 = async (newV1: string) => {
       Accept: 'application/json',
       Authorization: `Bearer ${storeAuth.token}`,
     },
-    body: JSON.stringify({ v1: newV1 }),
+    body: JSON.stringify({ min_value: newV1 }),
   })
     .then((res) => res.json())
     .then(() => {
@@ -111,7 +111,7 @@ const onConfirmPopupEvnV2 = async (newV2: string) => {
       Accept: 'application/json',
       Authorization: `Bearer ${storeAuth.token}`,
     },
-    body: JSON.stringify({ v2: newV2 }),
+    body: JSON.stringify({ max_value: newV2 }),
   })
     .then((res) => res.json())
     .then(() => {
@@ -325,8 +325,8 @@ onMounted(() => {
         <ul v-else-if="modalites.length === 1" class="items-list">
           <li v-for="modalite in modalites" :key="modalite.id" class="item-row evn-row">
             <div class="evn-values">
-              <span class="evn-label">Valeur 1</span>
-              <span class="item-text">{{ modalite.v1 }}</span>
+              <span class="evn-label">Valeur minimale</span>
+              <span class="item-text">{{ modalite.min_value }}</span>
               <button
                 class="icon-btn edit"
                 title="Modifier V1"
@@ -340,8 +340,8 @@ onMounted(() => {
             </div>
             <div class="evn-separator" />
             <div class="evn-values">
-              <span class="evn-label">Valeur 2</span>
-              <span class="item-text">{{ modalite.v2 }}</span>
+              <span class="evn-label">Valeur maximale</span>
+              <span class="item-text">{{ modalite.max_value }}</span>
               <button
                 class="icon-btn edit"
                 title="Modifier V2"
@@ -364,8 +364,8 @@ onMounted(() => {
 
 
               <div class="evn-values">
-                <span class="evn-label">Valeur 1</span>
-                <span class="item-text-draggable">{{ modalite.v1 }}</span>
+                <span class="evn-label">Valeur minimale</span>
+                <span class="item-text-draggable">{{ modalite.min_value }}</span>
                 <button
                   class="icon-btn edit"
                   title="Modifier V1"
@@ -379,8 +379,8 @@ onMounted(() => {
               </div>
               <div class="evn-separator" />
               <div class="evn-values">
-                <span class="evn-label">Valeur 2</span>
-                <span class="item-text-draggable">{{ modalite.v2 }}</span>
+                <span class="evn-label">Valeur maximale</span>
+                <span class="item-text-draggable">{{ modalite.max_value }}</span>
                 <button
                   class="icon-btn edit"
                   title="Modifier V2"
@@ -398,13 +398,13 @@ onMounted(() => {
 
         <PopupUpdateModaliteEvnV1
           v-if="showModalEvnV1"
-          :current-v1="modaliteEvnToUpdate?.v1 || ''"
+          :current-v1="modaliteEvnToUpdate?.min_value || ''"
           @confirm="onConfirmPopupEvnV1"
           @cancel="showModalEvnV1 = false"
         />
         <PopupUpdateModaliteEvnV2
           v-if="showModalEvnV2"
-          :current-v2="modaliteEvnToUpdate?.v2 || ''"
+          :current-v2="modaliteEvnToUpdate?.max_value || ''"
           @confirm="onConfirmPopupEvnV2"
           @cancel="showModalEvnV2 = false"
         />

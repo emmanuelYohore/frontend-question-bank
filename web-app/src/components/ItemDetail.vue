@@ -17,8 +17,8 @@ interface FormatReponse {
 interface ModaliteReponse {
   id?: string
   intitule?: string | null
-  v1?: string | null
-  v2?: string | null
+  min_value?: string | null
+  max_value?: string | null
   format_reponse?: FormatReponse
 }
 

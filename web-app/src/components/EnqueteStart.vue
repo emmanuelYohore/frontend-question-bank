@@ -28,8 +28,8 @@ interface FormatReponse {
 interface ModaliteReponse {
   id?: string;
   intitule?: string | null;
-  v1?: string | null;
-  v2?: string | null;
+  min_value?: string | null;
+  max_value?: string | null;
   format_reponse?: FormatReponse;
 }
 
@@ -507,8 +507,8 @@ const handleEndModalClose = () => {
               <div v-else-if="item.format_reponse?.type === 'evn'" class="evn-container">
                 <div v-for="modalite in item.modalite_reponses" :key="modalite.id" class="range-item">
                   <div class="range-labels">
-                    <span class="label-left">{{ modalite.v1 }}</span>
-                    <span class="label-right">{{ modalite.v2 }}</span>
+                    <span class="label-left">{{ modalite.min_value }}</span>
+                    <span class="label-right">{{ modalite.max_value }}</span>
                   </div>
                   <input
                     type="range"

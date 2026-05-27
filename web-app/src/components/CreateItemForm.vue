@@ -20,8 +20,8 @@ interface FormatReponse {
 interface ModaliteReponse {
   id?: string
   intitule?: string | null
-  v1?: string | null
-  v2?: string | null
+  min_value?: string | null
+  max_value?: string | null
   format_reponse?: FormatReponse
 }
 
@@ -60,7 +60,7 @@ const modalites = ref<ModaliteReponse[]>([
   { intitule: '' }
 ])
 
-const modaliteEVN = ref<ModaliteReponse>({ v1: '', v2: '' })
+const modaliteEVN = ref<ModaliteReponse>({ min_value: '', max_value: '' })
 
 const isQCMorQCU = computed(() => 
   formatReponse.value.type === 'qcm' || formatReponse.value.type === 'qcu'
@@ -182,8 +182,8 @@ const createItem = async () => {
             format_reponse_id: data1.formatReponse.id,
             item_id: data2.item.id,
             intitule: modalite.intitule,
-            v1: null,
-            v2: null
+            min_value: null,
+            max_value: null
           })
         })
 
@@ -205,8 +205,8 @@ const createItem = async () => {
           format_reponse_id: data1.formatReponse.id,
           item_id: data2.item.id,
           intitule: null,
-          v1: modaliteEVN.value.v1,
-          v2: modaliteEVN.value.v2
+          min_value: modaliteEVN.value.min_value,
+          max_value: modaliteEVN.value.max_value
         })
       })
 
@@ -232,7 +232,7 @@ const createItem = async () => {
     item.value = { question: '', name_variable_export: '', obligatoire: false, min_case_to_check: null, max_case_to_check: null }
     formatReponse.value = { type: '' }
     modalites.value = [{ intitule: '' }, { intitule: '' }]
-    modaliteEVN.value = { v1: '', v2: '' }
+    modaliteEVN.value = { min_value: '', max_value: '' }
   }
 }
 
@@ -335,13 +335,13 @@ const createItem = async () => {
           <h3>*Valeurs de l'échelle</h3>
           <div class="form-group">
             <label>*Valeur minimale :</label>
-            <input type="text" v-model="modaliteEVN.v1" placeholder="Ex: bien" required maxlength="150">
-            <p>{{ modaliteEVN.v1?.length }}/150</p>
+            <input type="text" v-model="modaliteEVN.min_value" placeholder="Ex: bien" required maxlength="150">
+            <p>{{ modaliteEVN.min_value?.length }}/150</p>
           </div>
           <div class="form-group">
             <label>*Valeur maximale :</label>
-            <input type="text" v-model="modaliteEVN.v2" placeholder="Ex: très bien" required maxlength="150">
-            <p>{{ modaliteEVN.v2?.length }}/150</p>
+            <input type="text" v-model="modaliteEVN.max_value" placeholder="Ex: très bien" required maxlength="150">
+            <p>{{ modaliteEVN.max_value?.length }}/150</p>
           </div>
         </div>
 

@@ -7,7 +7,7 @@ import { VueDraggableNext as draggable } from 'vue-draggable-next'
 interface BankItem {
   id: string
   name: string
-  mode: string           // ← ajouté
+  mode: string           
   enquete_bank_id: string
 }
 
