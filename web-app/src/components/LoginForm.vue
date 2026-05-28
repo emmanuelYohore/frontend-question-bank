@@ -40,6 +40,7 @@ const login = async () => {
     .then((data) => {
       if (data.access_token) {
         storeAuth.setToken(data.access_token);
+        storeAuth.setUser(data.user);
         storeAuth.setUserId(data.user.id)
         console.log(data);
         router.push("/home");

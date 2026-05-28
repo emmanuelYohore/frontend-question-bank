@@ -11,7 +11,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const storeAuth = useAuthStore();
-
 //interface pour le formulaire d'inscription
 interface FormRegister {
   name: string;
@@ -50,6 +49,7 @@ const register = async () => {
         surname: formRegister.value.surname,
         email: formRegister.value.email,
         password: formRegister.value.password,
+        role: "user",
       }),
     });
 
