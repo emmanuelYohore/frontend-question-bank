@@ -3,14 +3,15 @@ import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import { VueDraggableNext as draggable } from 'vue-draggable-next'
+import PopupRandomItemsCount from '@/modals/PopupRandomItemsCount.vue'
 
 interface BankItem {
   id: string
   name: string
   mode: string           
   enquete_bank_id: string
-    nombre_items_aleatoires: number | null
-
+  nombre_items_aleatoires: number | null
+  items?: Array<any>
 }
 
 const route = useRoute()
@@ -24,6 +25,11 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const hasChanged = ref(false)
 const isSaving = ref(false)
+
+// Popup state
+const showRandomItemsPopup = ref(false)
+const selectedBankForPopup = ref<BankItem | null>(null)
+const pendingMode = ref<string | null>(null)
 
 const getBanksAssociatedToEnquete = async () => {
   loading.value = true
@@ -126,6 +132,18 @@ const onDragEnd = () => {
 }
 
 const updateBankMode = async (enqueteBankId: string, newMode: string) => {
+  // Si le nouveau mode est "aleatoire", afficher la popup
+  if (newMode === 'aleatoire') {
+    const bank = bankItems.value.find((b) => b.enquete_bank_id === enqueteBankId)
+    if (bank) {
+      selectedBankForPopup.value = bank
+      pendingMode.value = newMode
+      showRandomItemsPopup.value = true
+    }
+    return
+  }
+
+  // Si le mode est "systematique", mettre à jour directement sans popup
   try {
     const response = await fetch(
       `http://localhost:8000/api/v1/enquete-banks/${enqueteBankId}`,
@@ -143,15 +161,59 @@ const updateBankMode = async (enqueteBankId: string, newMode: string) => {
       throw new Error('Erreur lors de la mise à jour du mode')
     }
 
-    // ← on cherche par enquete_bank_id, pas par id
     const bank = bankItems.value.find((b) => b.enquete_bank_id === enqueteBankId)
     if (bank) {
       bank.mode = newMode
+      bank.nombre_items_aleatoires = null
     }
   } catch (err) {
     console.error('Error:', err)
     alert('Impossible de mettre à jour le mode de la banque')
   }
+}
+
+const handleRandomItemsConfirm = async (count: number) => {
+  if (!selectedBankForPopup.value || !pendingMode.value) return
+
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/enquete-banks/${selectedBankForPopup.value.enquete_bank_id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${storeAuth.token}`,
+        },
+        body: JSON.stringify({ 
+          mode: pendingMode.value,
+          nombre_items_aleatoires: count
+        }),
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la mise à jour du mode')
+    }
+
+    // Mettre à jour le state local
+    if (selectedBankForPopup.value) {
+      selectedBankForPopup.value.mode = pendingMode.value
+      selectedBankForPopup.value.nombre_items_aleatoires = count
+    }
+
+    showRandomItemsPopup.value = false
+    selectedBankForPopup.value = null
+    pendingMode.value = null
+  } catch (err) {
+    console.error('Error:', err)
+    alert('Impossible de mettre à jour le mode de la banque')
+  }
+}
+
+const handleRandomItemsCancel = () => {
+  showRandomItemsPopup.value = false
+  selectedBankForPopup.value = null
+  pendingMode.value = null
 }
 
 const goBack = () => {
@@ -180,13 +242,17 @@ onMounted(async () => {
 			<li v-for="bank in bankItems" :key="bank.id" class="bank-row">
 				<span class="bank-text">
 					<span>{{ bank.name }}</span>
-<select
-  class="mode-select"
-  :value="bank.mode"
-  @change="(e) => updateBankMode(bank.enquete_bank_id, (e.target as HTMLSelectElement).value)"
->						<option value="systematique">Systématique</option>
+					<select
+						class="mode-select"
+						:value="bank.mode"
+						@change="(e) => updateBankMode(bank.enquete_bank_id, (e.target as HTMLSelectElement).value)"
+					>
+						<option value="systematique">Systématique</option>
 						<option value="aleatoire">Aléatoire</option>
 					</select>
+					<span v-if="bank.mode === 'aleatoire' && bank.nombre_items_aleatoires" class="random-count-badge">
+						{{ bank.nombre_items_aleatoires }} item(s)
+					</span>
 				</span>
 				<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
 					<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -210,8 +276,9 @@ onMounted(async () => {
 						<select class="mode-select" :value="bank.mode" @change="(e) => updateBankMode(bank.enquete_bank_id, (e.target as HTMLSelectElement).value)">
 							<option value="systematique">Systématique</option>
 							<option value="aleatoire">Aléatoire</option>
-						</select>
-					</span>
+						</select>					<span v-if="bank.mode === 'aleatoire' && bank.nombre_items_aleatoires" class="random-count-badge">
+						{{ bank.nombre_items_aleatoires }} item(s)
+					</span>					</span>
 					<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
 						<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<path d="M3 6h18" />
@@ -230,6 +297,16 @@ onMounted(async () => {
 				{{ isSaving ? 'Enregistrement...' : 'Confirmer' }}
 			</button>
 		</div>
+
+		<PopupRandomItemsCount
+			v-if="selectedBankForPopup"
+			:is-open="showRandomItemsPopup"
+			:bank-name="selectedBankForPopup.name"
+			:max-items="selectedBankForPopup.items?.length || 0"
+			:current-count="selectedBankForPopup.nombre_items_aleatoires"
+			@confirm="handleRandomItemsConfirm"
+			@cancel="handleRandomItemsCancel"
+		/>
 	</div>
 </template>
 
@@ -423,6 +500,17 @@ onMounted(async () => {
 	background-color: #9ca3af;
 	cursor: not-allowed;
 	opacity: 0.6;
+}
+
+.random-count-badge {
+	background: #dbeafe;
+	color: #0369a1;
+	padding: 0.25rem 0.75rem;
+	border-radius: 6px;
+	font-size: 0.8rem;
+	font-weight: 600;
+	white-space: nowrap;
+	flex-shrink: 0;
 }
 
 @media (max-width: 900px) {
