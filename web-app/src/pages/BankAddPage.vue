@@ -153,7 +153,10 @@ const updateBankMode = async (enqueteBankId: string, newMode: string) => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${storeAuth.token}`,
         },
-        body: JSON.stringify({ mode: newMode }),
+        body: JSON.stringify({ 
+          mode: newMode,
+          nombre_items_aleatoires: null 
+        }),
       }
     )
 
@@ -216,6 +219,12 @@ const handleRandomItemsCancel = () => {
   pendingMode.value = null
 }
 
+const openRandomItemsPopupForEdit = (bank: BankItem) => {
+  selectedBankForPopup.value = bank
+  pendingMode.value = bank.mode
+  showRandomItemsPopup.value = true
+}
+
 const goBack = () => {
   router.push({ name: 'enquete-detail', params: { enqueteId } })
 }
@@ -254,15 +263,28 @@ onMounted(async () => {
 						{{ bank.nombre_items_aleatoires }} item(s)
 					</span>
 				</span>
-				<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
-					<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M3 6h18" />
-						<path d="M8 6V4h8v2" />
-						<path d="M19 6l-1 14H6L5 6" />
-						<path d="M10 11v6" />
-						<path d="M14 11v6" />
-					</svg>
-				</button>
+				<div class="icon-buttons-group">
+					<button 
+						v-if="bank.mode === 'aleatoire' && bank.nombre_items_aleatoires"
+						class="icon-btn edit-btn" 
+						@click="openRandomItemsPopupForEdit(bank)" 
+						title="Modifier le nombre d'items"
+					>
+						<svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+					</button>
+					<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
+						<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M3 6h18" />
+							<path d="M8 6V4h8v2" />
+							<path d="M19 6l-1 14H6L5 6" />
+							<path d="M10 11v6" />
+							<path d="M14 11v6" />
+						</svg>
+					</button>
+				</div>
 			</li>
 		</ul>
 
@@ -276,9 +298,22 @@ onMounted(async () => {
 						<select class="mode-select" :value="bank.mode" @change="(e) => updateBankMode(bank.enquete_bank_id, (e.target as HTMLSelectElement).value)">
 							<option value="systematique">Systématique</option>
 							<option value="aleatoire">Aléatoire</option>
-						</select>					<span v-if="bank.mode === 'aleatoire' && bank.nombre_items_aleatoires" class="random-count-badge">
+					</select>
+					<span v-if="bank.mode === 'aleatoire' && bank.nombre_items_aleatoires" class="random-count-badge">
 						{{ bank.nombre_items_aleatoires }} item(s)
-					</span>					</span>
+					</span>
+				</span>
+				<div class="icon-buttons-group">
+					<button 
+						v-if="bank.mode === 'aleatoire' && bank.nombre_items_aleatoires"
+						class="icon-btn edit-btn" 
+						@click="openRandomItemsPopupForEdit(bank)" 
+						title="Modifier le nombre d'items"
+					>
+						<svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L21 6.5z" />
+						</svg>
+					</button>
 					<button class="icon-btn" @click="removeBankFromEnquete(bank.id)" title="Supprimer">
 						<svg class="trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<path d="M3 6h18" />
@@ -288,6 +323,7 @@ onMounted(async () => {
 							<path d="M14 11v6" />
 						</svg>
 					</button>
+				</div>
 				</li>
 			</draggable>
 		</ul>
@@ -465,6 +501,21 @@ onMounted(async () => {
 	cursor: pointer;
 	padding: 0.1rem;
 	flex-shrink: 0;
+}
+
+.icon-buttons-group {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.edit-icon {
+	width: 1.2rem;
+	height: 1.2rem;
+}
+
+.edit-btn:hover .edit-icon {
+	color: #2563eb;
 }
 
 .trash-icon {
