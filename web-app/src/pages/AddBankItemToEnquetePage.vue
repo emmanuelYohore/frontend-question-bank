@@ -292,6 +292,23 @@ const addBankItemsToEnquete = async () => {
   padding: 0 2.2rem 2.4rem;
 }
 
+input[type="text"] {
+  width: 100%;
+  max-width: 480px;
+  padding: 0.75rem 1rem 0.75rem 2.8rem;
+  margin: 1rem 0;
+  border: none;
+  border-radius: 12px;
+  background-color: #f0f2f5;
+  font-size: 0.95rem;
+  color: #333;
+  outline: none;
+}
+
+input[type="text"]:focus {
+  background-color: #e8eaf0;
+}
+
 .header-row {
   display: flex;
   align-items: center;

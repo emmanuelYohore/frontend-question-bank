@@ -9,6 +9,8 @@ interface BankItem {
   name: string
   mode: string           
   enquete_bank_id: string
+    nombre_items_aleatoires: number | null
+
 }
 
 const route = useRoute()

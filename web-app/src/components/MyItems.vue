@@ -118,7 +118,7 @@ watch(input, () => {
           </router-link>
         </div>
 
-        <paginate
+      <paginate
       :page-count="Math.ceil(items.length / itemsPerPage)"
       :click-handler="handlePageChange"
       :prev-text="'Précédent'"
