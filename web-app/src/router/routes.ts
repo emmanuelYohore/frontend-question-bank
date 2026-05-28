@@ -24,6 +24,7 @@ import AdminGestionUsersPage from '@/pages/AdminGestionUsersPage.vue'
 import AdminGestionItemsPage from '@/pages/AdminGestionItemsPage.vue'
 import AdminGestionBanksPage from '@/pages/AdminGestionBanksPage.vue'
 import AdminGestionEnquetesPage from '@/pages/AdminGestionEnquetesPage.vue'
+import LinkToEnquetePage from '@/pages/LinkToEnquetePage.vue'
 
 const routes = [
   {
@@ -52,6 +53,13 @@ const routes = [
     path: '/create-bank-item',
     name: 'create-bank-item',
     component: CreateBankItemPage,
+    meta: { requiresAuth: true }
+  },
+
+   {
+    path: '/link-to-enquete',
+    name: 'link-to-enquete',
+    component: LinkToEnquetePage,
     meta: { requiresAuth: true }
   },
    {

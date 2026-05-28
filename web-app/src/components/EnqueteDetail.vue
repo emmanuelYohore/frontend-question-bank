@@ -334,7 +334,7 @@ onMounted(() => {
           <div class="detail-line">
             <span class="label">Statut :</span>
             <span class="status" :class="{ archived: enquete.archived }">
-              {{ enquete.archived ? 'Archivee' : 'Active' }}
+              {{ enquete.archived ? 'Archivé' : 'Active' }}
             </span>
           </div>
           <div class="detail-line">
@@ -419,7 +419,7 @@ onMounted(() => {
 
       <div class="actions-row">
         <button @click="toggleArchive" class="btn btn-archive">
-          {{ enquete.archived ? 'Desarchiver' : 'Archiver' }}
+          {{ enquete.archived ? 'Désarchiver' : 'Archiver' }}
         </button>
         <button @click="deleteEnquete" class="btn btn-delete">Supprimer</button>
 

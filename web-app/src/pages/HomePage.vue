@@ -8,8 +8,6 @@ import { useAuthStore } from '@/stores/auth';
 //   getInfoUserForRole()
 // })
 
-
-
 const router = useRouter();
 const authStore = useAuthStore();
 const navigateTo = (routeName: string) => {
@@ -72,7 +70,7 @@ const navigateTo = (routeName: string) => {
         <div class="card-image">
           <img src="../assets/img/enquete.jpg" alt="Enquête" />
         </div>
-        <button class="card-button" @click="navigateTo('')">
+        <button class="card-button" @click="navigateTo('link-to-enquete')">
           Commencer une enquête
         </button>
       </div>
