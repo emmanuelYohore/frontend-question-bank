@@ -11,7 +11,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const storeAuth = useAuthStore();
-//interface pour le formulaire d'inscription
 interface FormRegister {
   name: string;
   surname: string;
@@ -155,7 +154,7 @@ const togglePasswordVisibility = () => {
             <input
               :type="showPassword ? 'text' : 'password'"
               v-model="formRegister.password"
-              placeholder="Mot de passe"
+              placeholder="Mot de passe (minimum 6 caractères)"
               min="6"
               required
             />

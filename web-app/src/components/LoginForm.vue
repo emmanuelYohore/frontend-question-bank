@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { router } from "@/router/routes";
 import { useAuthStore } from "@/stores/auth";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import {
   faEnvelope,
   faLock,
@@ -20,40 +20,50 @@ const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
+const validePassword = computed(() => {
+  return password.value.length >= 6
+})
+
 //fonction pour se connecter
 const login = async () => {
   loading.value = true;
 
-  await fetch("http://localhost:8000/api/v1/auth/login", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      email: email.value,
-      password: password.value,
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.access_token) {
-        storeAuth.setToken(data.access_token);
-        storeAuth.setUser(data.user);
-        storeAuth.setUserId(data.user.id)
-        console.log(data);
-        router.push("/home");
-      }
-      ((email.value = ""), (password.value = ""));
-      loading.value = false;
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("Erreur lors de la connexion, veuillez vérifier vos identifiants");
-      loading.value = false;
+  try {
+    const response = await fetch("http://localhost:8000/api/v1/auth/login", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+      }),
     });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || "Identifiants incorrects");
+      loading.value = false;
+      return;
+    }
+    storeAuth.setToken(data.access_token);
+    storeAuth.setUser(data.user);
+    storeAuth.setUserId(data.user.id);
+
+    router.push("/home");
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Erreur réseau, impossible de contacter le serveur");
+  } finally {
+    email.value = "";
+    password.value = "";
+    loading.value = false;
+  }
 };
+
 </script>
 
 <template>
@@ -99,7 +109,7 @@ const login = async () => {
           </div>
         </div>
 
-        <button type="submit" class="submit-btn">
+        <button type="submit" class="submit-btn" :disabled="!validePassword" >
           {{ loading ? "Chargement..." : "Se connecter" }}
         </button>
       </form>
@@ -225,6 +235,11 @@ label {
 
 .submit-btn:hover {
   background-color: #4a7dde;
+}
+
+.submit-btn:disabled {
+  background-color: #a0c4f7;
+  cursor: not-allowed;
 }
 
 .register-link {

@@ -31,7 +31,7 @@ interface Item {
   question: string
   min_case_to_check: number | null    // ← sans ?, toujours null ou number
   max_case_to_check: number | null    // ← idem
-  name_variable_export: string
+  nom_court: string
   obligatoire: boolean
   format_reponse?: FormatReponse | null
   modalite_reponses?: ModaliteReponse[]
@@ -52,7 +52,7 @@ const item = ref<Item>({
   min_case_to_check: null,
   max_case_to_check: null,
   obligatoire: false,
-  name_variable_export: ''
+  nom_court: ''
 })
 
 const modalites = ref<ModaliteReponse[]>([
@@ -154,7 +154,7 @@ const createItem = async () => {
       body: JSON.stringify({
         format_reponse_id: data1.formatReponse.id,
         question: item.value.question,
-        name_variable_export: item.value.name_variable_export,
+        nom_court: item.value.nom_court,
         min_case_to_check: isQCM.value ?  item.value.min_case_to_check : null,
         max_case_to_check: isQCM.value ? item.value.max_case_to_check : null,
         obligatoire: item.value.obligatoire,
@@ -229,7 +229,7 @@ const createItem = async () => {
     alert("Erreur: " + err)
   } finally {
     loading.value = false
-    item.value = { question: '', name_variable_export: '', obligatoire: false, min_case_to_check: null, max_case_to_check: null }
+    item.value = { question: '', nom_court: '', obligatoire: false, min_case_to_check: null, max_case_to_check: null }
     formatReponse.value = { type: '' }
     modalites.value = [{ intitule: '' }, { intitule: '' }]
     modaliteEVN.value = { min_value: '', max_value: '' }
@@ -257,9 +257,9 @@ const createItem = async () => {
           <input type="text" v-model="item.question" placeholder="Entrez la question" maxlength="300" required>
           <p>{{ item.question.length }}/300</p>
 
-          <label>*Nom de la variable d'export :</label>
-          <input type="text" v-model="item.name_variable_export" placeholder="Entrez le nom de la variable" maxlength="255" required>
-          <p>{{ item.name_variable_export.length }}/255</p>
+          <label>*Nom court :</label>
+          <input type="text" v-model="item.nom_court" placeholder="Entrez le nom de la variable" maxlength="30" required>
+          <p>{{ item.nom_court.length }}/30</p>
         </div>
 
         <div class="form-group radio-group">

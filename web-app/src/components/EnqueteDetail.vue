@@ -230,63 +230,67 @@ const copyClipboard = async (copyText: string ) => {
   alert("texte copié");
 }
 
-// Export des réponses en CSV
-const exportResponsesCSV = async () => {
+// Export des réponses en CSV (nouveau format)
+const downloadResponsesCSV = async () => {
   if (!enqueteId) return
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}/reponses`, {
+    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}/export-reponses`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${storeAuth.token}`,
       },
     })
 
     if (!response.ok) {
-      throw new Error('Erreur lors de la récupération des réponses')
+      throw new Error('Erreur lors du téléchargement des réponses')
     }
 
-    const data = await response.json()
-    const reponses = Array.isArray(data) ? data : data.reponses || []
-
-    // Créer le CSV
-    if (reponses.length === 0) {
-      alert('Aucune réponse à exporter')
-      return
-    }
-
-    // Extraire les headers
-    const headers = Object.keys(reponses[0])
-    const csv = [
-      headers.join(','),
-      ...reponses.map((row: { [x: string]: any }) => 
-        headers.map(header => {
-          const value = row[header]
-          // Échapper les guillemets et les valeurs contenant des virgules
-          if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-            return `"${value.replace(/"/g, '""')}"`
-          }
-          return value || ''
-        }).join(',')
-      )
-    ].join('\n')
-
-    // Créer un blob et télécharger
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    // Récupérer le fichier CSV
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-    
-    link.setAttribute('href', url)
-    link.setAttribute('download', `reponses-enquete-${enquete.value?.title || enqueteId}.csv`)
-    link.style.visibility = 'hidden'
-    
+    link.href = url
+    link.download = `reponses_enquete_${enquete.value?.title || enqueteId}.csv`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
   } catch (err) {
     console.error('Error:', err)
-    alert('Erreur lors de l\'export des réponses')
+    alert('Erreur lors du téléchargement des réponses')
+  }
+}
+
+// Export des détails des variables en CSV
+const downloadVariableDetailsCSV = async () => {
+  if (!enqueteId) return
+
+  try {
+    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}/export-variables`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${storeAuth.token}`,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('Erreur lors du téléchargement des variables')
+    }
+
+    // Récupérer le fichier CSV
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `variables_enquete_${enquete.value?.title || enqueteId}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (err) {
+    console.error('Error:', err)
+    alert('Erreur lors du téléchargement des variables')
   }
 }
 
@@ -414,7 +418,8 @@ onMounted(() => {
 
       <div class="actions-row">
         <button @click="goToBanksPage" class="btn btn-banks">Voir les banques ajoutes</button>
-        <button @click="exportResponsesCSV" class="btn btn-export">Exporter les réponses en CSV</button>
+        <button @click="downloadResponsesCSV" class="btn btn-export">Télécharger les réponses (CSV)</button>
+        <button @click="downloadVariableDetailsCSV" class="btn btn-export">Télécharger les variables (CSV)</button>
       </div>
 
       <div class="actions-row">
