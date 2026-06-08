@@ -29,10 +29,10 @@ const handleConfirm = () => {
         placeholder="Nouveau nom..."
         @keyup.enter="handleConfirm"
         @keydown.escape="emit('cancel')"
-        maxlength="150"
+        maxlength="50"
         autofocus
       />
-      <p>{{ newName.length }}/150</p>
+      <p>{{ newName.length }}/50</p>
 
       <div class="actions">
         <button class="btn-cancel" @click="emit('cancel')">Annuler</button>

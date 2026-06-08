@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 const props = defineProps<{
-  currentNameVariableExport: string
+  currentNomCourt: string
 }>()
 
 const emit = defineEmits<{
@@ -10,29 +10,29 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
-const newNameVariableExport = ref(props.currentNameVariableExport)
+const newNomCourt = ref(props.currentNomCourt)
 
 const handleConfirm = () => {
-  if (!newNameVariableExport.value.trim()) return
-  emit('confirm', newNameVariableExport.value.trim())
+  if (!newNomCourt.value.trim()) return
+  emit('confirm', newNomCourt.value.trim())
 }
 </script>
 
 <template>
   <div class="overlay" @click.self="emit('cancel')">
     <div class="modal">
-      <h3>Modifier le nom de la variable d'export</h3>
+      <h3>Modifier le nom court</h3>
 
       <input
-        v-model="newNameVariableExport"
+        v-model="newNomCourt"
         type="text"
-        placeholder="Nouveau nom de la variable d'export..."
+        placeholder="Nouveau nom court..."
         @keyup.enter="handleConfirm"
         @keydown.escape="emit('cancel')"
-        maxlength="150"
+        maxlength="30"
         autofocus
       />
-      <p>{{ newNameVariableExport.length }}/150</p>
+      <p>{{ newNomCourt.length }}/30</p>
 
       <div class="actions">
         <button class="btn-cancel" @click="emit('cancel')">Annuler</button>

@@ -68,6 +68,7 @@ const previewEndMessage = computed(() =>
 const descriptionLength = computed(() => enquete.value.description.length);
 const startMessageLength = computed(() => enquete.value.start_message.length);
 const endMessageLength = computed(() => enquete.value.end_message.length);
+const titleLength = computed(() => enquete.value.title.length);
 
 const isSubmit = computed(() => {
   return enquete.value !== null;
@@ -117,7 +118,9 @@ const createEnquete = async () => {
       <form @submit.prevent="createEnquete()">
         <div class="form-group">
           <label for="title">*Titre :</label>
-          <input type="text" v-model="enquete.title" placeholder="Entrez un titre" required="true" />
+          <input type="text" v-model="enquete.title" placeholder="Entrez un titre" maxlength="255" required="true" />
+            <p class="char-count">{{ titleLength }}/255</p>
+
         </div>
 
         <!-- balise autorisées -->

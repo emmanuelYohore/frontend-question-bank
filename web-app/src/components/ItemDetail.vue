@@ -3,7 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
 import PopupUpdateQuestionItem from '../modals/PopupUpdateQuestionItem.vue'
-import PopupUpdateNameVarExportItem from '../modals/PopupUpdateNameVarExportItem.vue'
+import PopupUpdateNomCourt from '@/modals/PopupUpdateNomCourt.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -26,7 +26,7 @@ interface Item {
   id?: string
   question: string
   obligatoire : boolean
-  name_variable_export: string
+  nom_court: string
   archived: boolean
   format_reponse?: FormatReponse | null
   modalite_reponses?: ModaliteReponse[]
@@ -48,7 +48,7 @@ const isEVN = computed(() => formatReponse.value?.type === 'evn')
 
 
 const showModalQuestion = ref(false)
-const showModalVariableExport = ref(false)
+const nom_court = ref(false)
 
 
 const onConfirmUpdateQuestion = async (newQuestion: string) => {
@@ -76,7 +76,7 @@ const onConfirmUpdateQuestion = async (newQuestion: string) => {
   )
 }
 
-const onConfirmUpdateVariableExport = async (newVariableExport: string) => {
+const onConfirmUpdateNomCourt = async (newNomCourt: string) => {
   loading.value = true
 
   await fetch(`http://localhost:8000/api/v1/items/${itemId}`, {
@@ -87,14 +87,14 @@ const onConfirmUpdateVariableExport = async (newVariableExport: string) => {
         "Accept": "application/json",
         "Authorization": `Bearer ${storeAuth.token}`,
       },
-    body: JSON.stringify({ name_variable_export: newVariableExport }),
+    body: JSON.stringify({ nom_court: newNomCourt }),
   })
     .then(res => res.json())
     .then(() => {
       if (item.value) {
-        item.value.name_variable_export = newVariableExport
+        item.value.nom_court = newNomCourt
       }
-      showModalVariableExport.value = false
+      nom_court.value = false
     })
     .catch(err => console.error(err))
     .finally(() => loading.value = false
@@ -272,10 +272,10 @@ onMounted(() => {
           </div>
 
           <div class="info-group">
-            <label>Nom de la variable d'export :</label>
-            <span>{{ item.name_variable_export }}</span>
+            <label>Nom court :</label>
+            <span>{{ item.nom_court }}</span>
 
-            <button @click="showModalVariableExport = true">
+            <button @click="nom_court = true">
             <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
@@ -283,11 +283,11 @@ onMounted(() => {
             <span>Modifier</span>
             </button>
 
-            <PopupUpdateNameVarExportItem
-              v-if="showModalVariableExport"
-              :current-name-variable-export="item.name_variable_export"
-              @confirm="onConfirmUpdateVariableExport"
-              @cancel="showModalVariableExport = false"
+            <PopupUpdateNomCourt
+              v-if="nom_court"
+              :current-nom-court="item.nom_court"
+              @confirm="onConfirmUpdateNomCourt"
+              @cancel="nom_court = false"
             />
           </div>
           

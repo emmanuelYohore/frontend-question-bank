@@ -109,11 +109,11 @@ const togglePasswordVisibility = () => {
               v-model="formRegister.name"
               placeholder="Nom"
               min="3"
-              maxlength="150"
+              maxlength="50"
               required
             />
           </div>
-          <p>{{  formRegister.name.length }}/150</p>
+          <p>{{  formRegister.name.length }}/50</p>
         </div>
 
         <div class="form-group">
@@ -126,11 +126,11 @@ const togglePasswordVisibility = () => {
               v-model="formRegister.surname"
               placeholder="Prénom"
               min="3"
-              maxlength="150"
+              maxlength="50"
               required
             />
           </div>
-          <p>{{  formRegister.surname.length }}/150</p>
+          <p>{{  formRegister.surname.length }}/50</p>
         </div>
 
         <div class="form-group">

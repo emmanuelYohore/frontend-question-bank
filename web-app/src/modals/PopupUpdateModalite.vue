@@ -29,10 +29,10 @@ const handleConfirm = () => {
         placeholder="Nouvelle modalité..."
         @keyup.enter="handleConfirm"
         @keydown.escape="emit('cancel')"
-        maxlength="300"
+        maxlength="255"
         autofocus
       />
-      <p>{{ newModalite.length }}/300</p>
+      <p>{{ newModalite.length }}/255</p>
 
       <div class="actions">
         <button class="btn-cancel" @click="emit('cancel')">Annuler</button>

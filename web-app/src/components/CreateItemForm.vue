@@ -280,9 +280,9 @@ const createItem = async () => {
               v-model="modalite.intitule" 
               :placeholder="'Intitulé ' + (index + 1)" 
               required
-              maxlength="300"
+              maxlength="255"
             >
-            <p>{{ modalite.intitule?.length }}/300</p>
+            <p>{{ modalite.intitule?.length }}/255</p>
             <button 
               type="button" 
               @click="removeModalite(index)"

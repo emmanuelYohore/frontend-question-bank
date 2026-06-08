@@ -56,10 +56,10 @@ const createBankItem = async () => {
             type="text" 
             v-model="name" 
             placeholder="Entrez un nom" 
-            maxlength="250"
+            maxlength="255"
             :required="true"
           >
-          <p>{{ name.length }}/250</p>
+          <p>{{ name.length }}/255</p>
         </div>
         
         <button type="submit" class="btn-submit" :disabled="loading">
