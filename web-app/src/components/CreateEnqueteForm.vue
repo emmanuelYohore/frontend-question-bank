@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import DOMPurify from "dompurify";
 import { useAuthStore } from "@/stores/auth";
+import PopupAddBankAfterEnqueteCreate from "@/modals/PopupAddBankAfterEnqueteCreate.vue";
 
 //interface pour l'enquête
 interface Enquete {
@@ -23,7 +24,9 @@ const enquete = ref<Enquete>({
 });
 
 const loading = ref(false);
-
+const showPopup = ref(false)
+const createdEnqueteId = ref('')
+const valueEnqueteTitleCreated = ref('')
 /**
  * fonction pour choisir les balises HTML autorisées et interdire les balises dangereuses
  */
@@ -98,6 +101,11 @@ const createEnquete = async () => {
     .then((response) => response.json())
     .then((data) => {
       alert("Enquête créer avec succès");
+
+      createdEnqueteId.value = data.enquete.id
+      valueEnqueteTitleCreated.value = enquete.value.title 
+      showPopup.value = true
+
       console.log(data);
       loading.value = false;
       enquete.value = {
@@ -163,6 +171,13 @@ const createEnquete = async () => {
         </button>
       </form>
     </div>
+    <PopupAddBankAfterEnqueteCreate
+      v-if="showPopup"
+      :enquete-id="createdEnqueteId"
+      :enquete-title="valueEnqueteTitleCreated"
+      @close="showPopup = false"
+    />
+
   </div>
 </template>
 

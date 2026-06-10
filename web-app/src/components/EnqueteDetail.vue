@@ -417,7 +417,7 @@ onMounted(() => {
       </div>
 
       <div class="actions-row">
-        <button @click="goToBanksPage" class="btn btn-banks">Voir les banques ajoutes</button>
+        <button @click="goToBanksPage" class="btn btn-banks">Voir les banques ajoutées</button>
         <button @click="downloadResponsesCSV" class="btn btn-export">Télécharger les réponses (CSV)</button>
         <button @click="downloadVariableDetailsCSV" class="btn btn-export">Télécharger les variables (CSV)</button>
       </div>

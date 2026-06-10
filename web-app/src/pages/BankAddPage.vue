@@ -302,7 +302,7 @@ onMounted(async () => {
 					<span v-if="bank.mode === 'aleatoire' && bank.nombre_items_aleatoires" class="random-count-badge">
 						{{ bank.nombre_items_aleatoires }} item(s)
 					</span>
-				</span>b
+				</span>
 				<div class="icon-buttons-group">
 					<button 
 						v-if="bank.mode === 'aleatoire' && bank.nombre_items_aleatoires"
