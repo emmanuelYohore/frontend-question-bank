@@ -25,6 +25,7 @@ import AdminGestionItemsPage from '@/pages/AdminGestionItemsPage.vue'
 import AdminGestionBanksPage from '@/pages/AdminGestionBanksPage.vue'
 import AdminGestionEnquetesPage from '@/pages/AdminGestionEnquetesPage.vue'
 import LinkToEnquetePage from '@/pages/LinkToEnquetePage.vue'
+import AdminCreateUserForm from '@/components/AdminCreateUserForm.vue'
 
 const routes = [
   {
@@ -171,6 +172,12 @@ const routes = [
     path: '/admin-gestion-users',
     name: 'admin-gestion-users',
     component: AdminGestionUsersPage,
+    meta: { requiresAuth: true }
+  },
+     {
+    path: '/admin-create-users',
+    name: 'admin-create-users',
+    component: AdminCreateUserForm,
     meta: { requiresAuth: true }
   },
     {

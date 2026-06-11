@@ -111,6 +111,9 @@ const navigateTo = (routeName: string) => {
             Gérer les enquetes
           </button>
         </div>
+        <button class="card-button" @click="navigateTo('admin-create-users')">
+          creer user admin
+        </button>
       </div>
     </div>
   </div>
