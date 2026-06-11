@@ -12,10 +12,9 @@ export interface User {
 export const useAuthStore = defineStore('auth', () => {
 
   const token = ref<string | null>(localStorage.getItem('access-token'))
-  const userId = ref<string | null>(localStorage.getItem('user-id'))
-
-  // user uniquement en mémoire
   const user = ref<User | null>(null)
+  const userId = ref<string | null>(null)
+  const isLoading = ref(false)         // ← nouveau
 
   const getToken = () => token.value
 
@@ -30,7 +29,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   const setUserId = (id: string) => {
     userId.value = id
-    localStorage.setItem('user-id', id)
   }
 
   const clearAuth = () => {
@@ -38,18 +36,36 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
     userId.value = null
     localStorage.removeItem('access-token')
-    localStorage.removeItem('user-id')
   }
 
+  const fetchUserInfo = async () => {
+    if (!token.value) return null
+
+    isLoading.value = true             // ← début chargement
+    try {
+      const response = await fetch('http://localhost:8000/api/v1/auth/me', {
+        headers: { 'Authorization': `Bearer ${token.value}` }
+      })
+
+      if (response.ok) {
+        const userData = await response.json()
+        setUser(userData)
+        setUserId(userData.id)
+        return userData
+      } else {
+        clearAuth()
+        return null
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des infos utilisateur:', error)
+      return null
+    } finally {
+      isLoading.value = false           
+    }
+  }
 
   return {
-    token,
-    user,
-    userId,
-    getToken,
-    setToken,
-    setUser,
-    clearAuth,
-    setUserId
+    token, user, userId, isLoading,
+    getToken, setToken, setUser, clearAuth, setUserId, fetchUserInfo
   }
 })

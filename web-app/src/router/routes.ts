@@ -199,21 +199,27 @@ export const router = createRouter({
 })
 
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const storeAuth = useAuthStore()
   const authenticated = storeAuth.getToken()
-  const requiresAuth = to.meta.requiresAuth 
+  const requiresAuth = to.meta.requiresAuth
+
+  if (authenticated && !storeAuth.user) {
+    await storeAuth.fetchUserInfo()
+  }
+
   const userRole = storeAuth.user?.role
 
-  if (to.name === 'admin-gestion-users' || to.name === 'admin-gestion-banks' || to.name === 'admin-gestion-enquetes') {
+  const adminRoutes = ['admin-gestion-users', 'admin-gestion-banks', 'admin-gestion-enquetes', 'admin-gestion-items', 'admin-create-users']
+  if (adminRoutes.includes(to.name as string)) {
     if (userRole !== 'admin') {
-      next('/home');
+      return next('/home')  
     }
   }
 
-  if (requiresAuth && !authenticated ) {
-    next('/login');  
-  }  else {
-    next();
+  if (requiresAuth && !authenticated) {
+    return next('/login')
   }
+
+  return next()
 })

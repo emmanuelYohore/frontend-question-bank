@@ -2,24 +2,23 @@
 import { useRouter } from 'vue-router';
 import NavigationBar from '@/components/NavigationBar.vue';
 import { useAuthStore } from '@/stores/auth';
-// import { onMounted } from 'vue';
-
-// onMounted(() => {
-//   getInfoUserForRole()
-// })
 
 const router = useRouter();
 const authStore = useAuthStore();
+
 const navigateTo = (routeName: string) => {
   router.push({ name: routeName });
 };
-
-
 </script>
 
- <template>
+<template>
   <NavigationBar />
-  <div class="home-container">
+
+  <div v-if="authStore.isLoading" class="loading">
+    Chargement...
+  </div>
+
+  <div v-else class="home-container">
     <div class="cards-container">
       <div class="card">
         <div class="card-image">
@@ -89,9 +88,9 @@ const navigateTo = (routeName: string) => {
           <div class="card-image">
             <img src="../assets/img/admin.png" alt="Admin" />
           </div>
-            <button class="card-button" @click="navigateTo('admin-gestion-banks')">
-              Gérer les banques d'items
-            </button>
+          <button class="card-button" @click="navigateTo('admin-gestion-banks')">
+            Gérer les banques d'items
+          </button>
         </div>
 
         <div class="card">
@@ -100,7 +99,7 @@ const navigateTo = (routeName: string) => {
           </div>
           <button class="card-button" @click="navigateTo('admin-gestion-items')">
             Gérer les items
-          </button> 
+          </button>
         </div>
 
         <div class="card">
@@ -111,13 +110,15 @@ const navigateTo = (routeName: string) => {
             Gérer les enquetes
           </button>
         </div>
+
         <button class="card-button" @click="navigateTo('admin-create-users')">
-          creer user admin
+          Créer user admin
         </button>
       </div>
+
     </div>
   </div>
- </template>
+</template>
  
  <style scoped>
  * {
