@@ -57,14 +57,10 @@ onMounted(() => {
 <template>
   <div class="page">
     <header class="page-header">
-      <button class="back-btn" @click="$router.back()">
-        <span class="back-circle">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5M12 5l-7 7 7 7"/>
-          </svg>
-        </span>
-        Retour
-      </button>
+       <button class="back-button" @click="$router.back()">
+          <span class="back-circle">&#8592;</span>
+          <span>Retour</span>
+        </button>
       <h1 class="page-title">Commencer une enquête</h1>
       <div class="header-spacer"></div>
     </header>
@@ -101,29 +97,30 @@ onMounted(() => {
   background: #fff;
 }
 
-.back-btn {
-  display: flex;
+.back-button {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.8rem;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 15px;
-  color: #1a1a1a;
   padding: 0;
-  font-family: inherit;
+  font-size: 1rem;
+  color: #1f2937;
 }
 
 .back-circle {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 2.7rem;
+  height: 2.7rem;
+  border: 2px solid #2d2d2d;
   border-radius: 50%;
-  border: 1.5px solid #1a1a1a;
-  flex-shrink: 0;
+  font-size: 1.5rem;
+  line-height: 1;
 }
+
 
 .page-title {
   font-size: 18px;

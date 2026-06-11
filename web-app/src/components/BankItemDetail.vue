@@ -171,10 +171,6 @@ onMounted(() => {
         <div class="details-grid">
           <div class="details-left">
             <div class="detail-line">
-              <span class="label">Proprietaire :</span>
-              <span class="value">{{ storeAuth.user?.name }}</span>
-            </div>
-            <div class="detail-line">
               <span class="label">Nom de la banque :</span>
               <span class="value">{{ bankItem.name }}</span>
             </div>

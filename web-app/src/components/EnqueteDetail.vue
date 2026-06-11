@@ -317,106 +317,79 @@ onMounted(() => {
 
     <section v-else-if="enquete" class="card details-card">
       <div class="details-grid">
-        <div class="details-left">
-          
-          <div class="detail-line">
-            <span class="label">Titre :</span>
-            <span class="value">{{ enquete.title }}</span>
-          </div>
-          <div class="detail-line">
-            <span class="label">Description :</span>
-            <span class="value" v-html="previewDescription"></span>
-          </div>
-          <div class="detail-line">
-            <span class="label">Message de début :</span>
-            <span class="value" v-html="previewStartMessage"></span>
-          </div>
-          <div class="detail-line">
-            <span class="label">Message de fin :</span>
-            <span class="value" v-html="previewEndMessage"></span>
-          </div>
-          <div class="detail-line">
-            <span class="label">Statut :</span>
-            <span class="status" :class="{ archived: enquete.archived }">
-              {{ enquete.archived ? 'Archivé' : 'Active' }}
-            </span>
-          </div>
-          <div class="detail-line">
-            <span class="label">Lien de l'enquête :</span>
-            <span class="value">{{ enquete.url_enquete }}</span>
-            <button @click="copyClipboard(enquete.url_enquete || '')" class="btn-copy">Copier</button>
-          </div>
-        </div>
 
-        <div class="edit-column">
-          <div class="edit-placeholder">
-            <button @click="showTitleModal = true">
-              <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-            <span>Modifier</span>
-            </button>
-              <PopupUpdateTitleEnquete
-                v-if="showTitleModal"
-                :currentTitle="enquete.title || ''"
-                @confirm="onConfirmTitle"
-                @cancel="showTitleModal = false"
-                />
-      
-          </div>
-          <div class="edit-placeholder">
-            <button @click="showDescriptionModal = true">
-              <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-            <span>Modifier</span>
-            </button>
-                      <PopupUpdateDescriptionEnquete
-                        v-if="showDescriptionModal"
-                        :currentDescription="enquete.description || ''"
-                        @confirm="onConfirmDescription"
-                        @cancel="showDescriptionModal = false"
-                        />
-      
-          </div>
-          <div class="edit-placeholder">
-            <button @click="showStartMessageModal = true">
-              <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-            <span>Modifier</span>
-            </button>
-                      <PopupUpdateStartMessageEnquete
-                        v-if="showStartMessageModal"
-                        :currentStartMessage="enquete.start_message || ''"
-                        @confirm="onConfirmStartMessage"
-                        @cancel="showStartMessageModal = false"
-                        />
-            
-          </div>
-          <div class="edit-placeholder">
-            <button @click="showEndMessageModal = true">
-              <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-            <span>Modifier</span>
-            </button>
-                      <PopupUpdateEndMessageEnquete
-                        v-if="showEndMessageModal"
-                        :currentEndMessage="enquete.end_message || ''"
-                        @confirm="onConfirmEndMessage"
-                        @cancel="showEndMessageModal = false"
-                        />
-          
-          </div>
-        </div>
-      </div>
+  <div class="detail-line">
+    <span class="label">Titre :</span>
+    <span class="value">{{ enquete.title }}</span>
+    <button class="btn-modifier" @click="showTitleModal = true">
+      <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+      </svg>
+      <span>Modifier</span>
+    </button>
+    <PopupUpdateTitleEnquete v-if="showTitleModal" :currentTitle="enquete.title || ''"
+      @confirm="onConfirmTitle" @cancel="showTitleModal = false" />
+  </div>
 
-      <div class="actions-row">
+  <div class="detail-line">
+    <span class="label">Description :</span>
+    <span class="value" v-html="previewDescription"></span>
+    <button class="btn-modifier" @click="showDescriptionModal = true">
+      <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+      </svg>
+      <span>Modifier</span>
+    </button>
+    <PopupUpdateDescriptionEnquete v-if="showDescriptionModal" :currentDescription="enquete.description || ''"
+      @confirm="onConfirmDescription" @cancel="showDescriptionModal = false" />
+  </div>
+
+  <div class="detail-line">
+    <span class="label">Message de début :</span>
+    <span class="value" v-html="previewStartMessage"></span>
+    <button class="btn-modifier" @click="showStartMessageModal = true">
+      <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+      </svg>
+      <span>Modifier</span>
+    </button>
+    <PopupUpdateStartMessageEnquete v-if="showStartMessageModal" :currentStartMessage="enquete.start_message || ''"
+      @confirm="onConfirmStartMessage" @cancel="showStartMessageModal = false" />
+  </div>
+
+  <div class="detail-line">
+    <span class="label">Message de fin :</span>
+    <span class="value" v-html="previewEndMessage"></span>
+    <button class="btn-modifier" @click="showEndMessageModal = true">
+      <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+      </svg>
+      <span>Modifier</span>
+    </button>
+    <PopupUpdateEndMessageEnquete v-if="showEndMessageModal" :currentEndMessage="enquete.end_message || ''"
+      @confirm="onConfirmEndMessage" @cancel="showEndMessageModal = false" />
+  </div>
+
+  <div class="detail-line">
+    <span class="label">Statut :</span>
+    <span class="status" :class="{ archived: enquete.archived }">
+      {{ enquete.archived ? 'Archivé' : 'Active' }}
+    </span>
+  </div>
+
+  <div class="detail-line line-url">
+    <span class="label">Lien de l'enquête :</span>
+    <span class="value url-value">{{ enquete.url_enquete }}</span>
+    <button @click="copyClipboard(enquete.url_enquete || '')" class="btn-copy">Copier</button>
+  </div>
+
+</div>
+
+<div class="actions-row">
         <button @click="goToBanksPage" class="btn btn-banks">Voir les banques ajoutées</button>
         <button @click="downloadResponsesCSV" class="btn btn-export">Télécharger les réponses (CSV)</button>
         <button @click="downloadVariableDetailsCSV" class="btn btn-export">Télécharger les variables (CSV)</button>
@@ -440,23 +413,13 @@ onMounted(() => {
   font-family: 'Arial', sans-serif;
 }
 
-.edit-icon {
-  width: 1.9rem;
-  height: 1.9rem;
-}
-
-.btn-copy{
-  background-color: #EEC05D;
-  padding: 1%;
-  border-radius: 15px;
-  cursor: pointer;
-}
 .detail-page {
   max-width: 1100px;
   margin: 1.5rem auto;
   padding: 0 1rem 2rem;
 }
 
+/* ── Header ── */
 .header-row {
   display: flex;
   align-items: center;
@@ -496,6 +459,7 @@ onMounted(() => {
   transform: translateX(-4rem);
 }
 
+/* ── États loading / error ── */
 .loading,
 .error {
   text-align: center;
@@ -506,6 +470,7 @@ onMounted(() => {
   color: #e74c3c;
 }
 
+/* ── Card ── */
 .card {
   background: #fff;
   border: 1px solid #d8d8d8;
@@ -518,27 +483,27 @@ onMounted(() => {
   margin-bottom: 0.85rem;
 }
 
+/* ── Grille des détails ── */
 .details-grid {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: start;
-  gap: 1.5rem;
-}
-
-.details-left {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.85rem;
 }
 
 .detail-line {
-  display: flex;
+  display: grid;
+  grid-template-columns: 190px 1fr auto;
   align-items: center;
   gap: 1rem;
+  min-height: 2.2rem;
+}
+
+/* Ligne lien : label + url + bouton copier + bouton modifier */
+.detail-line.line-url {
+  grid-template-columns: 190px 1fr auto auto;
 }
 
 .label {
-  min-width: 170px;
   font-weight: 700;
   color: #111827;
   flex-shrink: 0;
@@ -546,10 +511,14 @@ onMounted(() => {
 
 .value {
   color: #1f2937;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
   word-break: break-word;
   line-height: 1.5;
+}
+
+.url-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .status {
@@ -561,25 +530,45 @@ onMounted(() => {
   color: #95a5a6;
 }
 
-.edit-column {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  margin-top: 1.3rem;
+/* ── Bouton Copier ── */
+.btn-copy {
+  background-color: #EEC05D;
+  padding: 0.35rem 0.9rem;
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.edit-placeholder {
+/* ── Bouton Modifier ── */
+.btn-modifier {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
   color: #1f2937;
+  font-size: 0.78rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.btn-modifier:hover {
+  background: #f3f4f6;
 }
 
 .edit-icon {
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
+/* ── Lignes d'actions ── */
 .actions-row {
   display: flex;
   justify-content: center;
@@ -594,19 +583,15 @@ onMounted(() => {
   font-weight: 500;
   color: #fff;
   cursor: pointer;
+  font-size: 0.95rem;
 }
 
 .btn-banks {
   background: #22a86c;
 }
 
-.btn-archive {
-  width: 140px;
-  background: #5b8ee6;
-}
-
-.btn-delete {
-  background: #ef4423;
+.btn-banks:hover {
+  background: #1a9260;
 }
 
 .btn-export {
@@ -617,8 +602,24 @@ onMounted(() => {
   background: #4f46e5;
 }
 
+.btn-archive {
+  min-width: 140px;
+  background: #5b8ee6;
+}
 
+.btn-archive:hover {
+  background: #4a7dd4;
+}
 
+.btn-delete {
+  background: #ef4423;
+}
+
+.btn-delete:hover {
+  background: #d93a1b;
+}
+
+/* ── Responsive ── */
 @media (max-width: 900px) {
   .page-title {
     transform: none;
@@ -631,12 +632,36 @@ onMounted(() => {
     gap: 0.8rem;
   }
 
-  .details-grid {
+  .detail-line,
+  .detail-line.line-url {
+    grid-template-columns: 150px 1fr auto;
+    gap: 0.6rem;
+  }
+
+  .detail-line.line-url {
+    grid-template-columns: 150px 1fr auto auto;
+  }
+
+  .actions-row {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .btn {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}
+
+@media (max-width: 500px) {
+  .detail-line,
+  .detail-line.line-url {
     grid-template-columns: 1fr;
   }
 
-  .edit-column {
-    margin-top: 0;
+  .btn-modifier {
+    flex-direction: row;
+    gap: 6px;
   }
 }
 </style>
