@@ -295,6 +295,32 @@ const downloadVariableDetailsCSV = async () => {
   }
 }
 
+const clearResponses = async () => {
+  if (!confirm('Êtes-vous sûr de vouloir vider toutes les réponses de cette enquête ? Cette action est irréversible.')) {
+    return
+  }
+
+  try {
+    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}/clear-responses`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${storeAuth.token}`,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la suppression des réponses')
+    }
+
+    alert('Les réponses ont été vidées avec succès')
+    await getEnqueteDetail() 
+  } catch (err) {
+    console.error('Error:', err)
+    alert('Erreur lors de la suppression des réponses')
+  }
+}
+
 onMounted(() => {
   getEnqueteDetail()
 })
@@ -399,6 +425,8 @@ onMounted(() => {
         <button @click="goToBanksPage" class="btn btn-banks">Voir les banques ajoutées</button>
         <button @click="downloadResponsesCSV" class="btn btn-export">Télécharger les réponses (CSV)</button>
         <button @click="downloadVariableDetailsCSV" class="btn btn-export">Télécharger les variables (CSV)</button>
+          <button @click="clearResponses" class="btn btn-clear">Vider les réponses</button> <!-- 👈 -->
+
       </div>
 
       <div class="actions-row">
@@ -442,6 +470,14 @@ onMounted(() => {
   cursor: pointer;
   color: #1f2937;
   font-size: 1rem;
+}
+
+.btn-clear {
+  background: #f59e0b;
+}
+
+.btn-clear:hover {
+  background: #d97706;
 }
 
 .back-circle {
