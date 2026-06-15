@@ -14,6 +14,18 @@ interface BankItem {
   items?: Array<any>
 }
 
+// Interface pour l'enquête pour afficher le nom de l'enquete dans le titre de la page
+interface Enquete {
+  id?: string;
+  title: string;
+  description: string;
+  start_message: string;
+  end_message: string;
+  archived: boolean;
+  repondants_count?: number;
+}
+
+
 const route = useRoute()
 const router = useRouter()
 const storeAuth = useAuthStore()
@@ -30,6 +42,36 @@ const isSaving = ref(false)
 const showRandomItemsPopup = ref(false)
 const selectedBankForPopup = ref<BankItem | null>(null)
 const pendingMode = ref<string | null>(null)
+
+const enquete = ref<Enquete | null>(null)
+
+const fetchEnqueteDetails = async () => {
+  loading.value = true
+  error.value = null
+
+  try {
+	const response = await fetch(
+	  `http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}`,
+	  {
+		method: 'GET',
+		headers: {
+		  'Content-Type': 'application/json',
+		  Authorization: `Bearer ${storeAuth.token}`,
+		},
+	  }
+	)
+
+	if (!response.ok) {
+	  throw new Error('Erreur lors de la récupération des détails de l\'enquête')
+	}
+
+	enquete.value = await response.json()
+  } catch (err) {
+	error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
+  } finally {
+	loading.value = false
+  }
+}
 
 const getBanksAssociatedToEnquete = async () => {
   loading.value = true
@@ -52,8 +94,18 @@ const getBanksAssociatedToEnquete = async () => {
     }
 
     const data = await response.json()
-    bankItems.value = data.bank_items
-    originalBankItems.value = JSON.parse(JSON.stringify(data.bank_items))
+
+    bankItems.value = (data.bank_items || []).map((bank: any) => ({
+      id: bank.id,
+      name: bank.name,
+      archived: bank.archived,
+      items: bank.items || [],
+      mode: bank.pivot?.mode ?? 'systematique',
+      nombre_items_aleatoires: bank.pivot?.nombre_items_aleatoires ?? null,
+      enquete_bank_id: bank.pivot?.id,
+    }))
+
+    originalBankItems.value = JSON.parse(JSON.stringify(bankItems.value))
     hasChanged.value = false
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
@@ -132,7 +184,8 @@ const onDragEnd = () => {
 }
 
 const updateBankMode = async (enqueteBankId: string, newMode: string) => {
-  // Si le nouveau mode est "aleatoire", afficher la popup
+	  console.log('enqueteBankId:', enqueteBankId)
+
   if (newMode === 'aleatoire') {
     const bank = bankItems.value.find((b) => b.enquete_bank_id === enqueteBankId)
     if (bank) {
@@ -231,6 +284,7 @@ const goBack = () => {
 
 onMounted(async () => {
   await getBanksAssociatedToEnquete()
+  await fetchEnqueteDetails()
 })
 </script>
 
@@ -243,6 +297,8 @@ onMounted(async () => {
 			</button>
 			<h1 class="page-title">Banques ajoutées</h1>
 		</div>
+		<h2>Enquête: {{ enquete?.title }}</h2>
+
 
 		<div v-if="loading" class="loading">Chargement...</div>
 		<div v-else-if="error" class="error">{{ error }}</div>

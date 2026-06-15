@@ -10,11 +10,19 @@ interface Item {
 	question: string
 }
 
+// Interface pour la banque pour afficher le nom de la banque dans la page item add
+
+interface Bank {
+	id: string
+	name: string
+}
+
 const route = useRoute()
 const router = useRouter()
 const storeAuth = useAuthStore()
 
 const bankItemId = route.params.bankItemId
+const bank = ref<Bank | null>(null)
 const items = ref<Item[]>([])
 const originalItems = ref<Item[]>([])
 const loading = ref(false)
@@ -22,6 +30,40 @@ const error = ref<string | null>(null)
 const hasChanged = ref(false)
 const isSaving = ref(false)
 
+const fetchBankDetails = async () => {
+  loading.value = true
+  error.value = null
+
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/v1/users/${storeAuth.userId}/bank-items/${bankItemId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${storeAuth.token}`,
+        },
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des détails de la banque')
+    }
+
+    const data = await response.json()
+    console.log('data:', JSON.stringify(data, null, 2)) // 👈 pour voir la structure exacte
+    
+    // Essaie les deux formats possibles
+    bank.value = data.bank ?? { id: data.id, name: data.name }
+    items.value = data.items ?? []
+    originalItems.value = JSON.parse(JSON.stringify(items.value))
+    hasChanged.value = false
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
+  } finally {
+    loading.value = false
+  }
+}
 /**
  * Récupère les items associés à la banque pour un userId
  */
@@ -132,7 +174,7 @@ const goBack = () => {
 }
 
 onMounted(async() => {
-	await getItemsAssociatedToBanks()
+	await fetchBankDetails()
 })
 </script>
 
@@ -144,7 +186,9 @@ onMounted(async() => {
 				<span>Retour</span>
 			</button>
 			<h1 class="page-title">Items ajoutes</h1>
+			
 		</div>
+		<h2>Banque: {{ bank?.name }}</h2>
 
 		<div v-if="loading" class="loading">Chargement...</div>
 		<div v-else-if="error" class="error">{{ error }}</div>

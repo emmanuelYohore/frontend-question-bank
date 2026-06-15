@@ -250,6 +250,8 @@ onMounted(() => {
     <template v-else>
       <!-- QCM / QCU -->
       <template v-if="isQCMorQCU">
+        
+        <h2>Nom de l'item: {{ item?.question }}</h2>
         <div v-if="modalites.length === 0" class="error">Aucune modalité ajoutée à cet item</div>
 
         <!-- Single item: no drag -->

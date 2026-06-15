@@ -20,6 +20,7 @@ interface Enquete {
   end_message: string;
   url_enquete?: string;
   archived: boolean;
+  repondants_count?: number;
 }
 
 const enquete = ref<Enquete | null>(null)
@@ -372,6 +373,11 @@ onMounted(() => {
     </button>
     <PopupUpdateEndMessageEnquete v-if="showEndMessageModal" :currentEndMessage="enquete.end_message || ''"
       @confirm="onConfirmEndMessage" @cancel="showEndMessageModal = false" />
+  </div>
+
+  <div class="detail-line">
+    <span class="label">Nombre de répondants :</span>
+<span class="value">{{ enquete.repondants_count ?? 0 }}</span>
   </div>
 
   <div class="detail-line">
