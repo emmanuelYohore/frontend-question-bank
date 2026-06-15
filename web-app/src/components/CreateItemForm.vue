@@ -95,7 +95,6 @@ const maxCaseOptions = computed(() => {
 const addModalite = () => {
   if (modalites.value.length < 20) {
     modalites.value.push({ intitule: '' })
-    // Si le max était calé sur l'ancien nombre de modalités, on le met à jour
     if (item.value.max_case_to_check === modalites.value.length - 1) {
       item.value.max_case_to_check = modalites.value.length
     }

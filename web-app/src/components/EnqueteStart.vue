@@ -243,25 +243,32 @@ const isFormValid = computed(() => {
   for (const bankItem of bankItemsEnquete.value) {
     if (!bankItem.items) continue;
     for (const item of bankItem.items) {
-      if (item.obligatoire) {
-        const response = responses.value[item.id!];
-        if (!response) return false;
+      const response = responses.value[item.id!];
 
+      // Vérification QCM min_case_to_check (obligatoire ou non)
+      if (item.format_reponse?.type === 'qcm' && item.min_case_to_check !== null) {
+        const count = response?.modaliteReponseIds?.length || 0;
+        // Si au moins une case est cochée, le min doit être respecté
+        if (count > 0 && count < item.min_case_to_check) return false;
+      }
+
+      if (item.obligatoire) {
         if (item.format_reponse?.type === 'texte') {
-          if (!response.valeurTexte || response.valeurTexte.trim() === '') return false;
+          if (!response?.valeurTexte || response.valeurTexte.trim() === '') return false;
         } else if (item.format_reponse?.type === 'qcm') {
-          if (!response.modaliteReponseIds || response.modaliteReponseIds.length === 0) return false;
+          const count = response?.modaliteReponseIds?.length || 0;
+          if (count === 0) return false;
+          if (item.min_case_to_check !== null && count < item.min_case_to_check) return false;
         } else if (item.format_reponse?.type === 'qcu') {
-          if (!response.modaliteReponseId) return false;
+          if (!response?.modaliteReponseId) return false;
         } else if (item.format_reponse?.type === 'evn') {
-          if (response.valeurEvn === undefined || response.valeurEvn === '') return false;
+          if (!response || response.valeurEvn === undefined || response.valeurEvn === '') return false;
         }
       }
     }
   }
   return true;
 });
-
 /**
  * Submit all responses
  */
@@ -472,12 +479,13 @@ const handleEndModalClose = () => {
   </div>
 
   <!-- Message d'erreur si min non atteint -->
-  <p
-    v-if="getQcmValidationMessage(item)"
-    class="qcm-error"
-  >
-    ⚠ {{ getQcmValidationMessage(item) }}
-  </p>
+ <p
+  v-if="getCheckedCount(item.id!) > 0 && getCheckedCount(item.id!) < (item.min_case_to_check ?? 0)"
+  class="qcm-error"
+>
+  ⚠ Veuillez sélectionner au moins {{ item.min_case_to_check }} option(s).
+  ({{ getCheckedCount(item.id!) }}/{{ item.min_case_to_check }})
+</p>
 
   <!-- Message succès si min atteint -->
   <p
