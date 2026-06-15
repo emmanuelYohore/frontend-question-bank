@@ -6,16 +6,12 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
-// Extract URL from route parameter - supports both old route format and new survey URL format
 const enqueteUrl = computed(() => {
-  // New route: /survey/:url(.*) -> use 'url' param directly
   if (route.params.url) {
     return (route.params.url as string).split('/').pop() || '';
   }
- 
 });
 
-// Generate unique session ID
 const generateSessionId = (): string => {
   return crypto.randomUUID?.() || `session-${Date.now()}-${Math.random()}`;
 };
@@ -34,14 +30,15 @@ interface ModaliteReponse {
 }
 
 interface Item {
-  id?: string
-  question: string
-  min_case_to_check: number | null    
-  max_case_to_check: number | null    
-  name_variable_export: string
-  obligatoire: boolean
-  format_reponse?: FormatReponse | null
-  modalite_reponses?: ModaliteReponse[]
+  id?: string;
+  question: string;
+  min_case_to_check: number | null;
+  max_case_to_check: number | null;
+  name_variable_export: string;
+  obligatoire: boolean;
+  format_reponse?: FormatReponse | null;
+  modalite_reponses?: ModaliteReponse[];
+  bankItemId?: string;
 }
 
 interface BankItem {
@@ -86,52 +83,119 @@ const showEndModal = ref(false);
 const sessionCreated = ref(false);
 const sessionId = ref<string>('');
 
-  /**
+// Pagination
+const ITEMS_PER_PAGE = 5;
+const currentPage = ref(0);
+
+// Flatten tous les items en une seule liste
+const allItems = computed(() => {
+  const items: Item[] = [];
+  for (const bankItem of bankItemsEnquete.value) {
+    for (const item of bankItem.items || []) {
+      items.push({ ...item, bankItemId: bankItem.id });
+    }
+  }
+  return items;
+});
+
+const totalPages = computed(() => Math.ceil(allItems.value.length / ITEMS_PER_PAGE));
+
+const currentItems = computed(() => {
+  const start = currentPage.value * ITEMS_PER_PAGE;
+  return allItems.value.slice(start, start + ITEMS_PER_PAGE);
+});
+
+const isLastPage = computed(() => currentPage.value === totalPages.value - 1);
+const isFirstPage = computed(() => currentPage.value === 0);
+
+/**
  * Retourne le nombre de cases cochées pour un item QCM donné
  */
 const getCheckedCount = (itemId: string): number => {
-  return responses.value[itemId]?.modaliteReponseIds?.length || 0
-}
+  return responses.value[itemId]?.modaliteReponseIds?.length || 0;
+};
 
 /**
  * Vérifie si une checkbox doit être désactivée (max atteint et non cochée)
  */
 const isCheckboxDisabled = (itemId: string, modaliteId: string, maxCheck: number | null): boolean => {
-  if (maxCheck === null) return false
-  const ids = responses.value[itemId]?.modaliteReponseIds || []
-  const isChecked = ids.includes(modaliteId)
-  return !isChecked && ids.length >= maxCheck
-}
+  if (maxCheck === null) return false;
+  const ids = responses.value[itemId]?.modaliteReponseIds || [];
+  const isChecked = ids.includes(modaliteId);
+  return !isChecked && ids.length >= maxCheck;
+};
 
 /**
- * Retourne un message d'erreur si le min n'est pas atteint pour un QCM obligatoire
+ * Vérifie la validité d'un item donné
  */
-const getQcmValidationMessage = (item: Item): string | null => {
-  if (!item.obligatoire || item.format_reponse?.type !== 'qcm') return null
-  if (item.min_case_to_check === null) return null
+const isItemValid = (item: Item): boolean => {
+  const response = responses.value[item.id!];
 
-  const count = getCheckedCount(item.id!)
-  if (count === 0) return null // pas encore touché, on n'affiche rien
-
-  if (count < item.min_case_to_check) {
-    return `Veuillez sélectionner au moins ${item.min_case_to_check} option(s). (${count}/${item.min_case_to_check})`
+  // Vérification QCM min (obligatoire ou non)
+  if (item.format_reponse?.type === 'qcm' && item.min_case_to_check !== null) {
+    const count = response?.modaliteReponseIds?.length || 0;
+    if (count > 0 && count < item.min_case_to_check) return false;
   }
-  return null
-}
 
+  if (item.obligatoire) {
+    if (item.format_reponse?.type === 'texte') {
+      if (!response?.valeurTexte || response.valeurTexte.trim() === '') return false;
+    } else if (item.format_reponse?.type === 'qcm') {
+      const count = response?.modaliteReponseIds?.length || 0;
+      if (count === 0) return false;
+      if (item.min_case_to_check !== null && count < item.min_case_to_check) return false;
+    } else if (item.format_reponse?.type === 'qcu') {
+      if (!response?.modaliteReponseId) return false;
+    } else if (item.format_reponse?.type === 'evn') {
+      if (!response || response.valeurEvn === undefined || response.valeurEvn === '') return false;
+    }
+  }
+
+  return true;
+};
+
+/**
+ * Vérifie si la page courante est valide pour pouvoir avancer
+ */
+const isCurrentPageValid = computed(() => {
+  for (const item of currentItems.value) {
+    if (!isItemValid(item)) return false;
+  }
+  return true;
+});
+
+/**
+ * Vérifie si tout le formulaire est valide
+ */
+const isFormValid = computed(() => {
+  if (!allItems.value.length) return false;
+  for (const item of allItems.value) {
+    if (!isItemValid(item)) return false;
+  }
+  return true;
+});
+
+const nextPage = () => {
+  if (!isLastPage.value && isCurrentPageValid.value) {
+    currentPage.value++;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
+
+const prevPage = () => {
+  if (!isFirstPage.value) {
+    currentPage.value--;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
 
 onMounted(() => {
   const sessionIdStored = sessionStorage.getItem('repondant_session_id') || generateSessionId();
   sessionStorage.setItem('repondant_session_id', sessionIdStored);
   sessionId.value = sessionIdStored;
-  
   getEnqueteByUrl();
 });
 
-/**
- *     //si l'enquete est archivée on retourne l'enquete est archivée, sinon on retourne l'enquete avec les items mélangés si le mode de la banque est aléatoire
-
- */
 const getEnqueteByUrl = async () => {
   loading.value = true;
   error.value = null;
@@ -139,25 +203,20 @@ const getEnqueteByUrl = async () => {
   try {
     const response = await fetch(`http://localhost:8000/api/v1/enquetes/by-url/${enqueteUrl.value}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     });
 
-     if (response.status === 410) {
+    if (response.status === 410) {
       const errorData = await response.json();
       alert(errorData.message);
       window.location.href = 'https://www.google.com';
     } else if (!response.ok) {
       throw new Error('Erreur lors du chargement de l\'enquête');
-      
     }
-   
+
     const data: Enquete = await response.json();
     enquete.value = data;
     bankItemsEnquete.value = data.bank_items || [];
-
-    // Afficher le modal de démarrage
     showStartModal.value = true;
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Une erreur est survenue lors du chargement de l\'enquête';
@@ -167,18 +226,13 @@ const getEnqueteByUrl = async () => {
   }
 };
 
-/**
- * Create anonymous repondant session (called when user clicks "Commencer")
- */
 const createRepondantSession = async () => {
   if (!enquete.value?.id) return;
 
   try {
     const response = await fetch('http://localhost:8000/api/v1/repondants', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         session_id: sessionId.value,
         enquete_id: enquete.value.id,
@@ -202,76 +256,31 @@ const createRepondantSession = async () => {
   }
 };
 
-/**
- * Update response value
- */
 const updateResponse = (itemId: string, fieldName: string, value: any, isQcm: boolean = false) => {
   if (!responses.value[itemId]) {
     responses.value[itemId] = {};
   }
-  
+
   if (isQcm && fieldName === 'modaliteReponseIds') {
     if (!responses.value[itemId].modaliteReponseIds) {
       responses.value[itemId].modaliteReponseIds = [];
     }
-    
+
     const ids = responses.value[itemId].modaliteReponseIds!;
     const modaliteId: string = value.id;
     const isChecked: boolean = value.checked;
-    
+
     if (isChecked) {
-      if (!ids.includes(modaliteId)) {
-        ids.push(modaliteId);
-      }
+      if (!ids.includes(modaliteId)) ids.push(modaliteId);
     } else {
       const index = ids.indexOf(modaliteId);
-      if (index > -1) {
-        ids.splice(index, 1);
-      }
+      if (index > -1) ids.splice(index, 1);
     }
   } else {
     responses.value[itemId][fieldName] = value;
   }
 };
 
-/**
- * Check if all required items are answered
- */
-const isFormValid = computed(() => {
-  if (!bankItemsEnquete.value || bankItemsEnquete.value.length === 0) return false;
-
-  for (const bankItem of bankItemsEnquete.value) {
-    if (!bankItem.items) continue;
-    for (const item of bankItem.items) {
-      const response = responses.value[item.id!];
-
-      // Vérification QCM min_case_to_check (obligatoire ou non)
-      if (item.format_reponse?.type === 'qcm' && item.min_case_to_check !== null) {
-        const count = response?.modaliteReponseIds?.length || 0;
-        // Si au moins une case est cochée, le min doit être respecté
-        if (count > 0 && count < item.min_case_to_check) return false;
-      }
-
-      if (item.obligatoire) {
-        if (item.format_reponse?.type === 'texte') {
-          if (!response?.valeurTexte || response.valeurTexte.trim() === '') return false;
-        } else if (item.format_reponse?.type === 'qcm') {
-          const count = response?.modaliteReponseIds?.length || 0;
-          if (count === 0) return false;
-          if (item.min_case_to_check !== null && count < item.min_case_to_check) return false;
-        } else if (item.format_reponse?.type === 'qcu') {
-          if (!response?.modaliteReponseId) return false;
-        } else if (item.format_reponse?.type === 'evn') {
-          if (!response || response.valeurEvn === undefined || response.valeurEvn === '') return false;
-        }
-      }
-    }
-  }
-  return true;
-});
-/**
- * Submit all responses
- */
 const submitResponses = async () => {
   if (!repondantId.value || !enquete.value?.id) {
     error.value = 'Session invalide';
@@ -288,8 +297,7 @@ const submitResponses = async () => {
       if (!bankItem.items) continue;
       for (const item of bankItem.items) {
         const response = responses.value[item.id!];
-        
-        // Pour QCM, soumettre chaque modalité sélectionnée comme une réponse séparée
+
         if (item.format_reponse?.type === 'qcm' && response?.modaliteReponseIds) {
           for (const modaliteId of response.modaliteReponseIds) {
             reponsesToSubmit.push({
@@ -302,7 +310,6 @@ const submitResponses = async () => {
             });
           }
         } else if (response) {
-          // Pour les autres formats
           reponsesToSubmit.push({
             repondant_id: repondantId.value,
             enquete_id: enquete.value.id,
@@ -315,13 +322,10 @@ const submitResponses = async () => {
       }
     }
 
-    // Submit each response
     for (const resp of reponsesToSubmit) {
       const submitResponse = await fetch('http://localhost:8000/api/v1/reponses', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(resp),
       });
 
@@ -330,22 +334,16 @@ const submitResponses = async () => {
       }
     }
 
-    // Mark repondant as completed
     const updateResponse = await fetch(`http://localhost:8000/api/v1/repondants/${repondantId.value}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        completed_at: new Date().toISOString(),
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed_at: new Date().toISOString() }),
     });
 
     if (!updateResponse.ok) {
       console.warn('Warning: Could not mark repondant as completed');
     }
 
-    // Afficher le modal de fin
     showEndModal.value = true;
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Une erreur est survenue lors de l\'envoi des réponses';
@@ -355,12 +353,6 @@ const submitResponses = async () => {
   }
 };
 
-/**
- * Handle start survey button
- */
-/**
- * Handle start survey button - create session and show form
- */
 const handleStartSurvey = async () => {
   await createRepondantSession();
   if (sessionCreated.value) {
@@ -368,16 +360,10 @@ const handleStartSurvey = async () => {
   }
 };
 
-/**
- * Handle start modal close
- */
 const handleModalClose = () => {
   showStartModal.value = false;
 };
 
-/**
- * Handle end modal close - cleanup and redirect
- */
 const handleEndModalClose = () => {
   showEndModal.value = false;
   sessionStorage.removeItem('repondant_session_id');
@@ -423,137 +409,157 @@ const handleEndModalClose = () => {
       <!-- Header -->
       <div class="survey-header">
         <h1>Enquête: {{ enquete.title }}</h1>
-        <p class="description">{{ enquete.description }}</p>       
       </div>
 
-      <!-- Bank Items and Questions -->
+      <!-- Items de la page courante -->
       <div class="survey-content">
-        <div v-for="bankItem in bankItemsEnquete" :key="bankItem.id" class="bank-item-section">
-          <div v-for="item in bankItem.items" :key="item.id" class="item-card">
-            <div class="item-header">
-              <label class="question">
-                <span v-if="item.obligatoire" class="required">*</span>
-                {{ item.question }}
-              </label>
+        <div v-for="item in currentItems" :key="item.id" class="item-card">
+          <div class="item-header">
+            <label class="question">
+              <span v-if="item.obligatoire" class="required">*</span>
+              {{ item.question }}
+            </label>
+          </div>
+
+          <div class="response-area">
+            <!-- Text Format -->
+            <input
+              v-if="item.format_reponse?.type === 'texte'"
+              type="text"
+              placeholder="Entrez votre réponse"
+              :value="responses[item.id!]?.valeurTexte || ''"
+              @input="updateResponse(item.id!, 'valeurTexte', ($event.target as HTMLInputElement).value)"
+              class="text-input"
+            />
+
+            <!-- QCM (Multiple Choice) -->
+            <div v-else-if="item.format_reponse?.type === 'qcm'" class="qcm-container">
+              <p class="qcm-info">
+                Veuillez sélectionner
+                <strong>entre {{ item.min_case_to_check }} et {{ item.max_case_to_check }}</strong> options
+                <span class="qcm-count">
+                  ({{ getCheckedCount(item.id!) }}/{{ item.max_case_to_check }} sélectionnée(s))
+                </span>
+              </p>
+
+              <div
+                v-for="modalite in item.modalite_reponses"
+                :key="modalite.id"
+                class="checkbox-item"
+                :class="{ 'checkbox-disabled': isCheckboxDisabled(item.id!, modalite.id!, item.max_case_to_check) }"
+              >
+                <input
+                  v-if="modalite.id"
+                  type="checkbox"
+                  :id="`checkbox-${item.id}-${modalite.id}`"
+                  :checked="responses[item.id!]?.modaliteReponseIds?.includes(modalite.id) || false"
+                  :disabled="isCheckboxDisabled(item.id!, modalite.id!, item.max_case_to_check)"
+                  @change="updateResponse(item.id!, 'modaliteReponseIds', { id: modalite.id, checked: ($event.target as HTMLInputElement).checked }, true)"
+                />
+                <label
+                  v-if="modalite.id"
+                  :for="`checkbox-${item.id}-${modalite.id}`"
+                  :class="{ 'label-disabled': isCheckboxDisabled(item.id!, modalite.id!, item.max_case_to_check) }"
+                >
+                  {{ modalite.intitule }}
+                </label>
+              </div>
+
+              <p
+                v-if="getCheckedCount(item.id!) > 0 && getCheckedCount(item.id!) < (item.min_case_to_check ?? 0)"
+                class="qcm-error"
+              >
+                ⚠ Veuillez sélectionner au moins {{ item.min_case_to_check }} option(s).
+                ({{ getCheckedCount(item.id!) }}/{{ item.min_case_to_check }})
+              </p>
+              <p
+                v-else-if="getCheckedCount(item.id!) >= (item.min_case_to_check ?? 0) && getCheckedCount(item.id!) > 0"
+                class="qcm-success"
+              >
+                ✓ Sélection valide
+              </p>
             </div>
 
-            <div class="response-area">
-              <!-- Text Format -->
-              <input
-                v-if="item.format_reponse?.type === 'texte'"
-                type="text"
-                placeholder="Entrez votre réponse"
-                :value="responses[item.id!]?.valeurTexte || ''"
-                @input="updateResponse(item.id!, 'valeurTexte', ($event.target as HTMLInputElement).value)"
-                class="text-input"
-              />
-
-              <!-- QCM (Multiple Choice) -->
-<div v-else-if="item.format_reponse?.type === 'qcm'" class="qcm-container">
-  <p class="qcm-info">
-    Veuillez sélectionner
-    <strong>entre {{ item.min_case_to_check }} et {{ item.max_case_to_check }}</strong> options
-    <span class="qcm-count">
-      ({{ getCheckedCount(item.id!) }}/{{ item.max_case_to_check }} sélectionnée(s))
-    </span>
-  </p>
-
-  <div v-for="modalite in item.modalite_reponses" :key="modalite.id" class="checkbox-item"
-    :class="{ 'checkbox-disabled': isCheckboxDisabled(item.id!, modalite.id!, item.max_case_to_check) }"
-  >
-    <input
-      v-if="modalite.id"
-      type="checkbox"
-      :id="`checkbox-${item.id}-${modalite.id}`"
-      :checked="responses[item.id!]?.modaliteReponseIds?.includes(modalite.id) || false"
-      :disabled="isCheckboxDisabled(item.id!, modalite.id!, item.max_case_to_check)"
-      @change="updateResponse(item.id!, 'modaliteReponseIds', { id: modalite.id, checked: ($event.target as HTMLInputElement).checked }, true)"
-    />
-    <label
-      v-if="modalite.id"
-      :for="`checkbox-${item.id}-${modalite.id}`"
-      :class="{ 'label-disabled': isCheckboxDisabled(item.id!, modalite.id!, item.max_case_to_check) }"
-    >
-      {{ modalite.intitule }}
-    </label>
-  </div>
-
-  <!-- Message d'erreur si min non atteint -->
- <p
-  v-if="getCheckedCount(item.id!) > 0 && getCheckedCount(item.id!) < (item.min_case_to_check ?? 0)"
-  class="qcm-error"
->
-  ⚠ Veuillez sélectionner au moins {{ item.min_case_to_check }} option(s).
-  ({{ getCheckedCount(item.id!) }}/{{ item.min_case_to_check }})
-</p>
-
-  <!-- Message succès si min atteint -->
-  <p
-    v-else-if="getCheckedCount(item.id!) >= (item.min_case_to_check ?? 0) && getCheckedCount(item.id!) > 0"
-    class="qcm-success"
-  >
-    ✓ Sélection valide
-  </p>
-</div>
-              <!-- QCU (Single Choice) -->
-              <div v-else-if="item.format_reponse?.type === 'qcu'" class="qcu-container">
-                <div v-for="modalite in item.modalite_reponses" :key="modalite.id" class="radio-item">
-                  <label>
-                    <input
-                      type="radio"
-                      :name="`item-${item.id}`"
-                      :value="modalite.id"
-                      :checked="responses[item.id!]?.modaliteReponseId === modalite.id"
-                      @change="updateResponse(item.id!, 'modaliteReponseId', modalite.id)"
-                    />
-                    {{ modalite.intitule }}
-                  </label>
-                </div>
-              </div>
-
-              <!-- EVN (Scale/Range) -->
-              <div v-else-if="item.format_reponse?.type === 'evn'" class="evn-container">
-                <div v-for="modalite in item.modalite_reponses" :key="modalite.id" class="range-item">
-                  <div class="range-labels">
-                    <span class="label-left">{{ modalite.min_value }}</span>
-                    <span class="label-right">{{ modalite.max_value }}</span>
-                  </div>
+            <!-- QCU (Single Choice) -->
+            <div v-else-if="item.format_reponse?.type === 'qcu'" class="qcu-container">
+              <div v-for="modalite in item.modalite_reponses" :key="modalite.id" class="radio-item">
+                <label>
                   <input
-                    type="range"
-                    min="0"
-                    max="10"
-                    :value="responses[item.id!]?.valeurEvn || '5'"
-                    @input="updateResponse(item.id!, 'valeurEvn', ($event.target as HTMLInputElement).value)"
-                    class="range-input"
+                    type="radio"
+                    :name="`item-${item.id}`"
+                    :value="modalite.id"
+                    :checked="responses[item.id!]?.modaliteReponseId === modalite.id"
+                    @change="updateResponse(item.id!, 'modaliteReponseId', modalite.id)"
                   />
-                </div>
+                  {{ modalite.intitule }}
+                </label>
               </div>
+            </div>
 
-              <!-- Unknown Format -->
-              <div v-else class="unknown-format">
-                <p>Format non reconnu: {{ item.format_reponse?.type }}</p>
+            <!-- EVN (Scale/Range) -->
+            <div v-else-if="item.format_reponse?.type === 'evn'" class="evn-container">
+              <div v-for="modalite in item.modalite_reponses" :key="modalite.id" class="range-item">
+                <div class="range-labels">
+                  <span class="label-left">{{ modalite.min_value }}</span>
+                  <span class="label-right">{{ modalite.max_value }}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="10"
+                  :value="responses[item.id!]?.valeurEvn || '5'"
+                  @input="updateResponse(item.id!, 'valeurEvn', ($event.target as HTMLInputElement).value)"
+                  class="range-input"
+                />
               </div>
+            </div>
+
+            <!-- Unknown Format -->
+            <div v-else class="unknown-format">
+              <p>Format non reconnu: {{ item.format_reponse?.type }}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Submit Button -->
+      <!-- Navigation -->
       <div class="submit-section">
-        <button
-          @click="submitResponses"
-          :disabled="!isFormValid || submitting"
-          class="submit-btn"
-        >
-          {{ submitting ? 'Envoi en cours...' : 'Envoyer' }}
-        </button>
+        <div class="pagination-info">
+          Page {{ currentPage + 1 }} / {{ totalPages }}
+        </div>
+        <div class="nav-buttons">
+          <button
+            v-if="!isFirstPage"
+            @click="prevPage"
+            class="nav-btn prev-btn"
+          >
+            Précédent
+          </button>
+
+          <button
+            v-if="!isLastPage"
+            @click="nextPage"
+            :disabled="!isCurrentPageValid"
+            class="nav-btn next-btn"
+          >
+            Suivant
+          </button>
+
+          <button
+            v-if="isLastPage"
+            @click="submitResponses"
+            :disabled="!isFormValid || submitting"
+            class="submit-btn"
+          >
+            {{ submitting ? 'Envoi en cours...' : 'Envoyer' }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-
 * {
   margin: 0;
   padding: 0;
@@ -620,23 +626,11 @@ const handleEndModalClose = () => {
   color: #333;
 }
 
-.description {
-  display: none;
-}
-
 .survey-content {
   flex: 1;
   overflow-y: auto;
   padding: 20px;
   counter-reset: item-counter;
-}
-
-.bank-item-section {
-  margin-bottom: 0;
-}
-
-.bank-item-name {
-  display: none;
 }
 
 .item-card {
@@ -647,7 +641,6 @@ const handleEndModalClose = () => {
   border-radius: 10px;
   counter-increment: item-counter;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
 }
 
 .item-card:last-child {
@@ -659,19 +652,24 @@ const handleEndModalClose = () => {
 }
 
 .question {
-   font-size: 15px;
+  font-size: 15px;
   font-weight: bold;
   color: #333;
   word-break: break-word;
   overflow-wrap: break-word;
   white-space: normal;
   display: block;
-  
 }
 
 .question::before {
   content: counter(item-counter) ". ";
   font-weight: 600;
+}
+
+.qcm-info {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
 }
 
 .qcm-count {
@@ -748,7 +746,6 @@ const handleEndModalClose = () => {
   cursor: pointer;
   font-size: 14px;
   color: #333;
-
   word-break: break-word;
   overflow-wrap: break-word;
   white-space: normal;
@@ -782,7 +779,7 @@ const handleEndModalClose = () => {
 
 .label-left {
   text-align: left;
-   font-size: 15px;
+  font-size: 15px;
   color: #333;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -792,7 +789,7 @@ const handleEndModalClose = () => {
 
 .label-right {
   text-align: right;
-   font-size: 15px;
+  font-size: 15px;
   color: #333;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -812,11 +809,57 @@ const handleEndModalClose = () => {
   border-radius: 4px;
 }
 
+/* ── Navigation ── */
 .submit-section {
   text-align: center;
   padding: 20px;
   flex-shrink: 0;
   border-top: 1px solid #e0e0e0;
+}
+
+.pagination-info {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.nav-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.nav-btn {
+  padding: 12px 30px;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.prev-btn {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.prev-btn:hover {
+  background-color: #d1d5db;
+}
+
+.next-btn {
+  background-color: #5b8ee6;
+  color: white;
+}
+
+.next-btn:hover:not(:disabled) {
+  background-color: #4a7fdb;
+}
+
+.next-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .submit-btn {
@@ -841,4 +884,3 @@ const handleEndModalClose = () => {
   cursor: not-allowed;
 }
 </style>
-
