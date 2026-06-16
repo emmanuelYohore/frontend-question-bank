@@ -226,6 +226,10 @@ const goToBanksPage = () => {
   router.push({ name: 'enquete-banks', params: { enqueteId } })
 }
 
+const goToPreview = () => {
+  router.push({ name: 'preview-enquete', query: { enqueteId: enqueteId as string } })
+}
+
 const copyClipboard = async (copyText: string ) => {
   navigator.clipboard.writeText(copyText);
   alert("texte copié");
@@ -423,9 +427,10 @@ onMounted(() => {
 
 <div class="actions-row">
         <button @click="goToBanksPage" class="btn btn-banks">Voir les banques ajoutées</button>
+        <button @click="goToPreview" class="btn btn-preview">Prévisualiser</button>
         <button @click="downloadResponsesCSV" class="btn btn-export">Télécharger les réponses (CSV)</button>
         <button @click="downloadVariableDetailsCSV" class="btn btn-export">Télécharger les variables (CSV)</button>
-          <button @click="clearResponses" class="btn btn-clear">Vider les réponses</button> <!-- 👈 -->
+        <button @click="clearResponses" class="btn btn-clear">Vider les réponses</button>
 
       </div>
 
@@ -626,6 +631,14 @@ onMounted(() => {
   color: #fff;
   cursor: pointer;
   font-size: 0.95rem;
+}
+
+.btn-preview {
+  background: #8b5cf6;
+}
+
+.btn-preview:hover {
+  background: #7c3aed;
 }
 
 .btn-banks {

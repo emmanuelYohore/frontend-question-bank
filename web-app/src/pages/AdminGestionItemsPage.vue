@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
 import { computed, onMounted, ref } from 'vue'
 // import Paginate from "vuejs-paginate-next";
@@ -82,4 +82,4 @@ onMounted(() => {
   border: 1px solid #ddd;
   cursor: pointer;
 }
-</style>
+</style> -->

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
 import { onMounted, ref } from 'vue'
 import { computed } from 'vue'
@@ -83,4 +83,4 @@ onMounted(() => {
   border: 1px solid #ddd;
   cursor: pointer;
 }
-</style>
+</style> -->

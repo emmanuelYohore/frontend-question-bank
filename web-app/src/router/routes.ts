@@ -21,11 +21,9 @@ import ItemAddPage from '@/pages/ItemAddPage.vue'
 import BankAddPage from '@/pages/BankAddPage.vue'
 import EnqueteStartPage from '@/pages/EnqueteStartPage.vue'
 import AdminGestionUsersPage from '@/pages/AdminGestionUsersPage.vue'
-import AdminGestionItemsPage from '@/pages/AdminGestionItemsPage.vue'
-import AdminGestionBanksPage from '@/pages/AdminGestionBanksPage.vue'
-import AdminGestionEnquetesPage from '@/pages/AdminGestionEnquetesPage.vue'
-import LinkToEnquetePage from '@/pages/LinkToEnquetePage.vue'
-import AdminCreateUserForm from '@/components/AdminCreateUserForm.vue'
+import PreviewEnquetePage from '@/pages/PreviewEnquetePage.vue'
+import ForgotPasswordPage from '@/pages/ForgotPasswordPage.vue'
+import ResetPasswordPage  from '@/pages/ResetPasswordPage.vue'
 
 const routes = [
   {
@@ -57,12 +55,6 @@ const routes = [
     meta: { requiresAuth: true }
   },
 
-   {
-    path: '/link-to-enquete',
-    name: 'link-to-enquete',
-    component: LinkToEnquetePage,
-    meta: { requiresAuth: true }
-  },
    {
     path: '/bank-item/:bankItemId',
     name: 'bank-item-detail',
@@ -144,46 +136,40 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/preview-enquete',
+    name: 'preview-enquete',
+    component: PreviewEnquetePage,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/survey/:url(.*)',
     name: 'public-survey',
     component: EnqueteStartPage,
     meta: { requiresAuth: false }
   },
- 
+ {
+  path: '/forgot-password',
+  name: 'forgot-password',
+  component: ForgotPasswordPage,
+  meta: { requiresAuth: false }
+},
+{
+  path: '/reset-password',
+  name: 'reset-password',
+  component: ResetPasswordPage,
+  meta: { requiresAuth: false }
+},
   {
     path: '/my-account',
     name: 'my-account',
     component: MyAccountPage,
     meta: { requiresAuth: true }
   },
-  {
-    path: '/admin-gestion-items',
-    name: 'admin-gestion-items',
-    component: AdminGestionItemsPage,
-    meta: { requiresAuth: true }
-  },
-    {
-    path: '/admin-gestion-banks',
-    name: 'admin-gestion-banks',
-    component: AdminGestionBanksPage,
-    meta: { requiresAuth: true }
-  },
+  
     {
     path: '/admin-gestion-users',
     name: 'admin-gestion-users',
     component: AdminGestionUsersPage,
-    meta: { requiresAuth: true }
-  },
-     {
-    path: '/admin-create-users',
-    name: 'admin-create-users',
-    component: AdminCreateUserForm,
-    meta: { requiresAuth: true }
-  },
-    {
-    path: '/admin-gestion-enquetes',
-    name: 'admin-gestion-enquetes',
-    component: AdminGestionEnquetesPage,
     meta: { requiresAuth: true }
   },
   {

@@ -54,8 +54,8 @@ const register = async () => {
 
     const data = await response.json();
 
-    if (!response.ok) {
-      alert("Erreur lors de l'inscription");
+    if (!response.ok && response.status == 422) {
+      alert("L'email est déjà utilisé");
       return;
     }
 

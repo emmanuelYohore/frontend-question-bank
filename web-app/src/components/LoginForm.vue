@@ -118,6 +118,9 @@ const login = async () => {
         Vous n'avez pas de compte ?
         <router-link to="/register">S'inscrire</router-link>
       </p>
+      <p class="">       
+<router-link to="/forgot-password">Mot de passe oublié ?</router-link>
+      </p>
     </div>
   </div>
 </template>

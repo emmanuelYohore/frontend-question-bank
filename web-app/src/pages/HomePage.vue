@@ -69,8 +69,8 @@ const navigateTo = (routeName: string) => {
         <div class="card-image">
           <img src="../assets/img/enquete.jpg" alt="Enquête" />
         </div>
-        <button class="card-button" @click="navigateTo('link-to-enquete')">
-          Commencer une enquête
+        <button class="card-button" @click="">
+          <!-- Prévisualiser une enquête -->
         </button>
       </div>
 
