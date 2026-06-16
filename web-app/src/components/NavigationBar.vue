@@ -8,6 +8,12 @@ const router = useRouter()
 const authStore = useAuthStore()
 const loading = ref(false)
 
+const isMenuOpen = ref(false)
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value
+}
+
 /**
  *fonction pour se déconnecter
 */
@@ -38,37 +44,61 @@ const logout = async () => {
  </script>
  
  <template>
-   <nav class="navbar">
-     <div class="navbar-container">
+  <nav class="navbar">
+    <div class="navbar-container">
       <div class="logo-section" @click="router.push('/home')">
         <div class="logo">
           <img src="../assets/img/logo.png" alt="Logo" />
         </div>
-        <h1 class="app-title" >ENQUETE APP</h1>
+        <h1 class="app-title">ENQUETE APP</h1>
       </div>
 
-       <ul class="nav-links">
+      <!-- Burger -->
+      <button class="burger-btn" @click="toggleMenu">
+        ☰
+      </button>
+
+      <!-- Navigation -->
+      <ul class="nav-links" :class="{ active: isMenuOpen }">
         <li>
           <router-link to="/home" class="nav-link">Accueil</router-link>
         </li>
         <li>
-          <router-link to="/my-bank-items" class="nav-link">Voir mes banques</router-link>
+          <router-link to="/my-bank-items" class="nav-link">
+            Voir mes banques
+          </router-link>
         </li>
         <li>
-          <router-link to="/my-items" class="nav-link">Voir mes items</router-link>
+          <router-link to="/my-items" class="nav-link">
+            Voir mes items
+          </router-link>
         </li>
         <li>
-          <router-link to="/my-enquetes" class="nav-link">Voir mes enquêtes</router-link>
+          <router-link to="/my-enquetes" class="nav-link">
+            Voir mes enquêtes
+          </router-link>
         </li>
         <li>
-          <router-link to="/my-account" class="nav-link">Mon compte</router-link>
+          <router-link to="/my-account" class="nav-link">
+            Mon compte
+          </router-link>
         </li>
-       </ul>
 
-      <button @click="logout" class="logout-btn">{{loading? 'Chargement...':'se déconnecter'}}</button>
-     </div>
-   </nav>
- </template>
+        <!-- Bouton logout mobile -->
+        <li class="mobile-logout">
+          <button @click="logout" class="logout-btn">
+            {{ loading ? 'Chargement...' : 'Se déconnecter' }}
+          </button>
+        </li>
+      </ul>
+
+      <!-- Logout desktop -->
+      <button @click="logout" class="logout-btn desktop-logout">
+        {{ loading ? 'Chargement...' : 'Se déconnecter' }}
+      </button>
+    </div>
+  </nav>
+</template>
  
  <style scoped>
   * {
@@ -159,6 +189,88 @@ const logout = async () => {
 
 .logout-btn:hover {
   background-color: #c0392b;
+}
+
+.burger-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.mobile-logout {
+  display: none;
+}
+
+/* TABLETTE */
+@media (max-width: 1024px) {
+  .app-title {
+    font-size: 1rem;
+  }
+
+  .nav-links {
+    gap: 1rem;
+  }
+  
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+    border-radius: 0 0 20px 20px;
+  }
+
+  .navbar-container {
+    flex-wrap: wrap;
+  }
+
+  .logo img {
+    height: 40px;
+  }
+
+  .app-title {
+    font-size: 0.9rem;
+  }
+
+  .burger-btn {
+    display: block;
+  }
+
+  .desktop-logout {
+    display: none;
+  }
+
+  .mobile-logout {
+    display: block;
+    width: 100%;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
+    gap: 1rem;
+    text-align: center;
+    background: #fff1f1;
+    padding: 1rem 0;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .nav-link {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+  }
+
+  .logout-btn {
+    width: 90%;
+  }
 }
 
  </style>

@@ -7,6 +7,7 @@ import PopupUpdateTitleEnquete from '@/modals/PopupUpdateTitleEnquete.vue'
 import PopupUpdateDescriptionEnquete from '@/modals/PopupUpdateDescriptionEnquete.vue'
 import PopupUpdateStartMessageEnquete from '@/modals/PopupUpdateStartMessageEnquete.vue'
 import PopupUpdateEndMessageEnquete from '@/modals/PopupUpdateEndMessageEnquete.vue'
+import FooterComponent from './FooterComponent.vue'
 
 const route = useRoute()
 const router = useRouter()
