@@ -245,7 +245,12 @@ const validate = async () => {
   font-size: 0.95rem;
   color: #1a1a2e;
   font-weight: 500;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
+
 
 /* ── Right column: search + list ── */
 .banques-right {
@@ -314,6 +319,7 @@ const validate = async () => {
   padding: 0.55rem 1.1rem;
   cursor: pointer;
   transition: background 0.15s;
+  min-width: 0;
 }
 
 .list-row-disabled {
@@ -336,7 +342,11 @@ const validate = async () => {
   font-size: 0.95rem;
   color: #1a1a2e;
   flex: 1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
+
 
 .label-disabled {
   color: #999;

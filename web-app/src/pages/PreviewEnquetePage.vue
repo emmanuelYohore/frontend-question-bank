@@ -188,7 +188,6 @@ const updateResponse = (itemId: string, fieldName: string, value: any, isQcm: bo
   }
 };
 
-// Chargement de l'enquête via l'API admin (authentifiée)
 const getEnqueteDetail = async () => {
   if (!enqueteId) {
     error.value = 'Aucune enquête spécifiée pour la prévisualisation.';
@@ -227,7 +226,6 @@ const getEnqueteDetail = async () => {
   }
 };
 
-// Simulation : on démarre juste la prévisualisation, sans créer de session
 const handleStartSurvey = () => {
   showStartModal.value = false;
   previewStarted.value = true;
@@ -238,7 +236,6 @@ const handleModalClose = () => {
   router.push({ name: 'enquete-detail', params: { enqueteId } });
 };
 
-// Simulation : on affiche juste la modale de fin, sans envoyer de données
 const handleSubmitPreview = () => {
   showEndModal.value = true;
 };
@@ -261,7 +258,6 @@ onMounted(() => {
   <div class="preview-wrapper">
     <!-- Bannière prévisualisation -->
     <div class="preview-banner">
-      <span class="preview-icon">👁️</span>
       <span>Mode prévisualisation — aucune donnée ne sera enregistrée</span>
       <button class="banner-back-btn" @click="goBack">← Retour à l'enquête</button>
     </div>
@@ -467,10 +463,6 @@ onMounted(() => {
   font-weight: 600;
   padding: 0.6rem 1.2rem;
   flex-wrap: wrap;
-}
-
-.preview-icon {
-  font-size: 1.1rem;
 }
 
 .banner-back-btn {
@@ -786,7 +778,7 @@ onMounted(() => {
   font-size: 15px;
   font-weight: 500;
   color: white;
-  background-color: #f59e0b;
+  background-color: #5b8ee6;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -794,7 +786,7 @@ onMounted(() => {
 }
 
 .submit-btn:hover:not(:disabled) {
-  background-color: #d97706;
+  background-color: #4a7fdb;
 }
 
 .submit-btn:disabled {
