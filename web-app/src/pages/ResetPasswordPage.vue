@@ -16,7 +16,6 @@ const success         = ref(false)
 const error           = ref('')
 
 onMounted(() => {
-  // Récupère token et email depuis l'URL
   token.value = route.query.token as string || ''
   email.value = route.query.email as string || ''
 })
@@ -121,7 +120,9 @@ const submit = async () => {
 </template>
 
 <style scoped>
-/* Même style que ForgotPasswordPage */
+*{
+  font-family: 'Arial', sans-serif;
+}
 .container { width:100%; height:100vh; display:flex;
              justify-content:center; align-items:center; background:white; }
 .form-box  { width:600px; padding:40px 50px; background:#efefef;

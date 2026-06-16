@@ -82,7 +82,9 @@ const submit = async () => {
 </template>
 
 <style scoped>
-/* Reprend le style de LoginPage */
+*{
+  font-family: 'Arial', sans-serif;
+}
 .container {
   width: 100%; height: 100vh;
   display: flex; justify-content: center; align-items: center;
