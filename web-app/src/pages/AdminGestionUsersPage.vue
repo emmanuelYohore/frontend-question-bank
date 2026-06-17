@@ -283,6 +283,28 @@ onMounted(() => getAllUsers())
   height: 18px;
 }
 
+.back-circle {
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 2px solid #1f2937;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #1f2937;
+  font-size: 1rem;
+}
+
 /* States */
 .loading,
 .empty-state,
