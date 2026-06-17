@@ -14,7 +14,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('access-token'))
   const user = ref<User | null>(null)
   const userId = ref<string | null>(null)
-  const isLoading = ref(false)         // ← nouveau
+  const isLoading = ref(false)         
 
   const getToken = () => token.value
 
