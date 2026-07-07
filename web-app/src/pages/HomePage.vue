@@ -73,21 +73,27 @@ const navigateTo = (routeName: string) => {
         <button class="card-button" @click="navigateTo('admin-gestion-users')">
           Gérer les utilisateurs
         </button>
+      </div>
 
+      <div class="card" v-if="authStore.user?.role === 'admin'">
         <div class="card-image">
           <img src="../assets/img/admin.png" alt="Admin" />
         </div>
         <button class="card-button" @click="navigateTo('admin-gestion-enquetes')">
           Gérer les enquêtes
         </button>
+      </div>
 
+      <div class="card" v-if="authStore.user?.role === 'admin'">
         <div class="card-image">
           <img src="../assets/img/admin.png" alt="Admin" />
         </div>
         <button class="card-button" @click="navigateTo('admin-gestion-items')">
           Gérer les items
         </button>
+      </div>
 
+      <div class="card" v-if="authStore.user?.role === 'admin'">
         <div class="card-image">
           <img src="../assets/img/admin.png" alt="Admin" />
         </div>
