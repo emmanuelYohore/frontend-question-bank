@@ -24,6 +24,9 @@ import AdminGestionUsersPage from '@/pages/AdminGestionUsersPage.vue'
 import PreviewEnquetePage from '@/pages/PreviewEnquetePage.vue'
 import ForgotPasswordPage from '@/pages/ForgotPasswordPage.vue'
 import ResetPasswordPage  from '@/pages/ResetPasswordPage.vue'
+import AdminGestionEnquetesPage from '@/pages/AdminGestionEnquetesPage.vue'
+import AdminGestionBanksPage from '@/pages/AdminGestionBanksPage.vue'
+import AdminGestionItemsPage from '@/pages/AdminGestionItemsPage.vue'
 
 const routes = [
   {
@@ -170,6 +173,24 @@ const routes = [
     path: '/admin-gestion-users',
     name: 'admin-gestion-users',
     component: AdminGestionUsersPage,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin-gestion-enquetes',
+    name: 'admin-gestion-enquetes',
+    component: AdminGestionEnquetesPage,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin-gestion-banks',
+    name: 'admin-gestion-banks',
+    component: AdminGestionBanksPage,
+    meta: { requiresAuth: true }
+  },
+    {
+    path: '/admin-gestion-items',
+    name: 'admin-gestion-items',
+    component: AdminGestionItemsPage,
     meta: { requiresAuth: true }
   },
   {

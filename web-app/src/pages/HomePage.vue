@@ -73,7 +73,30 @@ const navigateTo = (routeName: string) => {
         <button class="card-button" @click="navigateTo('admin-gestion-users')">
           Gérer les utilisateurs
         </button>
+
+        <div class="card-image">
+          <img src="../assets/img/admin.png" alt="Admin" />
+        </div>
+        <button class="card-button" @click="navigateTo('admin-gestion-enquetes')">
+          Gérer les enquêtes
+        </button>
+
+        <div class="card-image">
+          <img src="../assets/img/admin.png" alt="Admin" />
+        </div>
+        <button class="card-button" @click="navigateTo('admin-gestion-items')">
+          Gérer les items
+        </button>
+
+        <div class="card-image">
+          <img src="../assets/img/admin.png" alt="Admin" />
+        </div>
+        <button class="card-button" @click="navigateTo('admin-gestion-banks')">
+          Gérer les banques d'items
+        </button>
       </div>
+
+      
 
     </div>
   </div>

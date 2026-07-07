@@ -39,9 +39,14 @@ interface Item {
 interface BankItem {
   id: string;
   name: string;
-  mode: string;
+  mode?: string;
   archived: boolean;
   items?: Item[];
+  nombre_items_aleatoires?: number | null;
+  pivot?: {
+    mode?: string;
+    nombre_items_aleatoires?: number | null;
+  };
 }
 
 interface Enquete {
@@ -188,6 +193,23 @@ const updateResponse = (itemId: string, fieldName: string, value: any, isQcm: bo
   }
 };
 
+const preparePreviewBankItems = (bankItems: BankItem[]): BankItem[] => {
+  return bankItems.map((bankItem) => {
+    const mode = bankItem.mode || bankItem.pivot?.mode;
+    const nombreItems = bankItem.nombre_items_aleatoires ?? bankItem.pivot?.nombre_items_aleatoires ?? null;
+
+    if (mode === 'aleatoire' && nombreItems && nombreItems > 0 && Array.isArray(bankItem.items)) {
+      const shuffledItems = [...bankItem.items].sort(() => Math.random() - 0.5);
+      return {
+        ...bankItem,
+        items: shuffledItems.slice(0, nombreItems),
+      };
+    }
+
+    return bankItem;
+  });
+};
+
 const getEnqueteDetail = async () => {
   if (!enqueteId) {
     error.value = 'Aucune enquête spécifiée pour la prévisualisation.';
@@ -215,7 +237,7 @@ const getEnqueteDetail = async () => {
 
     const data: Enquete = await response.json();
     enquete.value = data;
-    bankItemsEnquete.value = data.bank_items || [];
+    bankItemsEnquete.value = preparePreviewBankItems(data.bank_items || []);
     showStartModal.value = true;
   } catch (err) {
     error.value =

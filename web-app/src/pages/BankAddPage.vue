@@ -297,7 +297,7 @@ onMounted(async () => {
 			</button>
 			<h1 class="page-title">Banques ajoutées</h1>
 		</div>
-		<h2>Enquête: {{ enquete?.title }}</h2>
+		<h2 class="title-enq">Enquête: {{ enquete?.title }}</h2>
 
 
 		<div v-if="loading" class="loading">Chargement...</div>
@@ -408,6 +408,12 @@ onMounted(async () => {
 	margin: 0;
 	padding: 0;
 	font-family: 'Arial', sans-serif;
+}
+
+.title-enq {
+  font-size: 1.2rem;
+  color: #111827;
+  margin-bottom: 1rem;
 }
 
 .banks-added-page {
