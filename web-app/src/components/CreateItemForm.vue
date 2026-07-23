@@ -4,6 +4,7 @@ import { ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { router } from '@/router/routes';
 import PopupAddItemCreateToBank from '@/modals/PopupAddItemCreateToBank.vue';
+import { notify } from '@/utils/popup'
 
 const authStore = useAuthStore();
 const showPopup = ref(false)
@@ -136,7 +137,7 @@ const createItem = async () => {
     })
 
     if (!res1.ok) {
-      alert("Erreur lors de la création du format de réponse")
+      notify("Erreur lors de la création du format de réponse", 'error')
       return
     }
 
@@ -161,7 +162,7 @@ const createItem = async () => {
     })
 
     if (!res2.ok) {
-      alert("Erreur lors de la création de l'item")
+      notify("Erreur lors de la création de l'item", 'error')
       return
     }
 
@@ -187,7 +188,7 @@ const createItem = async () => {
         })
 
         if (!resModalite.ok) {
-          alert("Erreur lors de la création des modalités")
+          notify("Erreur lors de la création des modalités", 'error')
           return
         }
       }
@@ -210,7 +211,7 @@ const createItem = async () => {
       })
 
       if (!res3.ok) {
-        alert("Erreur lors de la création de la modalité EVN")
+        notify("Erreur lors de la création de la modalité EVN", 'error')
         return
       }
 
@@ -225,7 +226,7 @@ const createItem = async () => {
 
   } catch (err) {
     console.error("Erreur :", err)
-    alert("Erreur: " + err)
+    notify("Erreur: " + err, 'error')
   } finally {
     loading.value = false
     item.value = { question: '', nom_court: '', obligatoire: false, min_case_to_check: null, max_case_to_check: null }

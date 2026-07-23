@@ -8,6 +8,7 @@ import PopupUpdateDescriptionEnquete from '@/modals/PopupUpdateDescriptionEnquet
 import PopupUpdateStartMessageEnquete from '@/modals/PopupUpdateStartMessageEnquete.vue'
 import PopupUpdateEndMessageEnquete from '@/modals/PopupUpdateEndMessageEnquete.vue'
 import FooterComponent from './FooterComponent.vue'
+import { notify } from '@/utils/popup'
 
 const route = useRoute()
 const router = useRouter()
@@ -190,7 +191,7 @@ const deleteEnquete = async () => {
     }
   } catch (err) {
     console.error('Error:', err)
-    alert('Erreur lors de la suppression')
+    notify('Erreur lors de la suppression', 'error')
   }
 }
 
@@ -215,7 +216,7 @@ const toggleArchive = async () => {
     }
   } catch (err) {
     console.error('Error:', err)
-    alert('Erreur lors de la mise à jour')
+    notify('Erreur lors de la mise à jour', 'error')
   }
 }
 
@@ -233,7 +234,7 @@ const goToPreview = () => {
 
 const copyClipboard = async (copyText: string ) => {
   navigator.clipboard.writeText(copyText);
-  alert("texte copié");
+  notify("texte copié", 'success');
 }
 
 // Export des réponses en CSV (nouveau format)
@@ -264,7 +265,7 @@ const downloadResponsesCSV = async () => {
     window.URL.revokeObjectURL(url)
   } catch (err) {
     console.error('Error:', err)
-    alert('Erreur lors du téléchargement des réponses')
+    notify('Erreur lors du téléchargement des réponses', 'success')
   }
 }
 
@@ -296,7 +297,7 @@ const downloadVariableDetailsCSV = async () => {
     window.URL.revokeObjectURL(url)
   } catch (err) {
     console.error('Error:', err)
-    alert('Erreur lors du téléchargement des variables')
+    notify('Erreur lors du téléchargement des variables', 'success')
   }
 }
 
@@ -318,11 +319,11 @@ const clearResponses = async () => {
       throw new Error('Erreur lors de la suppression des réponses')
     }
 
-    alert('Les réponses ont été vidées avec succès')
+    notify('Les réponses ont été vidées avec succès', 'success')
     await getEnqueteDetail() 
   } catch (err) {
     console.error('Error:', err)
-    alert('Erreur lors de la suppression des réponses')
+    notify('Erreur lors de la suppression des réponses', 'error')
   }
 }
 

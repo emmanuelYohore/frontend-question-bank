@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { notify } from '@/utils/popup'
 
 interface Enquete {
   id: string
@@ -93,7 +94,7 @@ const validate = async () => {
     emit('validated')
   } catch (err) {
     console.error('Erreur:', err)
-    alert("Une erreur est survenue lors de l'ajout à l'enquête.")
+    notify("Une erreur est survenue lors de l'ajout à l'enquête.", 'error')
   } finally {
     submitting.value = false
   }

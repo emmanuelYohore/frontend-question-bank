@@ -3,6 +3,7 @@ import PopupStartMessageEnquete from '@/modals/PopupStartMessageEnquete.vue';
 import PopupEndMessageEnquete from '@/modals/PopupEndMessageEnquete.vue';
 import { onMounted, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { notify } from '@/utils/popup'
 
 const route = useRoute();
 
@@ -208,7 +209,7 @@ const getEnqueteByUrl = async () => {
 
     if (response.status === 410) {
       const errorData = await response.json();
-      alert(errorData.message);
+      notify(errorData.message, 'error');
       window.location.href = 'https://www.google.com';
     } else if (!response.ok) {
       throw new Error('Erreur lors du chargement de l\'enquête');

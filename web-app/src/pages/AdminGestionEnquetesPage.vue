@@ -2,6 +2,7 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
+import { notify } from '@/utils/popup'
 
 interface BankItemData {
   id: string
@@ -93,7 +94,7 @@ const archiveEnquete = async (e: EnqueteData) => {
     e.archived = shouldArchive
   } catch (err) {
     console.error(err)
-    alert(`Erreur lors de ${shouldArchive ? 'l\'archivage' : 'la désarchivage'}`)
+    notify(`Erreur lors de ${shouldArchive ? 'l\'archivage' : 'la désarchivage'}`, 'error')
   }
 }
 

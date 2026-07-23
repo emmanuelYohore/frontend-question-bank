@@ -6,6 +6,7 @@ import NavigationBar from './NavigationBar.vue'
 import PopupUpdateNameUser from '@/modals/PopupUpdateNameUser.vue'
 import PopupUpdateSurnameUser from '@/modals/PopupUpdateSurnameUser.vue'
 import PopupUpdateEmailUser from '@/modals/PopupUpdateEmailUser.vue'
+import { notify } from '@/utils/popup'
 
 const router = useRouter()
 const storeAuth = useAuthStore()
@@ -100,7 +101,7 @@ const confirmPopupEmail = async ( newEmail: string ) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
   if (!emailRegex.test(email)) {
-    alert('Veuillez entrer un email valide. Exemple : user@gmail.com')
+    notify('Veuillez entrer un email valide. Exemple : user@gmail.com', 'info')
     return
   }
   loading.value = true

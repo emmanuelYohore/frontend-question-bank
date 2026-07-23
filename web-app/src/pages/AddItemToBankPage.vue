@@ -3,6 +3,7 @@ import { useAuthStore } from "@/stores/auth";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import NavigationBar from "@/components/NavigationBar.vue";
+import { notify } from '@/utils/popup'
 
 const router = useRouter();
 
@@ -196,7 +197,7 @@ const addItemsToBank = async () => {
   )
     .then((response) => response.json())
     .then((data) => {
-      alert("Les items ont bien été ajouté");
+      notify("Les items ont bien été ajouté", 'success');
       console.log(data);
       itemIds.value = [];
       bankItemId.value = null;

@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import PopupUpdateBank from '../modals/PopupUpdateBank.vue'
+import { notify } from '@/utils/popup'
 
 const route = useRoute()
 const router = useRouter()
@@ -76,7 +77,7 @@ const deleteBankItem = async () => {
     }
   } catch (err) {
     console.error('Error:', err)
-    alert('Erreur lors de la suppression')
+    notify('Erreur lors de la suppression', 'error')
   }
 }
 
@@ -106,7 +107,7 @@ const toggleArchive = async () => {
   } catch (err) {
     console.error('Error:', err)
     loading.value = false
-    alert('Erreur lors de la mise à jour')
+    notify('Erreur lors de la mise à jour', 'error')
   }
 }
 

@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
 import PopupUpdateQuestionItem from '../modals/PopupUpdateQuestionItem.vue'
 import PopupUpdateNomCourt from '@/modals/PopupUpdateNomCourt.vue'
+import { notify } from '@/utils/popup'
 
 const route = useRoute()
 const router = useRouter()
@@ -124,7 +125,7 @@ const toggleArchiveItem = async () => {
   } catch (err) {
     console.error('Error:', err)
     loading.value = false
-    alert('Erreur lors de la mise à jour')
+    notify('Erreur lors de la mise à jour', 'error')
   }
 }
 
@@ -182,7 +183,7 @@ const deleteItem = async () => {
     }
   } catch (err) {
     console.error('Error:', err)
-    alert('Erreur lors de la suppression')
+    notify('Erreur lors de la suppression', 'error')
   }
 }
 
@@ -206,7 +207,7 @@ const toggleObligatoire = async () => {
     }
   } catch (err) {
     console.error('Error:', err)
-    alert('Erreur lors de la mise à jour')
+    notify('Erreur lors de la mise à jour', 'error')
   }
 }
 

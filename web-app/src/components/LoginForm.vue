@@ -2,6 +2,7 @@
 import { router } from "@/router/routes";
 import { useAuthStore } from "@/stores/auth";
 import { computed, ref } from "vue";
+import { notify } from '@/utils/popup'
 import {
   faEnvelope,
   faLock,
@@ -45,7 +46,7 @@ const login = async () => {
     const data = await response.json();
 
     if (!response.ok) {
-      alert(data.message || "Identifiants incorrects");
+      notify(data.message || "Identifiants incorrects", 'error');
       loading.value = false;
       return;
     }
@@ -56,7 +57,7 @@ const login = async () => {
     router.push("/home");
   } catch (error) {
     console.error("Error:", error);
-    alert("Erreur réseau, impossible de contacter le serveur");
+    notify("Erreur réseau, impossible de contacter le serveur", 'error');
   } finally {
     email.value = "";
     password.value = "";

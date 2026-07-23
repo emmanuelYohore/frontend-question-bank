@@ -2,6 +2,7 @@
 import { router } from "@/router/routes";
 import { useAuthStore } from "@/stores/auth";
 import { computed, ref } from "vue";
+import { notify } from '@/utils/popup'
 import {
   faUser,
   faEnvelope,
@@ -55,7 +56,7 @@ const register = async () => {
     const data = await response.json();
 
     if (!response.ok && response.status == 422) {
-      alert("L'email est déjà utilisé");
+      notify("L'email est déjà utilisé", 'info');
       return;
     }
 
@@ -75,7 +76,7 @@ const register = async () => {
       password: "",
     };
   } catch (error) {
-    alert("Erreur lors de l'inscription");
+    notify("Erreur lors de l'inscription", 'error');
     console.error("Error:", error);
   } finally {
     loading.value = false;

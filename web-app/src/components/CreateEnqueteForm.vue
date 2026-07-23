@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import DOMPurify from "dompurify";
 import { useAuthStore } from "@/stores/auth";
 import PopupAddBankAfterEnqueteCreate from "@/modals/PopupAddBankAfterEnqueteCreate.vue";
+import { notify } from '@/utils/popup'
 
 //interface pour l'enquête
 interface Enquete {
@@ -100,7 +101,7 @@ const createEnquete = async () => {
   })
     .then((response) => response.json())
     .then((data) => {
-      alert("Enquête créer avec succès");
+      notify("Enquête créer avec succès", 'success');
 
       createdEnqueteId.value = data.enquete.id
       valueEnqueteTitleCreated.value = enquete.value.title 

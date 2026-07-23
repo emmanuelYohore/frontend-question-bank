@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import { VueDraggableNext as draggable } from 'vue-draggable-next'
+import { notify } from '@/utils/popup'
 
 
 interface Item {
@@ -126,7 +127,7 @@ const removeItemFromBank = async (itemId: string) => {
 		await getItemsAssociatedToBanks()
 	} catch (err) {
 		console.error('Error:', err)
-		alert("Impossible de supprimer l'item de la banque")
+		notify("Impossible de supprimer l'item de la banque", 'error')
 	}
 }
 
@@ -155,11 +156,11 @@ const saveItemsOrder = async () => {
 
 		originalItems.value = JSON.parse(JSON.stringify(items.value))
 		hasChanged.value = false
-		alert('Ordre sauvegardé avec succès')
+		notify('Ordre sauvegardé avec succès', 'success')
 	} catch (err) {
 		error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
 		console.error(err)
-		alert(error.value)
+		notify(error.value, 'error')
 	} finally {
 		isSaving.value = false
 	}

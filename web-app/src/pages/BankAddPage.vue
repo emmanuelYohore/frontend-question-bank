@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import { VueDraggableNext as draggable } from 'vue-draggable-next'
 import PopupRandomItemsCount from '@/modals/PopupRandomItemsCount.vue'
+import { notify } from '@/utils/popup'
 
 interface BankItem {
   id: string
@@ -139,7 +140,7 @@ const removeBankFromEnquete = async (bankItemId: string) => {
     await getBanksAssociatedToEnquete()
   } catch (err) {
     console.error('Error:', err)
-    alert("Impossible de supprimer la banque de l'enquete")
+    notify("Impossible de supprimer la banque de l'enquete", 'error')
   }
 }
 
@@ -169,11 +170,11 @@ const saveBankItemsOrder = async () => {
 
     originalBankItems.value = JSON.parse(JSON.stringify(bankItems.value))
     hasChanged.value = false
-    alert('Ordre sauvegardé avec succès')
+    notify('Ordre sauvegardé avec succès', 'success')
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Une erreur est survenue'
     console.error(err)
-    alert(error.value)
+    notify(error.value, 'error')
   } finally {
     isSaving.value = false
   }
@@ -224,7 +225,7 @@ const updateBankMode = async (enqueteBankId: string, newMode: string) => {
     }
   } catch (err) {
     console.error('Error:', err)
-    alert('Impossible de mettre à jour le mode de la banque')
+    notify('Impossible de mettre à jour le mode de la banque', 'error')
   }
 }
 
@@ -262,7 +263,7 @@ const handleRandomItemsConfirm = async (count: number) => {
     pendingMode.value = null
   } catch (err) {
     console.error('Error:', err)
-    alert('Impossible de mettre à jour le mode de la banque')
+    notify('Impossible de mettre à jour le mode de la banque', 'error')
   }
 }
 

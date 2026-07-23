@@ -3,6 +3,7 @@ import { useAuthStore } from "@/stores/auth";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import NavigationBar from "@/components/NavigationBar.vue";
+import { notify } from '@/utils/popup'
 
 const router = useRouter();
 
@@ -200,7 +201,7 @@ const addBankItemsToEnquete = async () => {
   )
     .then((response) => response.json())
     .then((data) => {
-      alert("Les banques d'items ont bien été ajouté");
+      notify("Les banques d'items ont bien été ajouté", 'success');
       console.log(data);
       bankItemIds.value = [];
       enqueteId.value = null;

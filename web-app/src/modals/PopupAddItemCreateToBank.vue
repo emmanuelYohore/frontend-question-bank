@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { notify } from '@/utils/popup'
 
 interface BankItem {
   id: string
@@ -97,7 +98,7 @@ const validate = async () => {
     emit('validated')
   } catch (err) {
     console.error('Erreur:', err)
-    alert("Une erreur est survenue lors de l'ajout à la banque.")
+    notify("Une erreur est survenue lors de l'ajout à la banque.", 'error')
   } finally {
     submitting.value = false
   }

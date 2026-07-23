@@ -6,6 +6,7 @@ import { VueDraggableNext as draggable } from 'vue-draggable-next'
 import PopupUpdateModalite from '@/modals/PopupUpdateModalite.vue'
 import PopupUpdateModaliteEvnV1 from '@/modals/PopupUpdateModaliteEvnV1.vue'
 import PopupUpdateModaliteEvnV2 from '@/modals/PopupUpdateModaliteEvnV2.vue'
+import { notify } from '@/utils/popup'
 
 const route = useRoute()
 const router = useRouter()
@@ -74,7 +75,7 @@ const onConfirmPopupQcmOrQcu = async (newModalite: string) => {
     })
     .catch((err) => {
       console.error('Error:', err)
-      alert('Impossible de modifier la modalité')
+      notify('Impossible de modifier la modalité', 'error')
     })
 }
 
@@ -97,7 +98,7 @@ const onConfirmPopupEvnV1 = async (newV1: string) => {
     })
     .catch((err) => {
       console.error('Error:', err)
-      alert('Impossible de modifier la modalité')
+      notify('Impossible de modifier la modalité', 'error')
     })
 }
 
@@ -120,7 +121,7 @@ const onConfirmPopupEvnV2 = async (newV2: string) => {
     })
     .catch((err) => {
       console.error('Error:', err)
-      alert('Impossible de modifier la modalité')
+      notify('Impossible de modifier la modalité', 'error')
     })
 }
 
@@ -182,7 +183,7 @@ const removeModalite = async (modaliteId: string) => {
     await getModalites()
   } catch (err) {
     console.error('Error:', err)
-    alert('Impossible de supprimer la modalité')
+    notify('Impossible de supprimer la modalité', 'error')
   }
 }
 
@@ -211,7 +212,7 @@ const removeModalite = async (modaliteId: string) => {
     hasChanged.value = false
   } catch (err) {
     console.error('Error:', err)
-    alert('Impossible de sauvegarder l\'ordre des modalités')
+    notify('Impossible de sauvegarder l\'ordre des modalités', 'error')
   } finally {
     loading.value = false
   }
