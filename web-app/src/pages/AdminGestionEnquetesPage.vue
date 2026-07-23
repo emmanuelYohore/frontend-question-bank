@@ -18,6 +18,43 @@ const itemsPerPage = 8
 const input = ref('')
 const loading = ref(false)
 
+const getCreatorName = (e: EnqueteData) => {
+  // try common fields returned by API
+  // @ts-ignore
+  return (e.user && (e.user.name || (e.user.first_name || e.user.username))) ||
+    // @ts-ignore
+    e.creator_name || e.created_by || '—'
+}
+
+const viewBanks = (e: EnqueteData) => {
+  if (!e.id) return
+  router.push({ name: 'enquete-banks', params: { enqueteId: e.id } })
+}
+
+const previewEnquete = (e: EnqueteData) => {
+  if (!e.id) return
+  router.push({ name: 'preview-enquete', query: { enqueteId: e.id } })
+}
+
+const archiveEnquete = async (e: EnqueteData) => {
+  if (!e.id) return
+  if (!confirm("Archiver cette enquête ?")) return
+  try {
+    await fetch(`http://localhost:8000/api/v1/enquetes/${e.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${storeAuth.token}`,
+      },
+      body: JSON.stringify({ archived: true }),
+    })
+    e.archived = true
+  } catch (err) {
+    console.error(err)
+    alert('Erreur lors de l\'archivage')
+  }
+}
+
 const getAllEnquetes = async () => {
   loading.value = true
 
@@ -97,7 +134,14 @@ onMounted(() => {
           <div class="user-info">
             <div class="user-row"><span class="label">Titre :</span><span class="value">{{ enquete.title }}</span></div>
             <div class="user-row"><span class="label">URL :</span><span class="value">{{ enquete.url_enquete }}</span></div>
+            <div class="user-row"><span class="label">Créateur :</span><span class="value">{{ getCreatorName(enquete) }}</span></div>
             <div class="user-row"><span class="label">Archivé :</span><span class="value">{{ enquete.archived ? 'Oui' : 'Non' }}</span></div>
+
+            <div class="action-row">
+              <button class="action-button" @click="viewBanks(enquete)" title="Voir les banques">Voir banques</button>
+              <button class="action-button" @click="previewEnquete(enquete)" title="Prévisualiser">Prévisualiser</button>
+              <button class="action-button danger" @click="archiveEnquete(enquete)" title="Archiver">Archiver</button>
+            </div>
           </div>
         </li>
       </ul>
@@ -237,6 +281,27 @@ onMounted(() => {
   color: #6b7280;
   font-size: 0.95rem;
   margin-bottom: 1rem;
+}
+
+.action-row {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-button {
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.action-button.danger {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #991b1b;
 }
 </style>
 

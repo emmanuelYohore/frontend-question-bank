@@ -17,6 +17,35 @@ const itemsPerPage = 8
 const input = ref('')
 const loading = ref(false)
 
+const getCreatorName = (b: BankData) => {
+  // @ts-ignore
+  return (b.user && (b.user.name || b.user.username)) || b.creator_name || b.created_by || '—'
+}
+
+const viewItems = (b: BankData) => {
+  if (!b.id) return
+  router.push({ name: 'bank-item-detail', params: { bankItemId: b.id } })
+}
+
+const archiveBank = async (b: BankData) => {
+  if (!b.id) return
+  if (!confirm("Archiver cette banque ?")) return
+  try {
+    await fetch(`http://localhost:8000/api/v1/bank-items/${b.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${storeAuth.token}`,
+      },
+      body: JSON.stringify({ archived: true }),
+    })
+    b.archived = true
+  } catch (err) {
+    console.error(err)
+    alert('Erreur lors de l\'archivage')
+  }
+}
+
 const getAllBanks = async () => {
   loading.value = true
 
@@ -95,7 +124,13 @@ onMounted(() => {
         <li class="user-card" v-for="bank in paginatedBanks" :key="bank.id">
           <div class="user-info">
             <div class="user-row"><span class="label">Nom :</span><span class="value">{{ bank.name }}</span></div>
+            <div class="user-row"><span class="label">Créateur :</span><span class="value">{{ getCreatorName(bank) }}</span></div>
             <div class="user-row"><span class="label">Archivé :</span><span class="value">{{ bank.archived ? 'Oui' : 'Non' }}</span></div>
+
+            <div class="action-row">
+              <button class="action-button" @click="viewItems(bank)" title="Voir les items">Voir items</button>
+              <button class="action-button danger" @click="archiveBank(bank)" title="Archiver">Archiver</button>
+            </div>
           </div>
         </li>
       </ul>
@@ -236,6 +271,27 @@ onMounted(() => {
   color: #6b7280;
   font-size: 0.95rem;
   margin-bottom: 1rem;
+}
+
+.action-row {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-button {
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.action-button.danger {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #991b1b;
 }
 </style>
 

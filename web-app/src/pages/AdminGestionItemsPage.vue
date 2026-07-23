@@ -18,6 +18,35 @@ const itemsPerPage = 8
 const input = ref('')
 const loading = ref(false)
 
+const getCreatorName = (it: ItemData) => {
+  // @ts-ignore
+  return (it.user && (it.user.name || it.user.username)) || it.creator_name || it.created_by || '—'
+}
+
+const viewModalites = (it: ItemData) => {
+  if (!it.id) return
+  router.push({ name: 'item-modalites', params: { itemId: it.id } })
+}
+
+const archiveItem = async (it: ItemData) => {
+  if (!it.id) return
+  if (!confirm("Archiver cet item ?")) return
+  try {
+    await fetch(`http://localhost:8000/api/v1/items/${it.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${storeAuth.token}`,
+      },
+      body: JSON.stringify({ archived: true }),
+    })
+    it.archived = true
+  } catch (err) {
+    console.error(err)
+    alert('Erreur lors de l\'archivage')
+  }
+}
+
 const getAllItems = async () => {
   loading.value = true
 
@@ -96,8 +125,14 @@ onMounted(() => {
         <li class="user-card" v-for="item in paginatedData" :key="item.id">
           <div class="user-info">
             <div class="user-row"><span class="label">Question :</span><span class="value">{{ item.question }}</span></div>
+            <div class="user-row"><span class="label">Créateur :</span><span class="value">{{ getCreatorName(item) }}</span></div>
             <div class="user-row"><span class="label">Obligatoire :</span><span class="value">{{ item.obligatoire ? 'Oui' : 'Non' }}</span></div>
             <div class="user-row"><span class="label">Archivé :</span><span class="value">{{ item.archived ? 'Oui' : 'Non' }}</span></div>
+
+            <div class="action-row">
+              <button class="action-button" @click="viewModalites(item)" title="Voir les modalités">Voir modalités</button>
+              <button class="action-button danger" @click="archiveItem(item)" title="Archiver">Archiver</button>
+            </div>
           </div>
         </li>
       </ul>
@@ -188,6 +223,27 @@ onMounted(() => {
 .search-input:focus {
   border-color: #6b7280;
   background: #fff;
+}
+
+.action-row {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-button {
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.action-button.danger {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #991b1b;
 }
 
 .user-list {
