@@ -130,7 +130,7 @@ const getModalites = async () => {
 
   try {
     const response = await fetch(
-      `http://localhost:8000/api/v1/users/${storeAuth.userId}/items/${itemId}`,
+      `http://localhost:8000/api/v1/items/${itemId}`,
       {
         method: 'GET',
         headers: {

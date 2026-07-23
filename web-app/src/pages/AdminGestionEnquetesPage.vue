@@ -3,11 +3,21 @@ import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 
+interface BankItemData {
+  id: string
+  name: string
+  archived: boolean
+  items?: Array<{ id: string; question: string; archived: boolean }>
+}
+
 interface EnqueteData {
   id?: string
   title: string
   url_enquete: string
   archived: boolean
+  user?: { name?: string; username?: string }
+  bank_items?: BankItemData[]
+  bankItems?: BankItemData[]
 }
 
 const router = useRouter()
@@ -17,6 +27,10 @@ const currentPage = ref(1)
 const itemsPerPage = 8
 const input = ref('')
 const loading = ref(false)
+const showBanksModal = ref(false)
+const selectedEnquete = ref<EnqueteData | null>(null)
+const loadingBanks = ref(false)
+const modalError = ref<string | null>(null)
 
 const getCreatorName = (e: EnqueteData) => {
   // try common fields returned by API
@@ -26,9 +40,35 @@ const getCreatorName = (e: EnqueteData) => {
     e.creator_name || e.created_by || '—'
 }
 
-const viewBanks = (e: EnqueteData) => {
+const viewBanks = async (e: EnqueteData) => {
   if (!e.id) return
-  router.push({ name: 'enquete-banks', params: { enqueteId: e.id } })
+
+  showBanksModal.value = true
+  loadingBanks.value = true
+  modalError.value = null
+  selectedEnquete.value = null
+
+  try {
+    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${e.id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${storeAuth.token}`,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP ${response.status}`)
+    }
+
+    const data = await response.json()
+    selectedEnquete.value = data
+  } catch (err) {
+    console.error(err)
+    modalError.value = err instanceof Error ? err.message : 'Impossible de charger les banques'
+  } finally {
+    loadingBanks.value = false
+  }
 }
 
 const previewEnquete = (e: EnqueteData) => {
@@ -38,7 +78,9 @@ const previewEnquete = (e: EnqueteData) => {
 
 const archiveEnquete = async (e: EnqueteData) => {
   if (!e.id) return
-  if (!confirm("Archiver cette enquête ?")) return
+  const shouldArchive = !e.archived
+  const action = shouldArchive ? 'Archiver' : 'Désarchiver'
+  if (!confirm(`${action} cette enquête ?`)) return
   try {
     await fetch(`http://localhost:8000/api/v1/enquetes/${e.id}`, {
       method: 'PUT',
@@ -46,12 +88,12 @@ const archiveEnquete = async (e: EnqueteData) => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${storeAuth.token}`,
       },
-      body: JSON.stringify({ archived: true }),
+      body: JSON.stringify({ archived: shouldArchive }),
     })
-    e.archived = true
+    e.archived = shouldArchive
   } catch (err) {
     console.error(err)
-    alert('Erreur lors de l\'archivage')
+    alert(`Erreur lors de ${shouldArchive ? 'l\'archivage' : 'la désarchivage'}`)
   }
 }
 
@@ -140,7 +182,9 @@ onMounted(() => {
             <div class="action-row">
               <button class="action-button" @click="viewBanks(enquete)" title="Voir les banques">Voir banques</button>
               <button class="action-button" @click="previewEnquete(enquete)" title="Prévisualiser">Prévisualiser</button>
-              <button class="action-button danger" @click="archiveEnquete(enquete)" title="Archiver">Archiver</button>
+              <button class="action-button danger" @click="archiveEnquete(enquete)" :title="enquete.archived ? 'Désarchiver' : 'Archiver'">
+                {{ enquete.archived ? 'Désarchiver' : 'Archiver' }}
+              </button>
             </div>
           </div>
         </li>
@@ -155,6 +199,43 @@ onMounted(() => {
         :page-class="'page-item'"
         :active-class="'active'"
       />
+    </div>
+
+    <div v-if="showBanksModal" class="modal-overlay" @click.self="showBanksModal = false">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Banques liées à l'enquête</h2>
+          <button class="modal-close" @click="showBanksModal = false">×</button>
+        </div>
+
+        <div v-if="loadingBanks" class="modal-loading">Chargement...</div>
+        <div v-else-if="modalError" class="modal-error">{{ modalError }}</div>
+        <div v-else-if="selectedEnquete">
+          <p class="modal-item-label"><strong>Titre :</strong> {{ selectedEnquete.title }}</p>
+          <p class="modal-item-label"><strong>URL :</strong> {{ selectedEnquete.url_enquete }}</p>
+          <p class="modal-item-label"><strong>Créateur :</strong> {{ getCreatorName(selectedEnquete) }}</p>
+
+          <div v-if="!selectedEnquete.bank_items?.length && !selectedEnquete.bankItems?.length" class="modal-empty">
+            Aucune banque liée à cette enquête.
+          </div>
+
+          <ul v-else class="modal-list">
+            <li
+              v-for="bank in selectedEnquete.bank_items || selectedEnquete.bankItems || []"
+              :key="bank.id"
+              class="modal-list-item"
+            >
+              <div>
+                <strong>{{ bank.name }}</strong>
+                <div class="modal-item-meta">Archivé : {{ bank.archived ? 'Oui' : 'Non' }}</div>
+              </div>
+              <div v-if="bank.items?.length" class="modal-bank-items">
+                <small>Items : {{ bank.items.length }}</small>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -255,6 +336,85 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-content {
+  width: min(92vw, 580px);
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.modal-close {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-item-label,
+.modal-empty {
+  margin-bottom: 1rem;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.modal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.modal-list-item {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  color: #111827;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-item-meta {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.modal-bank-items {
+  color: #6b7280;
+  font-size: 0.8rem;
+  margin-top: 0.4rem;
+}
+
+.modal-loading,
+.modal-error {
+  color: #6b7280;
+  margin-top: 1rem;
 }
 
 .user-row {

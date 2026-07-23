@@ -58,6 +58,7 @@ interface Enquete {
   url_enquete?: string;
   archived: boolean;
   bank_items?: BankItem[];
+  bankItems?: BankItem[];
 }
 
 interface Response {
@@ -221,7 +222,7 @@ const getEnqueteDetail = async () => {
 
   try {
     const response = await fetch(
-      `http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}`,
+      `http://localhost:8000/api/v1/enquetes/${enqueteId}`,
       {
         method: 'GET',
         headers: {
@@ -237,7 +238,7 @@ const getEnqueteDetail = async () => {
 
     const data: Enquete = await response.json();
     enquete.value = data;
-    bankItemsEnquete.value = preparePreviewBankItems(data.bank_items || []);
+    bankItemsEnquete.value = preparePreviewBankItems(data.bank_items || data.bankItems || []);
     showStartModal.value = true;
   } catch (err) {
     error.value =

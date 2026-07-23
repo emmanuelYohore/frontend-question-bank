@@ -3,10 +3,18 @@ import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 
+interface ItemData {
+  id: string
+  question: string
+  archived: boolean
+}
+
 interface BankData {
   id: string
   name: string
   archived: boolean
+  items?: ItemData[]
+  user?: { name?: string; username?: string }
 }
 
 const router = useRouter()
@@ -16,20 +24,58 @@ const currentPage = ref(1)
 const itemsPerPage = 8
 const input = ref('')
 const loading = ref(false)
+const showModal = ref(false)
+const selectedBank = ref<BankData | null>(null)
+const loadingBankItems = ref(false)
+const modalError = ref<string | null>(null)
 
 const getCreatorName = (b: BankData) => {
   // @ts-ignore
   return (b.user && (b.user.name || b.user.username)) || b.creator_name || b.created_by || '—'
 }
 
-const viewItems = (b: BankData) => {
+const viewItems = async (b: BankData) => {
   if (!b.id) return
-  router.push({ name: 'bank-item-detail', params: { bankItemId: b.id } })
+
+  showModal.value = true
+  loadingBankItems.value = true
+  modalError.value = null
+  selectedBank.value = null
+
+  try {
+    const response = await fetch(`http://localhost:8000/api/v1/bank-items/${b.id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${storeAuth.token}`,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP ${response.status}`)
+    }
+
+    const data = await response.json()
+    selectedBank.value = data
+  } catch (err) {
+    console.error(err)
+    modalError.value = err instanceof Error ? err.message : 'Impossible de charger les items de la banque'
+  } finally {
+    loadingBankItems.value = false
+  }
+}
+
+const closeModal = () => {
+  showModal.value = false
+  selectedBank.value = null
+  modalError.value = null
 }
 
 const archiveBank = async (b: BankData) => {
   if (!b.id) return
-  if (!confirm("Archiver cette banque ?")) return
+  const shouldArchive = !b.archived
+  const action = shouldArchive ? 'Archiver' : 'Désarchiver'
+  if (!confirm(`${action} cette banque ?`)) return
   try {
     await fetch(`http://localhost:8000/api/v1/bank-items/${b.id}`, {
       method: 'PUT',
@@ -37,12 +83,12 @@ const archiveBank = async (b: BankData) => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${storeAuth.token}`,
       },
-      body: JSON.stringify({ archived: true }),
+      body: JSON.stringify({ archived: shouldArchive }),
     })
-    b.archived = true
+    b.archived = shouldArchive
   } catch (err) {
     console.error(err)
-    alert('Erreur lors de l\'archivage')
+    alert(`Erreur lors de ${shouldArchive ? 'l\'archivage' : 'la désarchivage'}`)
   }
 }
 
@@ -129,7 +175,9 @@ onMounted(() => {
 
             <div class="action-row">
               <button class="action-button" @click="viewItems(bank)" title="Voir les items">Voir items</button>
-              <button class="action-button danger" @click="archiveBank(bank)" title="Archiver">Archiver</button>
+              <button class="action-button danger" @click="archiveBank(bank)" :title="bank.archived ? 'Désarchiver' : 'Archiver'">
+                {{ bank.archived ? 'Désarchiver' : 'Archiver' }}
+              </button>
             </div>
           </div>
         </li>
@@ -144,6 +192,34 @@ onMounted(() => {
         :page-class="'page-item'"
         :active-class="'active'"
       />
+    </div>
+
+    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Items de la banque</h2>
+          <button class="modal-close" @click="closeModal">×</button>
+        </div>
+
+        <div v-if="loadingBankItems" class="modal-loading">Chargement...</div>
+        <div v-else-if="modalError" class="modal-error">{{ modalError }}</div>
+        <div v-else-if="selectedBank">
+          <p class="modal-item-label"><strong>Banque :</strong> {{ selectedBank.name }}</p>
+          <p class="modal-item-label"><strong>Créateur :</strong> {{ getCreatorName(selectedBank) }}</p>
+          <p class="modal-item-label"><strong>Archivé :</strong> {{ selectedBank.archived ? 'Oui' : 'Non' }}</p>
+
+          <div v-if="!selectedBank.items || selectedBank.items.length === 0" class="modal-empty">
+            Aucune item dans cette banque.
+          </div>
+
+          <ul v-else class="modal-list">
+            <li v-for="item in selectedBank.items" :key="item.id" class="modal-list-item">
+              <span>{{ item.question }}</span>
+              <span class="modal-item-meta">Archivé : {{ item.archived ? 'Oui' : 'Non' }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -245,6 +321,79 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-content {
+  width: min(92vw, 560px);
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.modal-close {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-item-label,
+.modal-empty {
+  margin-bottom: 1rem;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.modal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.modal-list-item {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #111827;
+}
+
+.modal-item-meta {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.modal-loading,
+.modal-error {
+  color: #6b7280;
+  margin-top: 1rem;
 }
 
 .user-row {
