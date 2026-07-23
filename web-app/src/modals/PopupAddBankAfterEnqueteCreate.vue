@@ -114,7 +114,7 @@ const validate = async () => {
         <div class="enquete-col">
           <label class="enquete-row">
             <input type="radio" checked disabled class="enquete-radio" />
-            <span class="enquete-label">{{ enqueteTitle }}</span>
+            <span class="enquete-label" :title="enqueteTitle">{{ enqueteTitle }}</span>
           </label>
         </div>
 
@@ -147,7 +147,7 @@ const validate = async () => {
                   :disabled="bank.archived"
                   class="list-checkbox"
                 />
-                <span class="list-label" :class="{ 'label-disabled': bank.archived }">{{ bank.name }}</span>
+                <span class="list-label" :title="bank.name" :class="{ 'label-disabled': bank.archived }">{{ bank.name }}</span>
                 <span v-if="bank.archived" class="badge-archived">Archivé</span>
               </label>
             </div>
@@ -212,6 +212,7 @@ const validate = async () => {
 /* ── Body: two columns ── */
 .popup-body {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
   align-items: flex-start;
 }
@@ -220,10 +221,12 @@ const validate = async () => {
 .enquete-col {
   flex: 0 0 auto;
   align-self: center;
+  min-width: 0;
 }
 
 .enquete-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.6rem;
   cursor: default;
@@ -234,54 +237,51 @@ const validate = async () => {
   min-width: 180px;
 }
 
-.enquete-radio {
-  accent-color: #1a1a2e;
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
+.enquete-row,
+.enquete-label,
+.list-row,
+.list-label {
+  min-width: 0;
 }
 
 .enquete-label {
   font-size: 0.95rem;
   color: #1a1a2e;
   font-weight: 500;
+  flex: 1 1 auto;
+    min-width: 0;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+  .enquete-radio {
+    accent-color: #1a1a2e;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
 
+  .list-label {
+    font-size: 0.95rem;
+    color: #1a1a2e;
+    flex: 1 1 auto;
+  max-width: 300px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-/* ── Right column: search + list ── */
-.banques-right {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/* ── Search bar ── */
-.search-bar {
-  display: flex;
-  align-items: center;
-  background: #f0f0f0;
-  border-radius: 8px;
-  padding: 0.45rem 0.75rem;
-  gap: 0.5rem;
-}
-
-.search-input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 0.9rem;
-  color: #1a1a2e;
-}
-
-.search-input::placeholder {
-  color: #999;
-}
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background: #f0f0f0;
+    border-radius: 8px;
+    padding: 0.45rem 0.75rem;
+    gap: 0.5rem;
+  }
 
 /* ── Banques list ── */
 .banques-col {
@@ -301,6 +301,7 @@ const validate = async () => {
   flex: 1;
   scrollbar-width: thin;
   scrollbar-color: #c4c4c4 transparent;
+  max-width: 600px;
 }
 
 .list-loading,
