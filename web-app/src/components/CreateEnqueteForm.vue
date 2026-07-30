@@ -4,6 +4,7 @@ import DOMPurify from "dompurify";
 import { useAuthStore } from "@/stores/auth";
 import PopupAddBankAfterEnqueteCreate from "@/modals/PopupAddBankAfterEnqueteCreate.vue";
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 //interface pour l'enquête
 interface Enquete {
@@ -83,7 +84,7 @@ const isSubmit = computed(() => {
  */
 const createEnquete = async () => {
   loading.value = true;
-  await fetch("http://localhost:8000/api/v1/enquetes", {
+  await fetch(`${API_V1_URL}/enquetes`, {
     method: "POST",
     credentials: "include",
     headers: {

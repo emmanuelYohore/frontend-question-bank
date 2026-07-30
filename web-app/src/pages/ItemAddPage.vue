@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import { VueDraggableNext as draggable } from 'vue-draggable-next'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 
 interface Item {
@@ -36,8 +37,7 @@ const fetchBankDetails = async () => {
   error.value = null
 
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/users/${storeAuth.userId}/bank-items/${bankItemId}`,
+    const response = await fetch(`${API_V1_URL}/users/${storeAuth.userId}/bank-items/${bankItemId}`,
       {
         method: 'GET',
         headers: {
@@ -73,8 +73,7 @@ const getItemsAssociatedToBanks = async () => {
 	error.value = null
 
 	try {
-		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.userId}/bank-items/${bankItemId}`,
+		const response = await fetch(`${API_V1_URL}/users/${storeAuth.userId}/bank-items/${bankItemId}`,
 			{
 				method: 'GET',
 				headers: {
@@ -108,8 +107,7 @@ const removeItemFromBank = async (itemId: string) => {
 	}
 
 	try {
-		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.userId}/bank-items/${bankItemId}/items/detach`,
+		const response = await fetch(`${API_V1_URL}/users/${storeAuth.userId}/bank-items/${bankItemId}/items/detach`,
 			{
 				method: 'DELETE',
 				headers: {
@@ -136,8 +134,7 @@ const saveItemsOrder = async () => {
 	error.value = null
 
 	try {
-		const response = await fetch(
-			`http://localhost:8000/api/v1/users/${storeAuth.userId}/bank-items/${bankItemId}/items/order`,
+		const response = await fetch(`${API_V1_URL}/users/${storeAuth.userId}/bank-items/${bankItemId}/items/order`,
 			{
 				method: 'POST',
 				headers: {

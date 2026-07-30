@@ -4,6 +4,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import NavigationBar from "@/components/NavigationBar.vue";
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 const router = useRouter();
 
@@ -49,7 +50,7 @@ const isSelectAll = computed(() => {
  */
 const getAllEnqueteForUser = async () => {
   loading.value = true;
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes`, {
+  await fetch(`${API_V1_URL}/users/${userId}/enquetes`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -71,7 +72,7 @@ const getAllEnqueteForUser = async () => {
  */
 const getAllBankItemForUser = async () => {
   loading.value = true;
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items`, {
+  await fetch(`${API_V1_URL}/users/${userId}/bank-items`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -90,7 +91,7 @@ const getAllBankItemForUser = async () => {
 
 const filterBanks = async () => {
   loadingSearchBankItems.value = true
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items?search=${inputSearchBankItems.value}`, {
+  await fetch(`${API_V1_URL}/users/${userId}/bank-items?search=${inputSearchBankItems.value}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -107,7 +108,7 @@ const filterBanks = async () => {
 
 const filterEnquetes = async () => {
   loadingSearchEnquetes.value = true
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes?search=${inputSearchEnquetes.value}`, {
+  await fetch(`${API_V1_URL}/users/${userId}/enquetes?search=${inputSearchEnquetes.value}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -143,8 +144,7 @@ const getBanksForEnquete = async (id: string) => {
   if (!id) return;
   loading.value = true;
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/users/${userId}/enquetes/${id}`,
+    const response = await fetch(`${API_V1_URL}/users/${userId}/enquetes/${id}`,
       {
         method: "GET",
         headers: {
@@ -184,8 +184,7 @@ watch(enqueteId, async (newVal) => {
  */
 const addBankItemsToEnquete = async () => {
   loading.value = true;
-  await fetch(
-    `http://localhost:8000/api/v1/users/${userId}/enquetes/${enqueteId.value}/bank-items`,
+  await fetch(`${API_V1_URL}/users/${userId}/enquetes/${enqueteId.value}/bank-items`,
     {
       method: "POST",
       credentials: "include",

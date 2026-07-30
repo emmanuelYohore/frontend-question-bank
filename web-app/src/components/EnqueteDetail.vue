@@ -9,6 +9,7 @@ import PopupUpdateStartMessageEnquete from '@/modals/PopupUpdateStartMessageEnqu
 import PopupUpdateEndMessageEnquete from '@/modals/PopupUpdateEndMessageEnquete.vue'
 import FooterComponent from './FooterComponent.vue'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -45,7 +46,7 @@ const getEnqueteDetail = async () => {
   error.value = null
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}`, {
+    const response = await fetch(`${API_V1_URL}/users/${storeAuth.userId}/enquetes/${enqueteId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -71,7 +72,7 @@ const getEnqueteDetail = async () => {
 const onConfirmTitle = async (newTitle: string) => {
   loading.value = true
 
-  await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
+  await fetch(`${API_V1_URL}/enquetes/${enqueteId}`, {
     method: 'PUT',
     credentials: "include",
       headers: {
@@ -97,7 +98,7 @@ const onConfirmTitle = async (newTitle: string) => {
 const onConfirmDescription = async (newDescription: string) => {
   loading.value = true
 
-  await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
+  await fetch(`${API_V1_URL}/enquetes/${enqueteId}`, {
     method: 'PUT',
     credentials: "include",
       headers: {
@@ -123,7 +124,7 @@ const onConfirmDescription = async (newDescription: string) => {
 const onConfirmStartMessage = async (newStartMessage: string) => {
   loading.value = true
 
-  await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
+  await fetch(`${API_V1_URL}/enquetes/${enqueteId}`, {
     method: 'PUT',
     credentials: "include",
       headers: {
@@ -149,7 +150,7 @@ const onConfirmStartMessage = async (newStartMessage: string) => {
 const onConfirmEndMessage = async (newEndMessage: string) => {
   loading.value = true
 
-  await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
+  await fetch(`${API_V1_URL}/enquetes/${enqueteId}`, {
     method: 'PUT',
     credentials: "include",
       headers: {
@@ -178,7 +179,7 @@ const deleteEnquete = async () => {
   }
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
+    const response = await fetch(`${API_V1_URL}/enquetes/${enqueteId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -200,7 +201,7 @@ const toggleArchive = async () => {
   if (!enquete.value) return
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}`, {
+    const response = await fetch(`${API_V1_URL}/enquetes/${enqueteId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -242,7 +243,7 @@ const downloadResponsesCSV = async () => {
   if (!enqueteId) return
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}/export-reponses`, {
+    const response = await fetch(`${API_V1_URL}/enquetes/${enqueteId}/export-reponses`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${storeAuth.token}`,
@@ -274,7 +275,7 @@ const downloadVariableDetailsCSV = async () => {
   if (!enqueteId) return
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}/export-variables`, {
+    const response = await fetch(`${API_V1_URL}/enquetes/${enqueteId}/export-variables`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${storeAuth.token}`,
@@ -307,7 +308,7 @@ const clearResponses = async () => {
   }
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${enqueteId}/clear-responses`, {
+    const response = await fetch(`${API_V1_URL}/enquetes/${enqueteId}/clear-responses`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

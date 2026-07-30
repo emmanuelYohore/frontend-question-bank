@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth';
 import { router } from '@/router/routes';
 import PopupAddItemCreateToBank from '@/modals/PopupAddItemCreateToBank.vue';
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 const authStore = useAuthStore();
 const showPopup = ref(false)
@@ -124,7 +125,7 @@ const removeModalite = (index: number) => {
 const createItem = async () => {
   loading.value = true
   try {
-    const res1 = await fetch("http://localhost:8000/api/v1/format-reponses", {
+    const res1 = await fetch(`${API_V1_URL}/format-reponses`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
@@ -144,7 +145,7 @@ const createItem = async () => {
     const data1 = await res1.json()
     console.log("FormatReponse créé:", data1)
 
-    const res2 = await fetch("http://localhost:8000/api/v1/items", {
+    const res2 = await fetch(`${API_V1_URL}/items`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
@@ -171,7 +172,7 @@ const createItem = async () => {
 
     if (isQCMorQCU.value) {
       for (const modalite of modalites.value) {
-        const resModalite = await fetch("http://localhost:8000/api/v1/modalite-reponses", {
+        const resModalite = await fetch(`${API_V1_URL}/modalite-reponses`, {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
@@ -194,7 +195,7 @@ const createItem = async () => {
       }
       console.log("Modalités QCM/QCU créées")
     } else if (isEVN.value) {
-      const res3 = await fetch("http://localhost:8000/api/v1/modalite-reponses", {
+      const res3 = await fetch(`${API_V1_URL}/modalite-reponses`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

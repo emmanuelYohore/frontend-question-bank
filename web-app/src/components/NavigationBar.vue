@@ -3,6 +3,7 @@
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ref } from 'vue'
+import { API_V1_URL } from '@/config/api'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -20,7 +21,7 @@ const toggleMenu = () => {
 const logout = async () => {
   try {
     loading.value = true
-    const response = await fetch("http://localhost:8000/api/v1/auth/logout", {
+    const response = await fetch(`${API_V1_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
       headers: {

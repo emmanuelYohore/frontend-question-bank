@@ -7,6 +7,7 @@ import PopupUpdateNameUser from '@/modals/PopupUpdateNameUser.vue'
 import PopupUpdateSurnameUser from '@/modals/PopupUpdateSurnameUser.vue'
 import PopupUpdateEmailUser from '@/modals/PopupUpdateEmailUser.vue'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 const router = useRouter()
 const storeAuth = useAuthStore()
@@ -26,7 +27,7 @@ onMounted(() => {
 const getInfoUser = async () => {
   loading.value = true
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
+    const response = await fetch(`${API_V1_URL}/users/${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -49,7 +50,7 @@ const getInfoUser = async () => {
 const confirmPopupName = async ( newName: string ) => {
   loading.value = true
 
-  await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
+  await fetch(`${API_V1_URL}/users/${userId}`, {
     method: 'PUT',
     credentials: "include",
       headers: {
@@ -74,7 +75,7 @@ const confirmPopupName = async ( newName: string ) => {
 const confirmPopupSurname = async ( newSurname: string ) => {
   loading.value = true
 
-  await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
+  await fetch(`${API_V1_URL}/users/${userId}`, {
     method: 'PUT',
     credentials: "include",
       headers: {
@@ -106,7 +107,7 @@ const confirmPopupEmail = async ( newEmail: string ) => {
   }
   loading.value = true
 
-  await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
+  await fetch(`${API_V1_URL}/users/${userId}`, {
     method: 'PUT',
     credentials: "include",
       headers: {

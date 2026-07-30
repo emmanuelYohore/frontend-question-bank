@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import { computed, onMounted, ref, watch } from 'vue'
 import NavigationBar from './NavigationBar.vue'
 import { useRouter } from 'vue-router'
+import { API_V1_URL } from '@/config/api'
 
 const router = useRouter()
 
@@ -28,7 +29,7 @@ const input = ref('')
 //fonction pour récupérer tous les items avec leurs items associés pour un userId
 const getAllItemForUser = async () => {
   loading.value = true
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/items`, {
+  await fetch(`${API_V1_URL}/users/${userId}/items`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -56,7 +57,7 @@ const handlePageChange = (pageNum: number) => {
 // filtre tous les items
 const filterItems = async () => {
   loading.value = true
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/items?search=${input.value}`, {
+  await fetch(`${API_V1_URL}/users/${userId}/items?search=${input.value}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

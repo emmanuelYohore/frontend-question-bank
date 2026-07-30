@@ -3,6 +3,7 @@ import { router } from "@/router/routes";
 import { useAuthStore } from "@/stores/auth";
 import { computed, ref } from "vue";
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 import {
   faEnvelope,
   faLock,
@@ -30,7 +31,7 @@ const login = async () => {
   loading.value = true;
 
   try {
-    const response = await fetch("http://localhost:8000/api/v1/auth/login", {
+    const response = await fetch(`${API_V1_URL}/auth/login`, {
       method: "POST",
       credentials: "include",
       headers: {

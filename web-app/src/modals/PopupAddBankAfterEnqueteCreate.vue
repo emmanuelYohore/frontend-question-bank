@@ -3,6 +3,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 interface BankItem {
   id: string
@@ -38,7 +39,7 @@ onMounted(async () => {
 const fetchBanks = async () => {
   loading.value = true
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items`, {
+    const res = await fetch(`${API_V1_URL}/users/${userId}/bank-items`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${authStore.token}`,
@@ -55,7 +56,7 @@ const fetchBanks = async () => {
 
 const filterBanks = async () => {
   loadingSearchBanks.value = true
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items?search=${inputSearchBanks.value}`, {
+  await fetch(`${API_V1_URL}/users/${userId}/bank-items?search=${inputSearchBanks.value}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -79,7 +80,7 @@ const validate = async () => {
     if (!canValidate.value) return
     submitting.value = true
     try {
-        await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes/${props.enqueteId}/bank-items`, {
+        await fetch(`${API_V1_URL}/users/${userId}/enquetes/${props.enqueteId}/bank-items`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -243,6 +244,8 @@ const validate = async () => {
 .list-row,
 .list-label {
   min-width: 0;
+  max-width: 400px;
+
 }
 
 .enquete-label {
@@ -251,6 +254,7 @@ const validate = async () => {
   font-weight: 500;
   flex: 1 1 auto;
     min-width: 0;
+    max-width: 400px;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -268,7 +272,7 @@ const validate = async () => {
     font-size: 0.95rem;
     color: #1a1a2e;
     flex: 1 1 auto;
-  max-width: 300px;
+    max-width: 400px;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -344,9 +348,6 @@ const validate = async () => {
   font-size: 0.95rem;
   color: #1a1a2e;
   flex: 1;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 

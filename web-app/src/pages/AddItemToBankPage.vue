@@ -4,6 +4,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import NavigationBar from "@/components/NavigationBar.vue";
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 const router = useRouter();
 
@@ -46,7 +47,7 @@ const isSelectAll = computed(() => {
 
 const getAllBankForUser = async () => {
   loading.value = true;
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items`, {
+  await fetch(`${API_V1_URL}/users/${userId}/bank-items`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -65,7 +66,7 @@ const getAllBankForUser = async () => {
 
 const getAllItemForUser = async () => {
   loading.value = true;
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/items`, {
+  await fetch(`${API_V1_URL}/users/${userId}/items`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -84,7 +85,7 @@ const getAllItemForUser = async () => {
 
 const filterItems = async () => {
   loadingSearchItems.value = true
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/items?search=${inputSearchItems.value}`, {
+  await fetch(`${API_V1_URL}/users/${userId}/items?search=${inputSearchItems.value}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -101,7 +102,7 @@ const filterItems = async () => {
 
 const filterBanks = async () => {
   loadingSearchBankItems.value = true
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items?search=${inputSearchBankItems.value}`, {
+  await fetch(`${API_V1_URL}/users/${userId}/bank-items?search=${inputSearchBankItems.value}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -139,8 +140,7 @@ const getItemsForBank = async (bankId: string) => {
   if (!bankId) return;
   loading.value = true;
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/users/${userId}/bank-items/${bankId}`,
+    const response = await fetch(`${API_V1_URL}/users/${userId}/bank-items/${bankId}`,
       {
         method: "GET",
         headers: {
@@ -180,8 +180,7 @@ watch(bankItemId, async (newVal) => {
 
 const addItemsToBank = async () => {
   loading.value = true;
-  await fetch(
-    `http://localhost:8000/api/v1/users/${userId}/bank-items/${bankItemId.value}/items`,
+  await fetch(`${API_V1_URL}/users/${userId}/bank-items/${bankItemId.value}/items`,
     {
       method: "POST",
       credentials: "include",

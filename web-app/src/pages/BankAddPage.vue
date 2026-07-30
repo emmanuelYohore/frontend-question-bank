@@ -5,6 +5,7 @@ import { onMounted, ref } from 'vue'
 import { VueDraggableNext as draggable } from 'vue-draggable-next'
 import PopupRandomItemsCount from '@/modals/PopupRandomItemsCount.vue'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 interface BankItem {
   id: string
@@ -51,8 +52,7 @@ const fetchEnqueteDetails = async () => {
   error.value = null
 
   try {
-	const response = await fetch(
-	  `http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}`,
+	const response = await fetch(`${API_V1_URL}/users/${storeAuth.userId}/enquetes/${enqueteId}`,
 	  {
 		method: 'GET',
 		headers: {
@@ -79,8 +79,7 @@ const getBanksAssociatedToEnquete = async () => {
   error.value = null
 
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}`,
+    const response = await fetch(`${API_V1_URL}/users/${storeAuth.userId}/enquetes/${enqueteId}`,
       {
         method: 'GET',
         headers: {
@@ -121,8 +120,7 @@ const removeBankFromEnquete = async (bankItemId: string) => {
   }
 
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}/bank-items/detach`,
+    const response = await fetch(`${API_V1_URL}/users/${storeAuth.userId}/enquetes/${enqueteId}/bank-items/detach`,
       {
         method: 'DELETE',
         headers: {
@@ -151,8 +149,7 @@ const saveBankItemsOrder = async () => {
   try {
     const orderedIds = bankItems.value.map((b) => b.id)
 
-    const response = await fetch(
-      `http://localhost:8000/api/v1/users/${storeAuth.userId}/enquetes/${enqueteId}/bank-items/order`,
+    const response = await fetch(`${API_V1_URL}/users/${storeAuth.userId}/enquetes/${enqueteId}/bank-items/order`,
       {
         method: 'POST',
         headers: {
@@ -199,8 +196,7 @@ const updateBankMode = async (enqueteBankId: string, newMode: string) => {
 
   // Si le mode est "systematique", mettre à jour directement sans popup
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/enquete-banks/${enqueteBankId}`,
+    const response = await fetch(`${API_V1_URL}/enquete-banks/${enqueteBankId}`,
       {
         method: 'PUT',
         headers: {
@@ -233,8 +229,7 @@ const handleRandomItemsConfirm = async (count: number) => {
   if (!selectedBankForPopup.value || !pendingMode.value) return
 
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/enquete-banks/${selectedBankForPopup.value.enquete_bank_id}`,
+    const response = await fetch(`${API_V1_URL}/enquete-banks/${selectedBankForPopup.value.enquete_bank_id}`,
       {
         method: 'PUT',
         headers: {

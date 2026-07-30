@@ -4,6 +4,7 @@ import PopupEndMessageEnquete from '@/modals/PopupEndMessageEnquete.vue';
 import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { API_V1_URL } from '@/config/api'
 
 const route = useRoute();
 const router = useRouter();
@@ -221,8 +222,7 @@ const getEnqueteDetail = async () => {
   error.value = null;
 
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/enquetes/${enqueteId}`,
+    const response = await fetch(`${API_V1_URL}/enquetes/${enqueteId}`,
       {
         method: 'GET',
         headers: {

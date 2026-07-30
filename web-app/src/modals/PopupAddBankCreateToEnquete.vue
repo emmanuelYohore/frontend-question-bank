@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 interface Enquete {
   id: string
@@ -37,7 +38,7 @@ onMounted(async () => {
 const fetchEnquetes = async () => {
   loading.value = true
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes`, {
+    const res = await fetch(`${API_V1_URL}/users/${userId}/enquetes`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${authStore.token}`,
@@ -54,7 +55,7 @@ const fetchEnquetes = async () => {
 
 const filterEnquetes = async () => {
   loadingSearchEnquetes.value = true
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes?search=${inputSearchEnquetes.value}`, {
+  await fetch(`${API_V1_URL}/users/${userId}/enquetes?search=${inputSearchEnquetes.value}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -78,8 +79,7 @@ const validate = async () => {
   submitting.value = true
   try {
     for (const enqueteId of selectedEnqueteIds.value) {
-      await fetch(
-        `http://localhost:8000/api/v1/users/${userId}/enquetes/${enqueteId}/bank-items`,
+      await fetch(`${API_V1_URL}/users/${userId}/enquetes/${enqueteId}/bank-items`,
         {
           method: 'POST',
           headers: {

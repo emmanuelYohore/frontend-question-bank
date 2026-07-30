@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { API_V1_URL } from '@/config/api'
 
 export interface User {
   id?: string
@@ -43,7 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     isLoading.value = true             // ← début chargement
     try {
-      const response = await fetch('http://localhost:8000/api/v1/auth/me', {
+      const response = await fetch(`${API_V1_URL}/auth/me`, {
         headers: { 'Authorization': `Bearer ${token.value}` }
       })
 

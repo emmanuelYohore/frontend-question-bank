@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import PopupUpdateBank from '../modals/PopupUpdateBank.vue'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -34,7 +35,7 @@ const getBankItemDetail = async () => {
   error.value = null
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.userId}/bank-items/${bankItemId}`, {
+    const response = await fetch(`${API_V1_URL}/users/${storeAuth.userId}/bank-items/${bankItemId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +65,7 @@ const deleteBankItem = async () => {
   }
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/bank-items/${bankItemId}`, {
+    const response = await fetch(`${API_V1_URL}/bank-items/${bankItemId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -89,7 +90,7 @@ const toggleArchive = async () => {
   if (!bankItem.value) return
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/bank-items/${bankItemId}`, {
+    const response = await fetch(`${API_V1_URL}/bank-items/${bankItemId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -122,7 +123,7 @@ const goToItemsPage = () => {
 const confirmePopupName = async (newName: string ) => {
   loading.value = true
 
-  await fetch(`http://localhost:8000/api/v1/bank-items/${bankItemId}`, {
+  await fetch(`${API_V1_URL}/bank-items/${bankItemId}`, {
     method: 'PUT',
     credentials: "include",
       headers: {

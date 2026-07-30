@@ -4,6 +4,7 @@ import PopupEndMessageEnquete from '@/modals/PopupEndMessageEnquete.vue';
 import { onMounted, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 const route = useRoute();
 
@@ -202,7 +203,7 @@ const getEnqueteByUrl = async () => {
   error.value = null;
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/enquetes/by-url/${enqueteUrl.value}`, {
+    const response = await fetch(`${API_V1_URL}/enquetes/by-url/${enqueteUrl.value}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -231,7 +232,7 @@ const createRepondantSession = async () => {
   if (!enquete.value?.id) return;
 
   try {
-    const response = await fetch('http://localhost:8000/api/v1/repondants', {
+    const response = await fetch(`${API_V1_URL}/repondants`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -324,7 +325,7 @@ const submitResponses = async () => {
     }
 
     for (const resp of reponsesToSubmit) {
-      const submitResponse = await fetch('http://localhost:8000/api/v1/reponses', {
+      const submitResponse = await fetch(`${API_V1_URL}/reponses`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(resp),
@@ -335,7 +336,7 @@ const submitResponses = async () => {
       }
     }
 
-    const updateResponse = await fetch(`http://localhost:8000/api/v1/repondants/${repondantId.value}`, {
+    const updateResponse = await fetch(`${API_V1_URL}/repondants/${repondantId.value}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ completed_at: new Date().toISOString() }),

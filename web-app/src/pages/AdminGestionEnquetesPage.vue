@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 interface BankItemData {
   id: string
@@ -50,7 +51,7 @@ const viewBanks = async (e: EnqueteData) => {
   selectedEnquete.value = null
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/enquetes/${e.id}`, {
+    const response = await fetch(`${API_V1_URL}/enquetes/${e.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -83,7 +84,7 @@ const archiveEnquete = async (e: EnqueteData) => {
   const action = shouldArchive ? 'Archiver' : 'Désarchiver'
   if (!confirm(`${action} cette enquête ?`)) return
   try {
-    await fetch(`http://localhost:8000/api/v1/enquetes/${e.id}`, {
+    await fetch(`${API_V1_URL}/enquetes/${e.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -102,7 +103,7 @@ const getAllEnquetes = async () => {
   loading.value = true
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/enquetes?search=${encodeURIComponent(input.value)}`, {
+    const response = await fetch(`${API_V1_URL}/enquetes?search=${encodeURIComponent(input.value)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

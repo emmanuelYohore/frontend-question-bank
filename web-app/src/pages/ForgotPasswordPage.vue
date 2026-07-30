@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { API_V1_URL } from '@/config/api'
 
 const email   = ref('')
 const loading = ref(false)
@@ -13,7 +14,7 @@ const submit = async () => {
   error.value   = ''
 
   try {
-    const res = await fetch('http://localhost:8000/api/v1/auth/forgot-password', {
+    const res = await fetch(`${API_V1_URL}/auth/forgot-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ email: email.value }),

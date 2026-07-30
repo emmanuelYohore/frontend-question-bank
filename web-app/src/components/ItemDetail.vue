@@ -5,6 +5,7 @@ import { computed, onMounted, ref } from 'vue'
 import PopupUpdateQuestionItem from '../modals/PopupUpdateQuestionItem.vue'
 import PopupUpdateNomCourt from '@/modals/PopupUpdateNomCourt.vue'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -55,7 +56,7 @@ const nom_court = ref(false)
 const onConfirmUpdateQuestion = async (newQuestion: string) => {
   loading.value = true
 
-  await fetch(`http://localhost:8000/api/v1/items/${itemId}`, {
+  await fetch(`${API_V1_URL}/items/${itemId}`, {
     method: 'PUT',
     credentials: "include",
       headers: {
@@ -80,7 +81,7 @@ const onConfirmUpdateQuestion = async (newQuestion: string) => {
 const onConfirmUpdateNomCourt = async (newNomCourt: string) => {
   loading.value = true
 
-  await fetch(`http://localhost:8000/api/v1/items/${itemId}`, {
+  await fetch(`${API_V1_URL}/items/${itemId}`, {
     method: 'PUT',
     credentials: "include",
       headers: {
@@ -107,7 +108,7 @@ const toggleArchiveItem = async () => {
   if (!item.value) return
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/items/${itemId}`, {
+    const response = await fetch(`${API_V1_URL}/items/${itemId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -136,7 +137,7 @@ const getItemDetailWithModalitesAndFormatReponse = async () => {
   error.value = null
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/users/${storeAuth.userId}/items/${itemId}`, {
+    const response = await fetch(`${API_V1_URL}/users/${storeAuth.userId}/items/${itemId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -170,7 +171,7 @@ const deleteItem = async () => {
   }
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/items/${itemId}`, {
+    const response = await fetch(`${API_V1_URL}/items/${itemId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -191,7 +192,7 @@ const toggleObligatoire = async () => {
   if (!item.value) return
   
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/items/${itemId}`, {
+    const response = await fetch(`${API_V1_URL}/items/${itemId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

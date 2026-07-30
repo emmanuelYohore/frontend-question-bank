@@ -7,6 +7,7 @@ import PopupUpdateModalite from '@/modals/PopupUpdateModalite.vue'
 import PopupUpdateModaliteEvnV1 from '@/modals/PopupUpdateModaliteEvnV1.vue'
 import PopupUpdateModaliteEvnV2 from '@/modals/PopupUpdateModaliteEvnV2.vue'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -58,7 +59,7 @@ const showModalEvnV2 = ref(false)
 
 const onConfirmPopupQcmOrQcu = async (newModalite: string) => {
   loading.value = true
-  await fetch(`http://localhost:8000/api/v1/modalite-reponses/${modaliteQcmOrQcuToUpdate.value?.id}`, {
+  await fetch(`${API_V1_URL}/modalite-reponses/${modaliteQcmOrQcuToUpdate.value?.id}`, {
     method: 'PUT',
     credentials: 'include',
     headers: {
@@ -81,7 +82,7 @@ const onConfirmPopupQcmOrQcu = async (newModalite: string) => {
 
 const onConfirmPopupEvnV1 = async (newV1: string) => {
   loading.value = true
-  await fetch(`http://localhost:8000/api/v1/modalite-reponses/${modaliteEvnToUpdate.value?.id}`, {
+  await fetch(`${API_V1_URL}/modalite-reponses/${modaliteEvnToUpdate.value?.id}`, {
     method: 'PUT',
     credentials: 'include',
     headers: {
@@ -104,7 +105,7 @@ const onConfirmPopupEvnV1 = async (newV1: string) => {
 
 const onConfirmPopupEvnV2 = async (newV2: string) => {
   loading.value = true
-  await fetch(`http://localhost:8000/api/v1/modalite-reponses/${modaliteEvnToUpdate.value?.id}`, {
+  await fetch(`${API_V1_URL}/modalite-reponses/${modaliteEvnToUpdate.value?.id}`, {
     method: 'PUT',
     credentials: 'include',
     headers: {
@@ -130,8 +131,7 @@ const getModalites = async () => {
   error.value = null
 
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/items/${itemId}`,
+    const response = await fetch(`${API_V1_URL}/items/${itemId}`,
       {
         method: 'GET',
         headers: {
@@ -165,8 +165,7 @@ const removeModalite = async (modaliteId: string) => {
   }
 
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/modalite-reponses/${modaliteId}`,
+    const response = await fetch(`${API_V1_URL}/modalite-reponses/${modaliteId}`,
       {
         method: 'DELETE',
         headers: {
@@ -191,8 +190,7 @@ const removeModalite = async (modaliteId: string) => {
 
   loading.value = true
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/v1/items/${itemId}/modalite-reponses/order`,
+    const response = await fetch(`${API_V1_URL}/items/${itemId}/modalite-reponses/order`,
       {
         method: 'POST',
         headers: {

@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 interface ModaliteReponse {
   id: string
@@ -45,7 +46,7 @@ const viewModalites = async (it: ItemData) => {
   modalError.value = null
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/items/${it.id}`, {
+    const response = await fetch(`${API_V1_URL}/items/${it.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -79,7 +80,7 @@ const archiveItem = async (it: ItemData) => {
   const action = shouldArchive ? 'Archiver' : 'Désarchiver'
   if (!confirm(`${action} cet item ?`)) return
   try {
-    await fetch(`http://localhost:8000/api/v1/items/${it.id}`, {
+    await fetch(`${API_V1_URL}/items/${it.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -98,7 +99,7 @@ const getAllItems = async () => {
   loading.value = true
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/items?search=${encodeURIComponent(input.value)}`, {
+    const response = await fetch(`${API_V1_URL}/items?search=${encodeURIComponent(input.value)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

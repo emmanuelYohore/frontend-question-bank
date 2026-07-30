@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import NavigationBar from './NavigationBar.vue'
+import { API_V1_URL } from '@/config/api'
 
 const router = useRouter()
 
@@ -30,7 +31,7 @@ const input = ref('')
 //fonction pour récupérer tous les enquêtes avec leurs items associés pour un userId
 const getAllEnquetesForUser = async () => {
   loading.value = true
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes`, {
+  await fetch(`${API_V1_URL}/users/${userId}/enquetes`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -57,7 +58,7 @@ const handlePageChange = (pageNum: number) => {
 // filtre tous les enquêtes
 const filterEnquetes = async () => {
   loading.value = true
-  await fetch(`http://localhost:8000/api/v1/users/${userId}/enquetes?search=${input.value}`, {
+  await fetch(`${API_V1_URL}/users/${userId}/enquetes?search=${input.value}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

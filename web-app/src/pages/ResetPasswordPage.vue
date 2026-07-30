@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { API_V1_URL } from '@/config/api'
 
 const router = useRouter()
 const route  = useRoute()
@@ -34,7 +35,7 @@ const submit = async () => {
   error.value   = ''
 
   try {
-    const res = await fetch('http://localhost:8000/api/v1/auth/reset-password', {
+    const res = await fetch(`${API_V1_URL}/auth/reset-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({

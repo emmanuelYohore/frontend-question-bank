@@ -3,6 +3,7 @@ import PopupUpdateRoleUser from '@/modals/PopupUpdateRoleUser.vue'
 import { useAuthStore } from '@/stores/auth'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { API_V1_URL } from '@/config/api'
 
 interface UserData {
   id: string
@@ -25,7 +26,7 @@ const input = ref('')
 
 const getAllUsers = async() => {
     try {
-        const response = await fetch(`http://localhost:8000/api/v1/users`, {
+        const response = await fetch(`${API_V1_URL}/users`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -42,7 +43,7 @@ const getAllUsers = async() => {
 const confirmPopupRole = async (newRole: string) => {
   if (!user.value) return
   loading.value = true
-  await fetch(`http://localhost:8000/api/v1/users/${user.value.id}`, {
+  await fetch(`${API_V1_URL}/users/${user.value.id}`, {
     method: 'PUT',
     credentials: "include",
     headers: {
@@ -63,7 +64,7 @@ const confirmPopupRole = async (newRole: string) => {
 
 const filterUsers = async () => {
   loading.value = true
-  await fetch(`http://localhost:8000/api/v1/users?search=${input.value}`, {
+  await fetch(`${API_V1_URL}/users?search=${input.value}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

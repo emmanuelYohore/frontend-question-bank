@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 interface ItemData {
   id: string
@@ -44,7 +45,7 @@ const viewItems = async (b: BankData) => {
   selectedBank.value = null
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/bank-items/${b.id}`, {
+    const response = await fetch(`${API_V1_URL}/bank-items/${b.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ const archiveBank = async (b: BankData) => {
   const action = shouldArchive ? 'Archiver' : 'Désarchiver'
   if (!confirm(`${action} cette banque ?`)) return
   try {
-    await fetch(`http://localhost:8000/api/v1/bank-items/${b.id}`, {
+    await fetch(`${API_V1_URL}/bank-items/${b.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -97,7 +98,7 @@ const getAllBanks = async () => {
   loading.value = true
 
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/bank-items?search=${encodeURIComponent(input.value)}`, {
+    const response = await fetch(`${API_V1_URL}/bank-items?search=${encodeURIComponent(input.value)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

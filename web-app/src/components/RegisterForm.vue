@@ -3,6 +3,7 @@ import { router } from "@/router/routes";
 import { useAuthStore } from "@/stores/auth";
 import { computed, ref } from "vue";
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 import {
   faUser,
   faEnvelope,
@@ -37,7 +38,7 @@ const register = async () => {
   loading.value = true;
 
   try {
-    const response = await fetch("http://localhost:8000/api/v1/auth/register", {
+    const response = await fetch(`${API_V1_URL}/auth/register`, {
       method: "POST",
       credentials: "include",
       headers: {

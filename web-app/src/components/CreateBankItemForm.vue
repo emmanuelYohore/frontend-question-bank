@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import PopupAddBankCreateToEnquete from '@/modals/PopupAddBankCreateToEnquete.vue';
+import { API_V1_URL } from '@/config/api'
 
 const authStore = useAuthStore();
 
@@ -18,7 +19,7 @@ const valueBankNameCreated = ref('')
  */
 const createBankItem = async () => { 
   loading.value = true;
-  await fetch("http://localhost:8000/api/v1/bank-items", {
+  await fetch(`${API_V1_URL}/bank-items`, {
     method: "POST",
     credentials: "include",
     headers: {

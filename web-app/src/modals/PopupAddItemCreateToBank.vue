@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { notify } from '@/utils/popup'
+import { API_V1_URL } from '@/config/api'
 
 interface BankItem {
   id: string
@@ -37,7 +38,7 @@ onMounted(async () => {
 const fetchBanks = async () => {
   loading.value = true
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/users/${userId}/bank-items`, {
+    const res = await fetch(`${API_V1_URL}/users/${userId}/bank-items`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${authStore.token}`,
@@ -55,8 +56,7 @@ const fetchBanks = async () => {
 const filterBanks = async () => {
   loadingSearch.value = true
   try {
-    const res = await fetch(
-      `http://localhost:8000/api/v1/users/${userId}/bank-items?search=${inputSearchBankItems.value}`,
+    const res = await fetch(`${API_V1_URL}/users/${userId}/bank-items?search=${inputSearchBankItems.value}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -82,8 +82,7 @@ const validate = async () => {
   submitting.value = true
   try {
     for (const bankId of selectedBankIds.value) {
-      await fetch(
-        `http://localhost:8000/api/v1/users/${userId}/bank-items/${bankId}/items`,
+      await fetch(`${API_V1_URL}/users/${userId}/bank-items/${bankId}/items`,
         {
           method: 'POST',
           headers: {
